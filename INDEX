@@ -1,0 +1,19 @@
+bayesDensity            Summary for the density estimate based on the
+                        Bayesian model.
+bayessurvreg1           A Bayesian survival regression with a flexible
+                        error distribution.
+bayessurvreg1.files2init
+                        Read the initial values for the Bayesian
+                        survival regression model to the list.
+densplot2               Probability density function estimate from
+                        MCMC output
+files2coda              Read the sampled values from the Bayesian
+                        survival regression model to a coda mcmc
+                        object.
+plot.bayesDensity       Plot an object of class bayesDensity
+predictive              Compute predictive quantities based on a
+                        Bayesian survival regression model.
+print.bayesDensity      Print a summary for the density estimate based
+                        on the Bayesian model.
+sampleCovMat            Compute a sample covariance matrix.
+traceplot2              Trace plot of McMC output.
