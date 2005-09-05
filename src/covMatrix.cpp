@@ -2,7 +2,7 @@
 //
 // 30/01/2004: start working on it
 //
-#include "bayessurvreg.h"
+#include "covMatrix.h"
 
 using namespace std;
 
@@ -20,7 +20,7 @@ covMatrix::covMatrix()
   qraux = new double[_nrow];
 
   if (ichicovm == NULL || icovm == NULL || diagI == NULL || qr == NULL || qraux == NULL)
-    throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
+    throw returnR("C++ Error: 'covMatrix::covMatrix()' could not allocate a memory for a working space.", 1);
 }
 
 
@@ -81,7 +81,7 @@ covMatrix::operator=(const covMatrix& cm)
   jpvt = new int[_nrow];
 
   if (ichicovm == NULL || icovm == NULL || diagI == NULL || qr == NULL || qraux == NULL || jpvt == NULL)
-    throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
+    throw returnR("C++ Error: 'covMatrix' operator= could not allocate a memory for a working space.", 1);
   
   for (i = 0; i < _larray; i++){
     ichicovm[i] = cm.ichicovm[i];
@@ -130,7 +130,7 @@ covMatrix::covMatrix(double* covmA, const int* nr, const double* tolChol, const 
   jpvt = new int[_nrow];
 
   if (ichicovm == NULL || icovm == NULL || diagI == NULL || qr == NULL || qraux == NULL || jpvt == NULL)
-    throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
+    throw returnR("C++ Error: 'covMatrix' constructor could not allocate a memory for a working space.", 1);
 
   // Indeces of diagonal elements in an array
   for (i = 0; i < _nrow; i++) diagI[i] =  (i * (2*_nrow - i + 1)) / 2;

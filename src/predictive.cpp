@@ -13,11 +13,9 @@
 // 18/08/2004: time0 != 0 allowed
 //
 
-#include "bayessurvreg.h"
+#include "predictive.h"
 
 extern "C" {
-
-using namespace std;
 
 // PARAMETERS:
 //
@@ -34,8 +32,8 @@ using namespace std;
 //         nfixedP ................. number of fixed effects
 //         nrandomP ................ number of random effects (including the random intercept)
 //         randomIntP .............. 0/1, is a random intercept in the model or not
-//         nToStore ................ number of values that will be stored before written to files
-//                                   (currently ignored, always changed to nwrite)
+//         nToStore ................ (currently ignored, always changed to nwrite)
+//                                   
 //
 // dims2P[1+nP] ............... additional dimensionality parameters
 //        nquantileP[1]
@@ -87,16 +85,17 @@ using namespace std;
 // errP[1] ....... error flag
 //
 void
-predictive(int* errorTypeP,     char** dirP,
-           int* dimsP,          int* dims2P, 
-           double* XA,          int* indbA,
-           double* quantileA,   double* gridA,
-           int* priorParI,      double* priorParD,
-           int* nsimulP,        int* predictP,    int* storeP,
-           double* tolersP,     int* errP)
+predictive(const int* errorTypeP,  const char** dirP,        int* dimsP,          int* dims2P, 
+           const double* XA,       const int* indbA,         double* quantileA,   double* gridA,
+           const int* priorParI,   const double* priorParD,  const int* nsimulP,  const int* skipP,          
+           const int* byP,         int* onlyAver,            int* predictP,       int* storeP,
+           const double* tolersP,  int* errP)
 {
-  try{
+  try{/******/
+    double dtemp;
+    int itemp;
     int obs, i, j, cl;
+    double help;
 
     if (!(*errorTypeP == Mixture || *errorTypeP == Spline))
       throw returnR("C++ Error: unimplemented 'errorType' in a call to function 'predictive'.", 1);
@@ -104,7 +103,7 @@ predictive(int* errorTypeP,     char** dirP,
     GetRNGstate();
 
     *errP = 0;
-    string dir = *dirP;
+    const string dir = *dirP;
 
     // Transformation and inverse transformation of the response
     // ==========================================================
@@ -113,35 +112,36 @@ predictive(int* errorTypeP,     char** dirP,
 
     // Starting time for the survival model
     // ====================================
-    double* time0P = priorParD + 0;
+    const double* time0P = priorParD + 0;
 
     // Dimensionality parameters
     // =========================
     int* nP = dimsP;
     int* nclusterP = dimsP + 1;
     int* nwithinA = dimsP + 2;
-    int* nYP = dimsP + 2 + (*nclusterP);
+    //    int* nYP = dimsP + 2 + (*nclusterP);   /* nowhere used in this function */
     int* nXP = dimsP + 2 + (*nclusterP) + 1;
     int* nfixedP = dimsP + 2 + (*nclusterP) + 2;
     int* nrandomP = dimsP + 2 + (*nclusterP) + 3;
     int* randomIntP = dimsP + 2 + (*nclusterP) + 4;
-    int nToStore = dimsP[2 + (*nclusterP) + 5];
 
     // Additional dimensionality parameters
     // =====================================
     int* nquantileP = dims2P + 0;
-    int* ngridM = dims2P + 1;
+    const int* ngridM = dims2P + 1;
+    if (*nquantileP <= 0) *onlyAver = 1;
+    if (*onlyAver) *nquantileP = 0;
 
     // Parameters of done or future simulation
     // ========================================
     int niter = nsimulP[0]; 
-    int nthin = nsimulP[1];
-    int nwrite = nsimulP[2];         nToStore = nwrite;
+    //    int nthin = nsimulP[1];              /* nowhere used in this function */
+    int nwrite = nsimulP[2];
 
     // Tolerances for decompositions
     // =============================
-    double* tolerCholP = tolersP;
-    double* tolerQRP = tolersP + 1;
+    const double* tolerCholP = tolersP;
+    const double* tolerQRP = tolersP + 1;
 
     // What to predict?
     // =================
@@ -151,7 +151,7 @@ predictive(int* errorTypeP,     char** dirP,
     int* predicthazardP = predictP + 3;
     int* predictcumhazardP = predictP + 4;
     if (*predicthazardP || *predictcumhazardP) *predictSurvP = 1;
-    bool predictShch = (*predictSurvP) || (*predicthazardP) || (*predictcumhazardP);
+    const bool predictShch = (*predictSurvP) || (*predicthazardP) || (*predictcumhazardP);
 
     // What to store?
     // ================
@@ -160,34 +160,43 @@ predictive(int* errorTypeP,     char** dirP,
     int* storeSurvP = storeP + 2;           if (!(*predictSurvP)) *storeSurvP = 0;
     int* storehazardP = storeP + 3;         if (!(*predicthazardP)) *storehazardP = 0;
     int* storecumhazardP = storeP + 4;      if (!(*predictcumhazardP)) *storecumhazardP = 0;
-    bool store = (*storeETP) || (*storeTP) || (*storeSurvP) || (*storehazardP) || (*storecumhazardP);
+    const bool store = (*storeETP) || (*storeTP) || (*storeSurvP) || (*storehazardP) || (*storecumhazardP);
 
     // Indeces of quantile values in sampled chain (indexing starting from 0)
     // ======================================================================
+    // nread .................... number of iterations that will be considered now (after discarding skipped and thinned values)
     // indquant1, indquant2 ..... quantile = q*sample[indquant1] + (1-q)sample[indquant2]
     // help ..................... helping number
     //
-    int* indquant1 = new int[*nquantileP];
-    int* indquant2 = new int[*nquantileP];
-    double help;
-    for (i = 0; i < *nquantileP; i++){
-      if (quantileA[i] < 0 || quantileA[i] > 1) throw returnR("C++ Error: Incorrect quantile values supplied.", 1);
-      if (quantileA[i] <= 0) indquant1[i] = indquant2[i] = 0;
-      else if (quantileA[i] >= 1) indquant1[i] = indquant2[i] = niter - 1;
-           else{
-             help = quantileA[i] * double(niter);
-             if (fabs(help - floor(help + 1e-8)) < 1e-8){   // help is integer
-               indquant1[i] = int(floor(help)) - 1;
-               indquant2[i] = int(floor(help));
-             }
-             else{
-               indquant1[i] = indquant2[i] = int(floor(help));
-             }
-           }
-    }
+    if (*skipP >= niter) throw returnR("C++ Error: Too many iterations are to be skipped", 1);
+    if (*byP <= 0) throw returnR("C++ Error: by parameter must be positive", 1);
+    if (*skipP < 0) throw returnR("C++ Error: skip parameter must not be negative", 1);
+    const int nread = 1 + (niter - (*skipP) - 1) / (*byP);
 
-//    cout << "indquant1 = "; printArray(indquant1, nquantileP);
-//    cout << "indquant2 = "; printArray(indquant2, nquantileP);
+    int *indquant1 = &itemp;
+    int *indquant2 = &itemp;
+    if (!(*onlyAver)){
+      indquant1  = (int*) calloc(*nquantileP, sizeof(int));
+      indquant2  = (int*) calloc(*nquantileP, sizeof(int));
+      if (!indquant1 || !indquant2) throw returnR("C++ Error: Could not allocate working memory.", 1);
+      for (i = 0; i < *nquantileP; i++){
+        if (quantileA[i] < 0 || quantileA[i] > 1) throw returnR("C++ Error: Incorrect quantile values supplied.", 1);
+        if (quantileA[i] <= 0) indquant1[i] = indquant2[i] = 0;
+        else if (quantileA[i] >= 1) indquant1[i] = indquant2[i] = nread - 1;
+             else{
+               help = quantileA[i] * double(nread);
+               if (fabs(help - floor(help + 1e-8)) < 1e-8){   // help is integer
+                 indquant1[i] = int(floor(help)) - 1;
+                 indquant2[i] = int(floor(help));
+               }
+               else{
+                 indquant1[i] = indquant2[i] = int(floor(help));
+               }
+             }
+//      cout << "indquant1 = "; printArray(indquant1, nquantileP);
+//      cout << "indquant2 = "; printArray(indquant2, nquantileP);
+      }
+    }
 
 
     // Create data matrices and variables
@@ -198,16 +207,16 @@ predictive(int* errorTypeP,     char** dirP,
     // **ZZt ................ this is finally not needed
     // *diagIZZt ............ this is finally not needed
     //
-    int* clusteriA = new int[*nP];                           if (clusteriA == NULL) *errP = 1;
-    List<int>* invclusteriA = new List<int>[*nclusterP];     if (invclusteriA == NULL) *errP = 1;
-    int* indbinXA = new int[(*nrandomP ? *nrandomP : 1)];    if (indbinXA == NULL) *errP = 1;
-    double** ZZt = new double*[*nP];                         if (ZZt == NULL) *errP = 1;
-    int* diagIZZt = new int[*nrandomP];                      if (diagIZZt == NULL) *errP = 1;
-    if (*errP) throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
+    int* clusteriA          = (int*) calloc(*nP, sizeof(int));                          if (!clusteriA)    *errP = 1;
+    List<int>* invclusteriA = new List<int>[*nclusterP];                                if (!invclusteriA) *errP = 1;
+    int* indbinXA           = (int*) calloc(*nrandomP ? *nrandomP : 1, sizeof(int));    if (!indbinXA)     *errP = 1;
+    double** ZZt            = (double**) calloc(*nP, sizeof(double*));                  if (!ZZt)          *errP = 1;
+    int* diagIZZt           = (int*) calloc(*nrandomP, sizeof(int));                    if (!diagIZZt)     *errP = 1;
+    if (*errP) throw returnR("C++ Error: Could not allocate a memory for a working space", 1);
     for (j = 0; j < *nP && !(*errP); j++){
-      ZZt[j] = new double[*nrandomP * (*nrandomP)];          if (ZZt[j] == NULL) *errP = 1;
+      ZZt[j] = (double*) calloc(*nrandomP * (*nrandomP), sizeof(double));               if (!ZZt[j]) *errP = 1;
     }
-    if (*errP) throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
+    if (*errP) throw returnR("C++ Error: Could not allocate a memory for a working space", 1);
 
     createDataShort(nwithinA, clusteriA, invclusteriA, XA, ZZt, diagIZZt, indbinXA, 
                     nP, nclusterP, nXP, nfixedP, nrandomP, randomIntP, indbA);
@@ -220,14 +229,14 @@ predictive(int* errorTypeP,     char** dirP,
     // **loggridM ..... log(grid - time0)
     //
     int cumngrid = 0;
-    double** gridM = new double*[*nP];
-    double** loggridM = new double*[*nP];
-    if (gridM == NULL || loggridM == NULL) 
+    double** gridM    = (double**) calloc(*nP, sizeof(double*));
+    double** loggridM = (double**) calloc(*nP, sizeof(double*));
+    if (!gridM || !loggridM) 
       throw returnR("C++ Error: Could not allocate a memory for working space, too many predictive quantities are computed.", 1);
     for (obs = 0; obs < *nP; obs++){
       gridM[obs] = gridA + cumngrid;
-      loggridM[obs] = new double[ngridM[obs]];
-      if (loggridM[obs] == NULL)
+      loggridM[obs] = (double*) calloc(ngridM[obs], sizeof(double));
+      if (!loggridM[obs])
         throw returnR("C++ Error: Could not allocate a memory for working space, too many predictive quantities are computed.", 1);
       for (i = 0; i < ngridM[obs]; i++){
         if (gridM[obs][i] <= 0.0) throw returnR("C++ Error: Non-positive grid value for predictive survivor supplied.", 1);
@@ -245,20 +254,29 @@ predictive(int* errorTypeP,     char** dirP,
     // mixtureAwork .. sampled mixtures
     // betaAwork ..... sampled betas
     // DAwork ........ sampled D matrices (variances of random effects)
+    // niter_now ..... number of iterations that will be considered now (check)
     //
-    int* kmaxP = priorParI + 0;
-    int lmixture = 1 + 3*(*kmaxP);
-    double* mixtureAwork = new double[niter*lmixture];                 if (mixtureAwork == NULL) *errP = 1;
-    double* betaAwork = new double[(*nXP ? niter*(*nXP) : 1)];         if (betaAwork == NULL) *errP = 1;
-    int nD = ((*nrandomP) * (*nrandomP + 1)) / 2;
-    double* DAwork = new double[(*nrandomP ? niter*(1 + nD) : 1)];     if (DAwork == NULL) *errP = 1;
+    const int* kmaxP     = priorParI + 0;
+    const int lmixture   = 1 + 3*(*kmaxP);
+    double* mixtureAwork = (double*) calloc(niter*lmixture, sizeof(double));                   if (!mixtureAwork) *errP = 1;
+    double* betaAwork    = (double*) calloc(*nXP ? niter*(*nXP) : 1, sizeof(double));          if (!betaAwork)    *errP = 1;
+    const int nD         = ((*nrandomP) * (*nrandomP + 1)) / 2;
+    double* DAwork       = (double*) calloc(*nrandomP ? niter*(1 + nD) : 1, sizeof(double));   if (!DAwork)       *errP = 1;
     if (*errP) 
       throw returnR("C++ Error: Could not allocate a memory for sampled values.", *errP);
 
-    readMixtureFromFiles(mixtureAwork, niter, *kmaxP, dir, "/mixmoment.sim", "/mweight.sim", "/mmean.sim", "/mvariance.sim", 1);    
-    if (*nXP) readFromFile(betaAwork, niter, *nXP, dir, "/beta.sim", 0, 1);
-    if (*nrandomP) readFromFile(DAwork, niter, nD, dir, "/D.sim", 1, 1);              // skip first column
-
+    int niter_now;
+    readMixtureFromFiles(mixtureAwork, &niter_now, niter, *skipP, *byP, *kmaxP, dir, 
+                         "/mixmoment.sim", "/mweight.sim", "/mmean.sim", "/mvariance.sim");
+    if (niter_now != nread) throw returnR("Different MCMC sample sizes indicated by mixture files", 1);
+    if (*nXP){
+      readFromFile(betaAwork, &niter_now, niter, *nXP, 1, *skipP, *byP, dir, "/beta.sim", 0);
+      if (niter_now != nread) throw returnR("Different MCMC sample sizes indicated 'beta.sim'", 1);
+    }
+    if (*nrandomP){
+      readFromFile(DAwork, &niter_now, niter, nD, 1, *skipP, *byP, dir, "/D.sim", 1);              // skip first column
+      if (niter_now != nread) throw returnR("Different MCMC sample sizes indicated by 'D.sim'", 1);
+    }
 
     // Space for simulated quantities before they are written to files or used in other way
     // =====================================================================================
@@ -268,59 +286,61 @@ predictive(int* errorTypeP,     char** dirP,
     // hazardA[obs][grid.value][iter] ..... predictive hazard function
     // cumhazardA[obs][grid.value][iter] .. predictive cumulative hazard
     //
-    double** ETsA = new double*[(*predictETP)*(*nP)];                      if (ETsA == NULL) *errP = 1;
-    double** TsA = new double*[(*predictTP)*(*nP)];                        if (TsA == NULL) *errP = 1;
-    double*** SurvA = new double**[(*predictSurvP)*(*nP)];                 if (SurvA == NULL) *errP = 1;
-    double*** hazardA = new double**[(*predicthazardP)*(*nP)];             if (hazardA == NULL) *errP = 1;
-    double*** cumhazardA = new double**[(*predictcumhazardP)*(*nP)];       if (cumhazardA == NULL) *errP = 1;
+    double** ETsA        = (double**) calloc((*predictETP)*(*nP), sizeof(double*));             if (!ETsA)       *errP = 1;
+    double** TsA         = (double**) calloc((*predictTP)*(*nP), sizeof(double*));              if (!TsA)        *errP = 1;
+    double*** SurvA      = (double***) calloc((*predictSurvP)*(*nP), sizeof(double**));         if (!SurvA)      *errP = 1;
+    double*** hazardA    = (double***) calloc((*predicthazardP)*(*nP), sizeof(double**));       if (!hazardA)    *errP = 1;
+    double*** cumhazardA = (double***) calloc((*predictcumhazardP)*(*nP), sizeof(double**));    if (!cumhazardA) *errP = 1;
     if (*errP) throw returnR("C++ Error: Could not allocate a memory for working space.", *errP);
+
+    int nToAlloc = (*onlyAver) ? 1 : nread;
     if (*predictETP){
       for (obs = 0; obs < *nP; obs++){
-        ETsA[obs] = new double[niter];
-        if (ETsA[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        ETsA[obs] = (double*) calloc(nToAlloc, sizeof(double));
+        if (!ETsA[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
       }
     }
     if (*predictTP){
       for (obs = 0; obs < *nP; obs++){
-        TsA[obs] = new double[niter];
-        if (TsA[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        TsA[obs] = (double*) calloc(nToAlloc, sizeof(double));
+        if (!TsA[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
       }
     }
     if (*predictSurvP){
       for (obs = 0; obs < *nP; obs++){
-        SurvA[obs] = new double*[ngridM[obs]];
-        if (SurvA[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        SurvA[obs] = (double**) calloc(ngridM[obs], sizeof(double*));
+        if (!SurvA[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (j = 0; j < ngridM[obs]; j++){
-          SurvA[obs][j] = new double[niter];
-          if (SurvA[obs][j] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+	  SurvA[obs][j] = (double*) calloc(nToAlloc, sizeof(double));
+          if (!SurvA[obs][j]) throw returnR("C++ Error: Could not allocate a memory for SurvA[obs][j].", 1);
         }
       }
     }
     if (*predicthazardP){
       for (obs = 0; obs < *nP; obs++){
-        hazardA[obs] = new double*[ngridM[obs]];
-        if (hazardA[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        hazardA[obs] = (double**) calloc(ngridM[obs], sizeof(double*));
+        if (!hazardA[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (j = 0; j < ngridM[obs]; j++){
-          hazardA[obs][j] = new double[niter];
-          if (hazardA[obs][j] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+	  hazardA[obs][j] = (double*) calloc(nToAlloc, sizeof(double));
+          if (!hazardA[obs][j]) throw returnR("C++ Error: Could not allocate a memory for working space for hazardA[obs][j].", 1);
         }
       }
     }
     if (*predictcumhazardP){
       for (obs = 0; obs < *nP; obs++){
-        cumhazardA[obs] = new double*[ngridM[obs]];
-        if (cumhazardA[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        cumhazardA[obs] = (double**) calloc(ngridM[obs], sizeof(double*));
+        if (!cumhazardA[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (j = 0; j < ngridM[obs]; j++){
-          cumhazardA[obs][j] = new double[niter];
-          if (cumhazardA[obs][j] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+          cumhazardA[obs][j] = (double*) calloc(nToAlloc, sizeof(double));
+          if (!cumhazardA[obs][j]) throw returnR("C++ Error: Could not allocate a memory for working space for cumhazardA[obs][j].", 1);
         }
       }
     }
-    //    if (*predictETP) create2pointer(ETsA, *nP, niter, -99, true);
-    //    if (*predictTP) create2pointer(TsA, *nP, niter, -99, true);
-    //    if (*predictSurvP) create3pointer(SurvA, *nP, ngridM, niter, -99, true);
-    //    if (*predicthazardP) create3pointer(hazardA, *nP, ngridM, niter, -99, true);
-    //    if (*predictcumhazardP) create3pointer(cumhazardA, *nP, ngridM, niter, -99, true);
+    //    if (*predictETP) create2pointer(ETsA, *nP, nToAlloc, -99, true);
+    //    if (*predictTP) create2pointer(TsA, *nP, nToAlloc, -99, true);
+    //    if (*predictSurvP) create3pointer(SurvA, *nP, ngridM, nToAlloc, -99, true);
+    //    if (*predicthazardP) create3pointer(hazardA, *nP, ngridM, nToAlloc, -99, true);
+    //    if (*predictcumhazardP) create3pointer(cumhazardA, *nP, ngridM, nToAlloc, -99, true);
 
 
     // Space for quantiles and means
@@ -331,62 +351,62 @@ predictive(int* errorTypeP,     char** dirP,
     // hazardquant[obs][grid.value][quantile] .......
     // cumhazardquant[obs][grid.value][quantile] ....
     //
-    double** ETquant = new double*[(*predictETP)*(*nP)];                    if (ETquant == NULL) *errP = 1;   
-    double** Tquant = new double*[(*predictTP)*(*nP)];                      if (Tquant == NULL) *errP = 1;   
-    double*** Survquant = new double**[(*predictSurvP)*(*nP)];              if (Survquant == NULL) *errP = 1;
-    double*** hazardquant = new double**[(*predicthazardP)*(*nP)];          if (hazardquant == NULL) *errP = 1;
-    double*** cumhazardquant = new double**[(*predictcumhazardP)*(*nP)];    if (cumhazardquant == NULL) *errP = 1;
+    double** ETquant         = (double**) calloc((*predictETP)*(*nP), sizeof(double*));             if (!ETquant)        *errP = 1;   
+    double** Tquant          = (double**) calloc((*predictTP)*(*nP), sizeof(double*));              if (!Tquant)         *errP = 1;   
+    double*** Survquant      = (double***) calloc((*predictSurvP)*(*nP), sizeof(double**));         if (!Survquant)      *errP = 1;
+    double*** hazardquant    = (double***) calloc((*predicthazardP)*(*nP), sizeof(double**));       if (!hazardquant)    *errP = 1;
+    double*** cumhazardquant = (double***) calloc((*predictcumhazardP)*(*nP), sizeof(double**));    if (!cumhazardquant) *errP = 1;
     if (*errP) throw returnR("C++ Error: Could not allocate a memory for working space.", *errP);
 
     if (*predictETP){
       for (obs = 0; obs < *nP; obs++){
-        ETquant[obs] = new double[*nquantileP + 1];
-        if (ETquant[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        ETquant[obs] = (double*) calloc(*nquantileP + 1, sizeof(double));
+        if (!ETquant[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (i = 0; i < *nquantileP + 1; i++) ETquant[obs][i] = 0.0;
       }
     }
     if (*predictTP){
       for (obs = 0; obs < *nP; obs++){
-        Tquant[obs] = new double[*nquantileP + 1];
-        if (Tquant[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        Tquant[obs] = (double*) calloc(*nquantileP + 1, sizeof(double));
+        if (!Tquant[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (i = 0; i < *nquantileP + 1; i++) Tquant[obs][i] = 0.0;
       }
     }
     if (*predictSurvP){
       for (obs = 0; obs < *nP; obs++){
-        Survquant[obs] = new double*[ngridM[obs]];
-        if (Survquant[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        Survquant[obs] = (double**) calloc(ngridM[obs], sizeof(double*));
+        if (!Survquant[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (j = 0; j < ngridM[obs]; j++){
-          Survquant[obs][j] = new double[*nquantileP + 1];
-          if (Survquant[obs][j] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+          Survquant[obs][j] = (double*) calloc(*nquantileP + 1, sizeof(double));
+          if (!Survquant[obs][j]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
           for (i = 0; i < *nquantileP + 1; i++) Survquant[obs][j][i] = 0.0;
         }
       }
     }
     if (*predicthazardP){
       for (obs = 0; obs < *nP; obs++){
-        hazardquant[obs] = new double*[ngridM[obs]];
-        if (hazardquant[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        hazardquant[obs] = (double**) calloc(ngridM[obs], sizeof(double*));
+        if (!hazardquant[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (j = 0; j < ngridM[obs]; j++){
-          hazardquant[obs][j] = new double[*nquantileP + 1];
-          if (hazardquant[obs][j] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+          hazardquant[obs][j] = (double*) calloc(*nquantileP + 1, sizeof(double));
+          if (!hazardquant[obs][j]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
           for (i = 0; i < *nquantileP + 1; i++) hazardquant[obs][j][i] = 0.0;
         }
       }
     }
     if (*predictcumhazardP){
       for (obs = 0; obs < *nP; obs++){
-        cumhazardquant[obs] = new double*[ngridM[obs]];
-        if (cumhazardquant[obs] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+        cumhazardquant[obs] = (double**) calloc(ngridM[obs], sizeof(double*));
+        if (!cumhazardquant[obs]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
         for (j = 0; j < ngridM[obs]; j++){
-          cumhazardquant[obs][j] = new double[*nquantileP + 1];
-          if (cumhazardquant[obs][j] == NULL) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
+          cumhazardquant[obs][j] = (double*) calloc(*nquantileP + 1, sizeof(double));
+          if (!cumhazardquant[obs][j]) throw returnR("C++ Error: Could not allocate a memory for working space.", 1);
           for (i = 0; i < *nquantileP + 1; i++) cumhazardquant[obs][j][i] = 0.0;
         }
       }
     }
-    //    if (*predictETP) create2pointer(ETquant, *nP, *nquantileP, 0.0, true);
-    //    if (*predictTP) create2pointer(Tquant, *nP, *nquantileP, 0.0, true);
+    //    if (*predictETP) create2pointer(ETquant, *nP, *nquantileP + 1, 0.0, true);
+    //    if (*predictTP) create2pointer(Tquant, *nP, *nquantileP + 1, 0.0, true);
     //    if (*predictSurvP) create3pointer(Survquant, *nP, ngridM, *nquantileP + 1, 0.0, true);
     //    if (*predicthazardP) create3pointer(hazardquant, *nP, ngridM, *nquantileP + 1, 0.0, true);
     //    if (*predictcumhazardP) create3pointer(cumhazardquant, *nP, ngridM, *nquantileP + 1, 0.0, true);
@@ -420,30 +440,30 @@ predictive(int* errorTypeP,     char** dirP,
     double* mixtureM;
     int kP[1];
     double* wM;
-    double* cumwM = new double[*kmaxP];                 if (cumwM == NULL) *errP = 1;
+    double* cumwM      = (double*) calloc(*kmaxP, sizeof(double));       if (!cumwM)      *errP = 1;
     double* muM;
-    double* invsigma2M = new double[*kmaxP];            if (invsigma2M == NULL) *errP = 1;
+    double* invsigma2M = (double*) calloc(*kmaxP, sizeof(double));       if (!invsigma2M) *errP = 1;
     double* sigma2M;
-    double* sigmaM = new double[*kmaxP];                if (sigmaM == NULL) *errP = 1;
-    double* betaM;
+    double* sigmaM     = (double*) calloc(*kmaxP, sizeof(double));       if (!sigmaM)     *errP = 1;
+    double* betaM = &dtemp;
 
     covMatrix* Dcm = new covMatrix;
-    if (Dcm == NULL) throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
+    if (!Dcm) throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
     if (*nrandomP) *Dcm = covMatrix(DAwork, nrandomP, tolerCholP, tolerQRP);
 
-    int* rM = new int[*nP];                             if (rM == NULL) *errP = 1;
-    double* YsM = new double[*nP];                      if (YsM == NULL) *errP = 1;
+    int* rM             = (int*) calloc(*nP, sizeof(int));             if (!rM)          *errP = 1;
+    double* YsM         = (double*) calloc(*nP, sizeof(double));       if (!YsM)         *errP = 1;
+    double* regresPredM = (double*) calloc(*nP, sizeof(double));       if (!regresPredM) *errP = 1;
     for (i = 0; i < *nP; i++) YsM[i] = 0.0;
-    double* regresPredM = new double[*nP];               if (regresPredM == NULL) *errP = 1;
 
     const int nMHinfo2 = 1*(*nclusterP);
-    int* MHinfo2M = new int[nMHinfo2];                  if (MHinfo2M == NULL) *errP = 1;
-    double* bM = new double[(*nclusterP)*(*nrandomP)];  if (bM == NULL) *errP = 1;
-    bblocks* bb = new bblocks;                          if (bb == NULL) *errP = 1;
-    int* priorbI = new int[7+(*nrandomP)];              if (priorbI == NULL) *errP = 1;
-    double* priorbD = new double[1+2*nD+(*nrandomP)+1]; if (priorbD == NULL) *errP = 1;
+    int* MHinfo2M      = (int*) calloc(nMHinfo2, sizeof(int));                        if (!MHinfo2M) *errP = 1;
+    double* bM         = (double*) calloc((*nclusterP)*(*nrandomP), sizeof(double));  if (!bM)       *errP = 1;
+    bblocks* bb        = new bblocks;                                                 if (!bb)       *errP = 1;
+    int* priorbI       = (int*) calloc(7+(*nrandomP), sizeof(int));                   if (!priorbI)  *errP = 1;
+    double* priorbD    = (double*) calloc(1+2*nD+(*nrandomP)+1, sizeof(double));      if (!priorbD)  *errP = 1;
     if (*errP)
-      throw returnR("C++ Error: Could not allocate a memory for working space, buy more memory.", *errP);
+      throw returnR("C++ Error: Could not allocate a memory for working space.", *errP);
     if (*nrandomP){
       priorbI[0] = *nrandomP;  priorbI[1] = *nclusterP;  priorbI[2] = InvWishart;  priorbI[3] = Gibbs;
       priorbI[4] = 1;          priorbI[5] = *nrandomP;   priorbI[6] = nD;
@@ -464,19 +484,18 @@ predictive(int* errorTypeP,     char** dirP,
     // Random effects: their means
     // Y = log(T): sample according to mean given by the first regression vector and comp. pertinences
     // ==============================================================================
-    *kP = int(mixtureAwork[0]);
-    wM = mixtureAwork + 1;
-    muM = mixtureAwork + 1 + (*kmaxP);
-    sigma2M = mixtureAwork + 1 + 2*(*kmaxP);
-    giveSigmaAndInvsigma2(sigmaM, invsigma2M, sigma2M, kP);
+    mixtureM = mixtureAwork;
+    wM       = mixtureAwork + 1;
+    muM      = wM + (*kmaxP);
+    sigma2M  = muM + (*kmaxP);
+    *kP      = int(mixtureM[0]);
     cumsum(cumwM, wM, kP);
+    giveSigmaAndInvsigma2(sigmaM, invsigma2M, sigma2M, kP);
 
-    if (*nXP) betaM = betaAwork + 0;
+    if (*nXP) betaM = betaAwork;
     if (*nrandomP){
-      if (*Eb0dependMix){
-        *kP = int(mixtureAwork[0]);
-        mixMean(Eb0, kP, wM, muM);
-      }
+      Dcm->covm = DAwork;
+      if (*Eb0dependMix) mixMean(Eb0, kP, wM, muM);
       for (cl = 0; cl < *nclusterP; cl++){
         for (j = 0; j < *nrandomP; j++){
           bM[cl*(*nrandomP) + j] = ((indbinXA[j] == -1) ? (*Eb0) : betaM[indbinXA[j]]);
@@ -490,30 +509,21 @@ predictive(int* errorTypeP,     char** dirP,
 
 
     // ========== Main loop over iterations =========
-    int iter;
+    int iter, index;
     int nwithoutinfo = 0;
     char write_flag = 'a';
     int backs = 0;
 
     Rprintf("Iteration ");
-    for (iter = 1; iter <= niter; iter++){
+    for (iter = 1; iter <= nread; iter++){
+      index = (*onlyAver) ? 0 : (iter - 1);
 
-//cout << "iter = " << iter << endl;
-      // Shift pointers for previously sampled values
-      mixtureM = mixtureAwork + (iter - 1)*lmixture;
-      *kP = int(mixtureM[0]); 
-      wM = mixtureM + 1;
+      *kP = int(mixtureM[0]);
       cumsum(cumwM, wM, kP);
-      muM = mixtureM + 1 + (*kmaxP);
-      sigma2M = mixtureM + 1 + 2*(*kmaxP);
       giveSigmaAndInvsigma2(sigmaM, invsigma2M, sigma2M, kP);
-      if (*Eb0dependMix) mixMean(Eb0, kP, wM, muM);
-      if (*nrandomP){
-        Dcm->covm = DAwork + (iter - 1)*nD;
-        Dcm->update(tolerCholP, tolerQRP);
-      }
-      if (*nXP) betaM = betaAwork + (iter - 1)*(*nXP);
 
+      if (*Eb0dependMix) mixMean(Eb0, kP, wM, muM);
+      if (*nrandomP)     Dcm->update(tolerCholP, tolerQRP);
 
       // Sample and update cumulative sums
       if (*nrandomP){
@@ -525,21 +535,21 @@ predictive(int* errorTypeP,     char** dirP,
       regresPredictor(regresPredM, betaM, bM, XA, clusteriA, randomIntP, indbA, nP, nXP, nrandomP);
 //writeToFile(regresPredM, 1, *nP, "/home/arnost/temp/", "regresPred.sim", 'a');
       if (*predictETP){
-        predictET(ETsA, time0P, iter - 1, betaM, wM, muM, sigma2M, Dcm, XA, kP, nP, nXP, indbinXA, randomIntP, nrandomP, errorTypeP);
-        cumsumQuantile1(ETquant, ETsA, *nquantileP, *nP, iter - 1);
+        predictET(ETsA, time0P, index, betaM, wM, muM, sigma2M, Dcm, XA, kP, nP, nXP, indbinXA, randomIntP, nrandomP, errorTypeP);
+        cumsumQuantile1(ETquant, ETsA, *nquantileP, *nP, index);
       }
 
       if (*predictTP){
         predictData(YsM, regresPredM, rM, cumwM, muM, sigmaM, Eb0, kP, nP, errorTypeP, randomIntP);
-        Y2T(TsA, YsM, time0P, iter - 1, nP, itrans);
-        cumsumQuantile1(Tquant, TsA, *nquantileP, *nP, iter - 1);
+        Y2T(TsA, YsM, time0P, index, nP, itrans);
+        cumsumQuantile1(Tquant, TsA, *nquantileP, *nP, index);
       }
       if (predictShch){
-  	 predictSurv(SurvA, hazardA, cumhazardA, iter - 1, gridM, loggridM, time0P, regresPredM, rM, wM, muM, sigmaM,
+  	 predictSurv(SurvA, hazardA, cumhazardA, index, gridM, loggridM, time0P, regresPredM, rM, wM, muM, sigmaM,
                      Eb0, kP, nP, ngridM, errorTypeP, randomIntP, predicthazardP, predictcumhazardP);
-         if (*predictSurvP) cumsumQuantile2(Survquant, SurvA, *nquantileP, *nP, ngridM, iter - 1);
-         if (*predicthazardP) cumsumQuantile2(hazardquant, hazardA, *nquantileP, *nP, ngridM, iter - 1);
-         if (*predictcumhazardP) cumsumQuantile2(cumhazardquant, cumhazardA, *nquantileP, *nP, ngridM, iter - 1);
+         if (*predictSurvP) cumsumQuantile2(Survquant, SurvA, *nquantileP, *nP, ngridM, index);
+         if (*predicthazardP) cumsumQuantile2(hazardquant, hazardA, *nquantileP, *nP, ngridM, index);
+         if (*predictcumhazardP) cumsumQuantile2(cumhazardquant, cumhazardA, *nquantileP, *nP, ngridM, index);
       }
       nwithoutinfo++;
 
@@ -549,22 +559,35 @@ predictive(int* errorTypeP,     char** dirP,
         backs = int(log10(double(iter))) + 1;
         nwithoutinfo = 0;
       } 
+
+      // Shift pointers for previously sampled values
+      mixtureM += lmixture;
+      wM       = mixtureM + 1;
+      muM      = wM + (*kmaxP);
+      sigma2M  = muM + (*kmaxP);
+      if (*nrandomP) Dcm->covm += nD;
+      if (*nXP)      betaM     += (*nXP);
     }    // end of the simulation
+
+    if (nwithoutinfo > 0){
+      for (i = 0; i < backs; i++) Rprintf("\b");
+      Rprintf("%d", iter);
+    } 
 
     // Write to files simulated values
     if (store){
       Rprintf("\nStoring simulated values.");
-      writeToFiles2(ETsA, TsA, SurvA, hazardA, cumhazardA, niter, dir, write_flag, nP, ngridM,
+      writeToFiles2(ETsA, TsA, SurvA, hazardA, cumhazardA, nread, dir, write_flag, nP, ngridM,
                     storeETP, storeTP, storeSurvP, storehazardP, storecumhazardP);
     }
 
     // Compute means and quantiles
     Rprintf("\nComputing quantiles.");
-    if (*predictETP) meanQuantile1(ETquant, ETsA, quantileA, indquant1, indquant2, *nP, *nquantileP, niter);
-    if (*predictTP) meanQuantile1(Tquant, TsA, quantileA, indquant1, indquant2, *nP, *nquantileP, niter);
-    if (*predictSurvP) meanQuantile2(Survquant, SurvA, quantileA, indquant1, indquant2, *nP, ngridM, *nquantileP, niter);
-    if (*predicthazardP) meanQuantile2(hazardquant, hazardA, quantileA, indquant1, indquant2, *nP, ngridM, *nquantileP, niter);
-    if (*predictcumhazardP) meanQuantile2(cumhazardquant, cumhazardA, quantileA, indquant1, indquant2, *nP, ngridM, *nquantileP, niter);
+    if (*predictETP) meanQuantile1(ETquant, ETsA, quantileA, indquant1, indquant2, *nP, *nquantileP, nread);
+    if (*predictTP) meanQuantile1(Tquant, TsA, quantileA, indquant1, indquant2, *nP, *nquantileP, nread);
+    if (*predictSurvP) meanQuantile2(Survquant, SurvA, quantileA, indquant1, indquant2, *nP, ngridM, *nquantileP, nread);
+    if (*predicthazardP) meanQuantile2(hazardquant, hazardA, quantileA, indquant1, indquant2, *nP, ngridM, *nquantileP, nread);
+    if (*predictcumhazardP) meanQuantile2(cumhazardquant, cumhazardA, quantileA, indquant1, indquant2, *nP, ngridM, *nquantileP, nread);
 
     // Write to files quantiles and means
     Rprintf("\nStoring quantiles.");
@@ -575,63 +598,70 @@ predictive(int* errorTypeP,     char** dirP,
     PutRNGstate();
 
     // Cleaning
-    for (obs = 0; obs < *nP; obs++) delete [] loggridM[obs];
-    delete [] loggridM;         delete [] gridM;
+    if (!(*onlyAver)){
+      free(indquant1);         
+      free(indquant2);
+    }
 
-    delete [] mixtureAwork;     delete [] betaAwork;    delete [] DAwork;
+    free(clusteriA);         
+    delete [] invclusteriA;     
+    free(indbinXA);
 
-    delete bb;                  delete [] bM;           delete [] MHinfo2M;
-    delete Dcm;
+    for (j = 0; j < *nP; j++) free(ZZt[j]);
+    free(ZZt);               
+    free(diagIZZt);
 
-    delete [] clusteriA;        delete [] invclusteriA; delete [] indbinXA;
+    for (obs = 0; obs < *nP; obs++) free(loggridM[obs]);
+    free(loggridM);            
+    free(gridM);
 
-    for (j = 0; j < *nP; j++) delete [] ZZt[j];
-    delete [] ZZt;                                       delete [] diagIZZt;
-
-    delete [] cumwM;            delete [] invsigma2M;       delete [] sigmaM;
-    delete [] rM;               delete [] YsM;              delete [] regresPredM;
- 
-    delete [] indquant1;        delete [] indquant2;
+    free(mixtureAwork);        
+    free(betaAwork);        
+    free(DAwork);
 
     if (*predictETP) for (obs = 0; obs < *nP; obs++){
-                       delete [] ETsA[obs];
-                       delete [] ETquant[obs];
-                    }
+                       free(ETsA[obs]);
+                       free(ETquant[obs]);
+                     }
     if (*predictTP) for (obs = 0; obs < *nP; obs++){
-                       delete [] TsA[obs];
-                       delete [] Tquant[obs];
-                    }
+                       free(TsA[obs]);
+                       free(Tquant[obs]);
+                     }
     if (*predictSurvP) for (obs = 0; obs < *nP; obs++){ 
                          for (i = 0; i < ngridM[obs]; i++){
-                           delete [] SurvA[obs][i];
-                           delete [] Survquant[obs][i];
+                           free(SurvA[obs][i]);
+                           free(Survquant[obs][i]);
                          }
-                         delete [] SurvA[obs];
-                         delete [] Survquant[obs]; 
+                         free(SurvA[obs]);
+                         free(Survquant[obs]); 
                        }
     if (*predicthazardP) for (obs = 0; obs < *nP; obs++){
                            for (i = 0; i < ngridM[obs]; i++){
-                             delete [] hazardA[obs][i];
-                             delete [] hazardquant[obs][i];
+                             free(hazardA[obs][i]);
+                             free(hazardquant[obs][i]);
                            }
-                           delete [] hazardA[obs];
-                           delete [] hazardquant[obs]; 
+                           free(hazardA[obs]);
+                           free(hazardquant[obs]); 
                          }
     if (*predictcumhazardP) for (obs = 0; obs < *nP; obs++){
                               for (i = 0; i < ngridM[obs]; i++){
-                                delete [] cumhazardA[obs][i];
-                                delete [] cumhazardquant[obs][i];
+                                free(cumhazardA[obs][i]);
+                                free(cumhazardquant[obs][i]);
                               }
-                              delete [] cumhazardA[obs];
-                              delete [] cumhazardquant[obs];
+                              free(cumhazardA[obs]);
+                              free(cumhazardquant[obs]);
                             }
-    delete [] TsA;          delete [] Tquant;
-    delete [] SurvA;        delete [] Survquant;
-    delete [] hazardA;      delete [] hazardquant;
-    delete [] cumhazardA;   delete [] cumhazardquant;
+
+    free(ETsA);     free(TsA);     free(SurvA);      free(hazardA);      free(cumhazardA);
+    free(ETquant);  free(Tquant);  free(Survquant);  free(hazardquant);  free(cumhazardquant);
+
+    free(cumwM);    free(invsigma2M);    free(sigmaM);
+    free(rM);       free(YsM);           free(regresPredM);
+    free(bM);       free(MHinfo2M);      free(priorbI);       free(priorbD);
+    delete bb;      delete Dcm;
 
     return;
-  }  // end of try
+  }                     // end of try
   catch(returnR rr){
     *errP = rr.errflag();
     PutRNGstate();

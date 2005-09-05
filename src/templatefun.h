@@ -4,11 +4,11 @@
 #include <R.h>
 
 #include <iostream>
-#include <fstream>
 #include <iomanip>
-#include <climits>
+#include <fstream>
 #include <string>
 #include "AK_Error.h"
+#include "openFile.h"
 
 template <typename dd>
 void
@@ -24,16 +24,22 @@ changePointers(pp** aP, pp** bP);
 
 template <typename dd>
 void
-writeToFile(const dd* array,          const int nR,                 const int nC,
+writeToFile(const dd* array,          const int& nR,                const int& nC,
             const std::string& dir,   const std::string& filename,  const char &flag = 'n',
             const int& prec = 6,      const int& width = 0);
 
 template <typename dd>
 void
-writeTwoToFile(const dd* array1,         const int nR1,                 const int nC1,      const int col1,
-               const dd* array2,         const int nR2,                 const int nC2,
-               const std::string& dir,   const std::string& filename,   const char &flag,
+writeAddToFile(const dd* array,          const int& nR,                const int& nC,           const dd& add,
+               const std::string& dir,   const std::string& filename,  const char& flag = 'n',
                const int& prec = 6,      const int& width = 0);
+
+template <typename dd1, typename dd2>
+void
+writeTwoToFile(const dd1* array1,       const int& nR1,               const int& nC1,    const int& col1,
+               const dd2* array2,       const int& nR2,               const int& nC2,
+               const std::string& dir,  const std::string& filename,  const char &flag,  
+               const int& prec = 6,     const int& width = 0);
 
 template <typename dd>
 void
@@ -43,10 +49,18 @@ writeToFile2(dd** array,               const int n1,                 const int n
 
 template <typename dd>
 void
-readFromFile(dd* array,               const int nR,                 const int nC,
-             const std::string& dir,  const std::string& filename,  
-             const int skipOnRow,     const int skip);
+writeRaggedToFile(const dd* array,         const int& nR,                const int& maxnC,  
+                  const int* nC,           const int& multnC,
+                  const std::string& dir,  const std::string& filename,  const char &flag = 'n',
+                  const int& prec = 6,     const int& width = 0);
 
+template <typename dd>
+void
+readFromFile(dd* array,               int* nread,       
+             const int& nR,           const int& nC,               const int& header,
+             const int& skip,         const int& by,
+             const std::string& dir,  const std::string& filename,  
+             const int& skipOnRow);
 
 #if defined (__GNUG__) || defined (__MWERKS__) || defined (_MSC_VER) || defined (EXPLICIT_TEMPLATE_INSTANTIATION)
 // Necessary for template instantiation with some compilers.

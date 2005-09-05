@@ -6,7 +6,7 @@
 // These programs are based on functions 'cholesky2', 'chsolve2' and 'chinv2' of Terry Therneau
 // included in the R library 'survival'.
 
-#include "bayessurvreg.h"
+#include "cholesky.h"
 
 extern "C"{
 
@@ -243,7 +243,8 @@ chinv(double* C , const int* nC,  const int* diagI, const int* onlyCholInv)
   // * this will be the inverse of the original matrix
 
   // Store L^{-1}D matrix in a new array
-  double* LiD = new double[((*nC)*(*nC + 1))/2];
+  double* LiD = (double*) calloc(((*nC)*(*nC + 1))/2, sizeof(double));
+  if (!LiD) throw returnR("Could not allocate working memory for chinv", 1);
   for (j = 0; j < *nC; j++){
     LiD[diagI[j]] = C[diagI[j]] * C[diagI[j]];
     for (i = j + 1; i < *nC; i++)
@@ -274,7 +275,7 @@ chinv(double* C , const int* nC,  const int* diagI, const int* onlyCholInv)
     }
   }
 
-  delete [] LiD;
+  free(LiD);
   return;
 }    // end of function chinv
 
@@ -352,7 +353,8 @@ chinv2(double* C , double* ichol, const int* nC,  const int* diagI)
   // * this will be the inverse of the original matrix
 
   // Store L^{-1}D matrix in a new array
-  double* LiD = new double[((*nC)*(*nC + 1))/2];
+  double* LiD = (double*) calloc(((*nC)*(*nC + 1))/2, sizeof(double));
+  if (!LiD) throw returnR("Could not allocate working memory for chinv", 1);
   for (j = 0; j < *nC; j++){
     LiD[diagI[j]] = C[diagI[j]] * C[diagI[j]];
     for (i = j + 1; i < *nC; i++)
@@ -383,7 +385,7 @@ chinv2(double* C , double* ichol, const int* nC,  const int* diagI)
     }
   }
 
-  delete [] LiD;
+  free(LiD);
   return;
 }    // end of function chinv
 

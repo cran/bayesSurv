@@ -6,8 +6,8 @@
 }
 \description{
    This function creates a \code{coda} \code{mcmc} object from values found
-   in files where sampled values from one of the functions from the
-   family of \code{bayessurvreg} functions or from data.frames.
+   in files where sampled values from \code{bayessurvreg1} function are stored
+   or from data.frames.
 }
 \usage{
 files2coda(files, data.frames, variant = 1, dir = getwd(),
@@ -27,7 +27,10 @@ files2coda(files, data.frames, variant = 1, dir = getwd(),
   }
   \item{variant}{a variant of \code{bayessurvreg} function used to
     generate sampled values. This argument is only used to identify
-    appropriate files when \code{files} argument is missing.}
+    appropriate files when \code{files} argument is missing.
+
+    Currently only 1 is supported to cooperate with \code{\link{bayessurvreg1}}.
+  }
   \item{dir}{string giving the directory where it will be searched for the files with 
     sampled values.}
   \item{start}{the first row (possible header does not count) from the files with the
@@ -48,7 +51,7 @@ files2coda(files, data.frames, variant = 1, dir = getwd(),
   A list with \code{mcmc} objects. One object per file or data.frame.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \examples{
 ## *** illustration of usage of parameters 'data.frames' and 'chain' ***

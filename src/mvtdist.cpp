@@ -3,7 +3,7 @@
 // 20/01/2004: multivariate normal
 // 09/02/2004: wishart
 
-#include "bayessurvreg.h"
+#include "mvtdist.h"
 
 extern "C"{
 
@@ -86,7 +86,7 @@ void
 tLxMxL(double* LAL,     const double* L,   const double* A,
        const int* nA,   const int* diagI)
 {
-  int j, i, k, minij;
+  int j, i, k;
 
   // First, compute L'*A
   double** LA = new double*[*nA];  
@@ -141,7 +141,7 @@ tLxMxL(double* LAL,     const double* L,   const double* A,
 //              -> array of length nA, containing a subset of elements 0, 1, ..., na-1
 //              * this array is ignored if na == nA
 // na ......... length of a
-// nA ......... dimension of a
+// nA ......... dimension of A
 // diagI ...... indeces of diagonal elements of the covariance matrix in the array A
 //               -> array of length nA,
 //               diagI[j] = (j * (2*(*nA) - j + 1)) / 2
@@ -221,7 +221,7 @@ Mxa2(double* Ma,     const double* a,  const double* A,  const int* indA,
 // ====================================================================
 // Compute W*a where W is an oblong taken from a SYMMETRIC matrix A
 //  and a is a vector
-// * W does not contain any diagonal elements of 
+// * W does not contain any diagonal elements of the matrix A
 // (used in 'GIBBSproposalMeanRandom')
 // ====================================================================
 // 
@@ -537,7 +537,7 @@ rmvtiunif(double* x,        const double* mean,   const double* halfRange,
           const int* nx,    const int* nmean,     const int* nxrepl,
           const int* nP,    const int* callFromR)
 {
-  int i, j, sv;
+  int i, sv;
 
   if (*callFromR) GetRNGstate();
 

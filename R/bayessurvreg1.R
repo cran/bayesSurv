@@ -1,3 +1,15 @@
+###########################################
+#### AUTHOR:     Arnost Komarek        ####
+####             (2004)                ####
+####                                   ####
+#### FILE:       bayessurvreg1.R       ####
+####                                   ####
+#### FUNCTIONS:  bayessurvreg1         ####
+###########################################
+
+### ======================================
+### bayessurvreg1
+### ======================================
 bayessurvreg1 <- function(
      formula,
      random,
@@ -24,13 +36,14 @@ bayessurvreg1 <- function(
      toler.chol = 1e-10,
      toler.qr = 1e-10,
      ...)
-{
+{  
    thispackage = "bayesSurv"
   
    transform = function(t){log(t)}
    dtransform = function(t){1/t}
   
-   sim.to.R <- FALSE                                  ## this is here for a compatibility with an older code
+   sim.to.R <- FALSE                  ## this is here for a compatibility with an older code
+                                      ## If you try to change sim.to.R into TRUE, you also need to redefine 'row.need' variable below 
    store <- bayessurvreg1.checkStore(store)
    
    ## Give a function call to be recorded in a resulting object.
@@ -54,7 +67,7 @@ bayessurvreg1 <- function(
    prop.revjump <- attr(revjumpdi, "prop.revjump")
    
    if (missing(prior.beta)) prior.beta <- list()
-   betadi <- bayessurvreg.priorBeta(prior.beta, des$nX, des$indb, des$factors, des$n.factors, des$n.in.factors)
+   betadi <- bayessurvreg1.priorBeta(prior.beta, des$nX, des$indb, des$factors, des$n.factors, des$n.in.factors)
    prior.beta <- attr(betadi, "prior.beta")   
    prior.beta.noadapt <- attr(betadi, "prior.beta")
    if (des$nX){     
@@ -65,10 +78,10 @@ bayessurvreg1 <- function(
    else{
      n.adapt <- 0
    }       
-   betadi.noadapt <- bayessurvreg.priorBeta(prior.beta.noadapt, des$nX, des$indb, des$factors, des$n.factors, des$n.in.factors) 
+   betadi.noadapt <- bayessurvreg1.priorBeta(prior.beta.noadapt, des$nX, des$indb, des$factors, des$n.factors, des$n.in.factors) 
    
    if (missing(prior.b)) prior.b <- list()
-   bdi <- bayessurvreg.priorb(prior.b, des$nrandom, des$ncluster, toler.chol)
+   bdi <- bayessurvreg1.priorb(prior.b, des$nrandom, des$ncluster, toler.chol)
    prior.b <- attr(bdi, "prior.b")
    
 
@@ -97,7 +110,9 @@ bayessurvreg1 <- function(
    max.nwrite <- max(nwrite.run)
 
    if (!des$nrandom){ store$b <- FALSE;  store$MHb <- FALSE}
-   row.need <- ifelse(sim.to.R, max(nsimul$nburn, nafterburn), max.nwrite)
+   #row.need <- ifelse(sim.to.R, max(nsimul$nburn, nafterburn), max.nwrite)
+   # I do not know any more what 'nafterburn' should be, so change the above row into row.need <- max.nwrite
+   row.need <- max.nwrite
    
    ## =====================================================================================
    ## Write headers to files with stored values
@@ -183,8 +198,8 @@ bayessurvreg1 <- function(
              warning("Sample covariance matrix after no adapt period was not positive definite.")
            }
          }
-       }       
-       betadi <- bayessurvreg.priorBeta(prior.beta, des$nX, des$indb, des$factors, des$n.factors, des$n.in.factors)
+       }
+       betadi <- bayessurvreg1.priorBeta(prior.beta, des$nX, des$indb, des$factors, des$n.factors, des$n.in.factors)
      }       
      
        ## Give new initials
@@ -228,7 +243,7 @@ bayessurvreg1 <- function(
                                 store = as.integer(storeV),
                                 tolers = as.double(tolers),
                                 err = integer(1),
-               PACKAGE = thispackage)
+              PACKAGE = thispackage)
      if (fit$err != 0) stop ("Something went wrong during the simulation.")
      cat("Burn-up finished on                         ", date(), "   (iteration ", fit$iter, ")", "\n", sep = "")
      
@@ -271,7 +286,7 @@ bayessurvreg1 <- function(
                               store = as.integer(storeV),
                               tolers = as.double(tolers),
                               err = integer(1),
-             PACKAGE = thispackage)
+            PACKAGE = thispackage)
    if (fit$err != 0) stop ("Something went wrong during the simulation.")
    cat("Simulation finished on                      ", date(), "   (iteration ", fit$iter, ")", "\n", sep = "")   
 
@@ -284,7 +299,7 @@ bayessurvreg1 <- function(
    attr(toreturn, "prior.b") <- attr(bdi, "prior.b")
    if (x) attr(toreturn, "x") <- des$X
    if (y) attr(toreturn, "y") <- des$Y
-   class(toreturn) <- "bayessurvreg"
+   class(toreturn) <- "bayessurvreg1"
    
    return(toreturn)
 }

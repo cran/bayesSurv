@@ -9,7 +9,7 @@
 // 26/03/2004: function 'predictET'
 //
 
-#include "bayessurvreg.h"
+#include "predictMisc.h"
 
 using namespace std;
 
@@ -173,7 +173,7 @@ predictData(double* YsM,             const double* regresPredM,
             const double* Eb0,       const int* kP,             const int* nP,
             const int* errorTypeP,   const int* randomIntP)
 {
-  int obs, j;
+  int obs;
   double intcptadd;
 
   switch (*errorTypeP){
@@ -244,7 +244,7 @@ predictRandom(double* bM,
 
   int j, cl;
     // Mean of the normal distribution to sample from
-  double* gamma = new double[*nrandomP];
+  double* gamma = (double*) calloc(*nrandomP, sizeof(double));
   for (j = 0; j < *nrandomP; j++) gamma[j] = (indbinXA[j] < 0 ? (*Eb0) : betaM[indbinXA[j]]);
 
     // Loop over clusters, sample
@@ -253,7 +253,7 @@ predictRandom(double* bM,
               &ONE_INT, Dcm->diagI, &ZERO_INT);
   }
 
-  delete [] gamma;
+  free(gamma);
   return;
 }
 
@@ -293,7 +293,7 @@ predictET(double** ET,            const double* time0P, const int iter,
 
   int obs, j;
   double helpd;
-  double* zvec = new double [*nrandomP];
+  double* zvec = (double*) calloc(*nrandomP, sizeof(double));
   double zDz;
 
   switch (*errorTypeP){
@@ -330,6 +330,6 @@ predictET(double** ET,            const double* time0P, const int iter,
     returnR("C++ Error: Unknown errorType appeared in a call to function predictET.", 1);
   }
 
-  delete [] zvec;
+  free(zvec);
   return;
 }

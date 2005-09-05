@@ -1,8 +1,20 @@
+################################################
+#### AUTHOR:     Arnost Komarek             ####
+####             (2005)                     ####
+####                                        ####
+#### FILE:       bayessurvreg.design.R      ####
+####                                        ####
+#### FUNCTIONS:  bayessurvreg.design        ####
+################################################
+
+### ======================================
+### bayessurvreg.design
+### ======================================
 ## Subfunction common for all 'bayessurvreg' functions
 ##  - extract a design information
-
+##
 ## 18/03/2004
-
+##
 bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
 {
 
@@ -37,13 +49,14 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
      dropx <- tempc$terms
    }
    if (length(dropx)){
-      newTermsF <- TermsF[-dropx]
-      attr(newTermsF, "intercept") <- attr(TermsF, "intercept")  ## I do not why but the command on the previous row
+     newTermsF <- TermsF[-dropx]
+     attr(newTermsF, "intercept") <- attr(TermsF, "intercept")  ## I do not why but the command on the previous row
                                                                  ## sets attr(newTermsF, "intercept") always to 1,
                                                                  ## irrespective of what attr(TermsF, "intercept") was...
    }
-   else
-      newTermsF <- TermsF
+   else{
+     newTermsF <- TermsF
+   }      
 
    ## Design matrix for both fixed and random effects X
    ## (finally, always without the intercept)
@@ -74,7 +87,7 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
    randomInt <- FALSE
    nrandom <- 0
    if (!missing(random)){
-     if (!length(cluster)) stop ("You have to indicate clusters. ")
+     if (!length(cluster)) stop ("You have to indicate clusters when you wnat to include some random effects. ")
      tempR <- c("", "random", "data", "subset", "na.action")
      mR <- m[match(tempR, names(m), nomatch=0)]
      mR[[1]] <- as.name("model.frame")
@@ -95,9 +108,12 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
          mR <- eval(mR, parent.frame())
          if (attr(TermsR, "intercept")){
            randomInt <- TRUE
-           attr(TermsR, "intercept") <- 0     ## remove it from the design matrix of random effects
-         }         
-         names.random <- colnames(model.matrix(TermsR, mR))
+           names.random <- colnames(model.matrix(TermsR, mR))[-1]
+           ## attr(TermsR, "intercept") <- 0     ## remove it from the design matrix of random effects
+         }
+         else{
+           names.random <- colnames(model.matrix(TermsR, mR))
+         }           
        }
        nrandom <- 1*randomInt + length(names.random)
        if (sum(names.random %in% cnamesX) != nrandom - 1*randomInt) stop("Each random effect has to have also its fixed counterpart.")
@@ -112,6 +128,9 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
        if (nX) indb <- as.numeric(apply(matrix(cnamesX, ncol = 1), 1, find.indeces))
      }       
    }
+   else{
+     names.random <- character(0)
+   }     
    if (randomInt) names.random <- c("(Intercept)", names.random)
    nfixed <- nX - (nrandom - 1*randomInt)
 

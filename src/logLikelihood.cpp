@@ -7,7 +7,7 @@
 // 06/11/2003: start working on it
 // 13/03/2004: changed handling of a random intercept
 
-#include "bayessurvreg.h"
+#include "logLikelihood.h"
 
 using namespace std;
 

@@ -17,7 +17,7 @@
   /**** Class which in combination with catch in user's functions provides a safe return to R.
    *    Its constructor outputs the string given to it as its parameter 
    *    thereby notifying the user of why the program crashed.            
-  /* ======================================================================================= */
+   * ======================================================================================= */
   class returnR
   {
     public:

@@ -3,7 +3,7 @@
 
 // 28/01/2004: start working on it
 
-#include "bayessurvreg.h"
+#include "MHproposal.h"
 
 using namespace std;
 
@@ -63,7 +63,6 @@ AMproposal(double* proppar,              double* chcovpar,
            const double* halfRangeUnif,  const double* weightUnif,   
            const double* eps,            const double* sdNum,        const double* tolerChol)
 {
-  int i, j, k;
   double helpd;
 
     // Cholesky decomposition of matrix covpar (try to make it positive definite if it's not)

@@ -2,7 +2,7 @@
 //
 // 13/03/2004
 //
-#include "bayessurvreg.h"
+#include "mixMoments.h"
 
 using namespace std;
 

@@ -31,6 +31,6 @@ bayessurvreg1.files2init(dir = getwd(), row, kmax)
   in the form as required by the argument \code{init} of the function \code{\link{bayessurvreg1}}.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \keyword{file}

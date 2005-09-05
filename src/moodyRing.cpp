@@ -15,7 +15,7 @@
 
 // 04/11/2003: start working on it
 
-#include "bayessurvreg.h"
+#include "moodyRing.h"
 
 extern "C"{
 

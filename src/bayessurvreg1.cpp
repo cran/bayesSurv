@@ -10,10 +10,12 @@
 // 13/02/2004: first working version with all McMC steps:
 // 18/02/2004: possibility for auxiliary variables to propose reversible moves:
 // 13/03/2004: change handling of a random intercept (allow that its mean depends on a mixture)
-
+// 09/12/2004: some checks for possible NaN in mixture specification added after encountering 
+//             such problem with EORTC breast cancer data
+//
 // ==================================================================
 
-#include "bayessurvreg.h"
+#include "bayessurvreg1.h"
 
 extern "C" {
 
@@ -165,10 +167,8 @@ bayessurvreg1(char** dirP,
               int* errP 
              )
 {  
-  double* loglikCorrectP;
-
   try{
-    int i, j, l, obs;
+    int i, j, l;
 
     GetRNGstate();
 
@@ -217,7 +217,8 @@ bayessurvreg1(char** dirP,
     int* storeregresResP = storeP + 5;
     int niter = nsimulP[0]; 
     int nthin = nsimulP[1];
-    int nwrite = nsimulP[2];                    nToStore = nwrite;
+    int nwrite = nsimulP[2];                    
+    nToStore = nwrite;
     double* tolerCholP = tolersP;
     double* tolerQRP = tolersP + 1;
 
@@ -237,7 +238,7 @@ bayessurvreg1(char** dirP,
     //          moves for blocks of random effects, sorted first according to clusters and then according to blocks 
     //
     const int nMHinfo = 4 + priorBetaI[0];
-    const int nMHinfo2 = priorbI[3]*(*nclusterP);
+    const int nMHinfo2 = priorbI[4]*(*nclusterP);
     const int ncmSM = 1 + 3*priorParI[0];
     int* MHinfoM = new int[nMHinfo];
     int* MHinfo2M = new int[nMHinfo2];
@@ -433,7 +434,6 @@ bayessurvreg1(char** dirP,
     if (wM == NULL || muM == NULL || invsigma2M == NULL || propwM == NULL || propmuM == NULL || propinvsigma2M == NULL ||
         proprM == NULL || invrM == NULL || propinvrM == NULL || mixtureNM == NULL || propmixtureNM == NULL)
            throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);
-
     createParam(nP, kmaxP, mixtureM, wM, muM, invsigma2M, rM, invrM, mixtureNM, 
  		                     propwM, propmuM, propinvsigma2M, proprM, propinvrM, propmixtureNM);
     mixMoments(mixMomentM, kP, wM, muM, invsigma2M);
@@ -489,8 +489,7 @@ bayessurvreg1(char** dirP,
     double lgammazetaP[1] = {lgammafn(*zetaP)};
     double llambdaP[1] = {log(*lambdaP)};
 
-    if (*priorForkP == Fixed) for (i = 0; i < 4; i++) MHinfoM[i] = 1;
-
+    if (*priorForkP == Fixed_k) for (i = 0; i < 4; i++) MHinfoM[i] = 1;
 
     // Functions and ways to generate a proposal vector for the split-combine and birth-death moves
     // ==============================================================================================
@@ -612,14 +611,14 @@ bayessurvreg1(char** dirP,
     int nstored = 0;
     char write_flag = 'a';
     int nullthIter = *iterM;
-    int iter = nullthIter + 1;
+    int iter;
     int iterTotal = nullthIter*nthin;
     int iterTotalNow = 0;
     int backs = 0;
     int doadapt = 1;
 
     Rprintf("Iteration ");
-    for (iter; iter <= nullthIter + niter; iter++){
+    for (iter=nullthIter + 1; iter <= nullthIter + niter; iter++){
       for (int witer = 1; witer <= nthin; witer++){  // thinning cycle
         iterTotal++;                                                // = (iter-1)*nthin + witer
         iterTotalNow++;                                             // = (iter-1)*nthin + witer - nullthIter*nthin
@@ -630,14 +629,14 @@ bayessurvreg1(char** dirP,
         if ((*Eb0dependMix) && (*randomIntP))
           logLikelihood(loglikM + 0, loglikobs, nP, regresResM, YsM, kP, rM, wM, muM, invsigma2M, Eb0, errorTypeP, randomIntP, logdtrans);
 
-	updateWeights(&wM, &propwM, mixMomentM, 
+  	updateWeights(&wM, &propwM, mixMomentM, 
                       loglikM + 0, &loglikobs, &proploglikobs,
                       loglikM + 1, &randomllcl, &proprandomllcl,
                       regresResM, YsM, betaM, bM, Dcm, kP, mixtureNM, muM, invsigma2M, rM, deltaP,
                       Eb0dependMix, randomIntP, nP, nclusterP, nrandomP, indbinXA, logdtrans); 
 
 	updateMeans(muM, mixMomentM, regresResM, betaM, bM, Dcm, kP, mixtureNM, wM, invsigma2M, invrM, xiInvkappaP, invkappaP, 
-                    Eb0dependMix, randomIntP, nP, nclusterP, nrandomP, indbinXA); 
+                      Eb0dependMix, randomIntP, nP, nclusterP, nrandomP, indbinXA); 
 
 	updateVars(invsigma2M, mixMomentM, Eb0, regresResM, kP, mixtureNM, wM, muM, rM, zetaP, etaP, randomIntP, nP);
 
@@ -649,34 +648,72 @@ bayessurvreg1(char** dirP,
         if ((*Eb0dependMix) && (*randomIntP))
 	  randomLogLikelihood(loglikM + 1, randomllcl, &ZERO_INT, nclusterP, nclusterP, bM, betaM, Dcm, Eb0, indbinXA);
 
-	if (*kP < *kmaxP)
-          moodyRing(uMtemp, uM + 0, mrepsilonP, mrdeltaP, nuMtemp, mrcorrP, &ZERO_INT);
+        if (*priorForkP != Fixed_k){
+  	  if (*kP < *kmaxP)
+            moodyRing(uMtemp, uM + 0, mrepsilonP, mrdeltaP, nuMtemp, mrcorrP, &ZERO_INT);
 
-	birthDeath(MHinfoM + 2, MHinfoM + 3, kP, 
-                   loglikM + 0, &loglikobs, &proploglikobs,
-                   loglikM + 1, &randomllcl, &proprandomllcl,
-		   wM, muM, invsigma2M, mixMomentM, rM, invrM, mixtureNM,
-	           propkP,
-                   uMtemp, logdu, transuBD, invtransuBD, logJtransuBD,
-                   regresResM, YsM, bM, betaM, Dcm, 
-	           kmaxP, piBirthM, logpiBirthM, logpiDeathM,
-	           deltaP, xiP, invkappaP, sqrtkappaP, halfl2pikappaP, zetaP, etaP, lgammazetaP, llambdaP,
-                   priorParmu, transParmuBD, priorForkP, Eb0dependMix, randomIntP, 
-                   indbinXA, nP, nclusterP, logdtrans);
-        uMtemp = uM + 3*(*kP);
-        *nuMtemp = 3*(*kmaxP -(*kP));
+	  birthDeath(MHinfoM + 2, MHinfoM + 3, kP, 
+                     loglikM + 0, &loglikobs, &proploglikobs,
+                     loglikM + 1, &randomllcl, &proprandomllcl,
+		     wM, muM, invsigma2M, mixMomentM, rM, invrM, mixtureNM,
+	             propkP,
+                     uMtemp, logdu, transuBD, invtransuBD, logJtransuBD,
+                     regresResM, YsM, bM, betaM, Dcm, 
+	             kmaxP, piBirthM, logpiBirthM, logpiDeathM,
+	             deltaP, xiP, invkappaP, sqrtkappaP, halfl2pikappaP, zetaP, etaP, lgammazetaP, llambdaP,
+                     priorParmu, transParmuBD, priorForkP, Eb0dependMix, randomIntP, 
+                     indbinXA, nP, nclusterP, logdtrans);
+          uMtemp = uM + 3*(*kP);
+          *nuMtemp = 3*(*kmaxP -(*kP));
 
-	splitCombine(MHinfoM + 0, MHinfoM + 1,
-	             loglikM + 0, &loglikobs, &proploglikobs,
-	             kP, &wM, &muM, &invsigma2M, rM, &invrM, &mixtureNM,
-	             propkP, &propwM, &propmuM, &propinvsigma2M, proprM, &propinvrM, &propmixtureNM,
-	             uMtemp, logdu, transuSC, invtransuSC, logJtransuSC,
-	             regresResM, YsM, Eb0,
-	             kmaxP, randomIntP, piSplitM, logpiSplitM, logpiCombineM,
-	             deltaP, xiP, invkappaP, halfl2pikappaP, zetaP, etaP, lgammazetaP, llambdaP,
-                     priorParmu, transParmuSC, priorForkP, logdtrans, nP);
-        uMtemp = uM + 3*(*kP);
-        *nuMtemp = 3*(*kmaxP -(*kP));
+	  for (i = 0; i < *kP; i++){
+            if (!R_finite(wM[i]) || !R_finite(muM[i]) || !R_finite(invsigma2M[i])){
+              REprintf("\nk=%d", *kP);
+              REprintf(";  weights="); for (j=0; j < *kP; j++) REprintf("%e, ", wM[j]);
+              REprintf(";  means="); for (j=0; j < *kP; j++) REprintf("%e, ", muM[j]);
+              REprintf(";  invvars="); for (j=0; j < *kP; j++) REprintf("%e, ", invsigma2M[j]);
+              REprintf("\n");
+              for(i = 0; i < backs; i++) Rprintf("\b");
+              Rprintf("%d", iter - 1);
+              writeToFiles(iterAwork, loglikAwork, mixtureAwork, mixMomentAwork, betaAwork, bAwork, DAwork, rAwork, YsAwork, 
+                           otherpAwork, uAwork, MHinfoAwork, MHinfo2Awork, regresResAwork,
+                           nstored, dir, write_flag, ncmSM, nMHinfo, nMHinfo2, nD, kmaxP, nXP, nrandomP, nclusterP, nP, 
+                           storebP, storeyP, storerP, storeuP, storeMHbP, storeregresResP);  
+              nstored = 0;
+              throw returnR("Trap after birth-death move, NaN appears in the definition of the mixture", 1);
+            }
+          }
+
+	  splitCombine(MHinfoM + 0, MHinfoM + 1,
+	               loglikM + 0, &loglikobs, &proploglikobs,
+	               kP, &wM, &muM, &invsigma2M, rM, &invrM, &mixtureNM,
+	               propkP, &propwM, &propmuM, &propinvsigma2M, proprM, &propinvrM, &propmixtureNM,
+	               uMtemp, logdu, transuSC, invtransuSC, logJtransuSC,
+	               regresResM, YsM, Eb0,
+	               kmaxP, randomIntP, piSplitM, logpiSplitM, logpiCombineM,
+	               deltaP, xiP, invkappaP, halfl2pikappaP, zetaP, etaP, lgammazetaP, llambdaP,
+                       priorParmu, transParmuSC, priorForkP, logdtrans, nP);
+          uMtemp = uM + 3*(*kP);
+          *nuMtemp = 3*(*kmaxP -(*kP));
+
+	  for (i = 0; i < *kP; i++){
+            if (!R_finite(wM[i]) || !R_finite(muM[i]) || !R_finite(invsigma2M[i])){
+              REprintf("\nk=%d", *kP);
+              REprintf(";  weights="); for (j=0; j < *kP; j++) REprintf("%e, ", wM[j]);
+              REprintf(";  means="); for (j=0; j < *kP; j++) REprintf("%e, ", muM[j]);
+              REprintf(";  invvars="); for (j=0; j < *kP; j++) REprintf("%e, ", invsigma2M[j]);
+              REprintf("\n");
+              for(i = 0; i < backs; i++) Rprintf("\b");
+              Rprintf("%d", iter - 1);
+              writeToFiles(iterAwork, loglikAwork, mixtureAwork, mixMomentAwork, betaAwork, bAwork, DAwork, rAwork, YsAwork, 
+                           otherpAwork, uAwork, MHinfoAwork, MHinfo2Awork, regresResAwork,
+                           nstored, dir, write_flag, ncmSM, nMHinfo, nMHinfo2, nD, kmaxP, nXP, nrandomP, nclusterP, nP, 
+                           storebP, storeyP, storerP, storeuP, storeMHbP, storeregresResP);  
+              nstored = 0;
+              throw returnR("Trap after split-combine move, NaN appears in the definition of the mixture", 1);
+            }
+          }
+        }
 
         if (*nrandomP){ 
           updateRandom(bb, regresResM, propregresResM, 

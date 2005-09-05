@@ -14,6 +14,7 @@
 {
    require(survival)
    require(coda)
+   require(smoothSurv)
    library.dynam("bayesSurv", pkg, lib)
 
    invisible()

@@ -6,7 +6,7 @@
 //             can be called by predictive functions
 // 23/03/2004: sub-parts of predictive added
 
-#include "bayessurvreg.h"
+#include "arrays2Mat.h"
 
 using namespace std;
 
@@ -375,7 +375,7 @@ createParam(const int* nP,                 const int* kmaxP,             const d
 
   // Component pertinence
   // ====================
-  for (int obs = 0; obs < *nP; obs++){
+  for (obs = 0; obs < *nP; obs++){
     rM[obs] -= 1;                       // R index --> C++ index
     proprM[obs] = rM[obs];
   }
@@ -383,11 +383,11 @@ createParam(const int* nP,                 const int* kmaxP,             const d
   
   // Inverse component pertinence
   // ============================
-  for (int j = 0; j < *kmaxP; j++){      
+  for (j = 0; j < *kmaxP; j++){      
     invrM[j] = List<int>();
     propinvrM[j] = List<int>();
   }
-  for (int obs = 0; obs < *nP; obs++){
+  for (obs = 0; obs < *nP; obs++){
     invrM[rM[obs]].addNode(obs);
     propinvrM[rM[obs]].addNode(obs);
   }

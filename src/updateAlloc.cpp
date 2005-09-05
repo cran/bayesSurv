@@ -7,7 +7,7 @@
 //             (to be used by 'predictive' functions)
 //
 
-#include "bayessurvreg.h"
+#include "updateAlloc.h"
 
 using namespace std;
 
@@ -42,8 +42,6 @@ updateAlloc(int* rM,                List<int>* invrM,          int* mixtureNM,
     for (obs = 0; obs < *nP; obs++) rM[obs] = 0;
     return;
   }
-
-  double u;
 
   if (*randomIntP) intcptadd = *Eb0;
   else             intcptadd = 0.0;  
@@ -97,8 +95,6 @@ updateAlloc(int* rM,
     for (obs = 0; obs < *nP; obs++) rM[obs] = 0;
     return;
   }
-
-  double u;
 
   if (*randomIntP) intcptadd = *Eb0;
   else             intcptadd = 0.0;  

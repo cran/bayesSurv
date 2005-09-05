@@ -7,7 +7,7 @@
   Displays a plot of the density estimate for each variable in x, calculated by the density function. 
 
   This is slightly modified version of \code{\link[coda]{densplot}} function
-  of a \code{coda} library to conform to my personal preferences.
+  of a \code{coda} package to conform to my personal preferences.
 }
 \usage{
 densplot2(x, plot = TRUE, show.obs = FALSE, bwf, bty = "n", main = "", xlim, ylim, xlab, ylab, \dots) 
@@ -29,6 +29,6 @@ densplot2(x, plot = TRUE, show.obs = FALSE, bwf, bty = "n", main = "", xlim, yli
     \code{\link{plot.default}} function.}
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \keyword{hplot}

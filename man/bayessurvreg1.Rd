@@ -1,7 +1,8 @@
 \name{bayessurvreg1}
 \alias{bayessurvreg1}
 \title{
-   A Bayesian survival regression with a flexible error distribution.
+  A Bayesian survival regression with an error distribution
+  expressed as a~normal mixture with unknown number of components
 }
 \description{
   A function to sample from the posterior distribution for a survival
@@ -11,44 +12,38 @@
     log(T[i,l]) = beta'*x[i,l] + b[i]'*z[i,l] + epsilon[i,l], i=1,...,N,
     l=1,...,n[i],}
   where distribution of \eqn{\varepsilon_{i,l}}{epsilon[i,l]} is specified
-  as a normal mixture with unknown number of components and random
-  effect \eqn{b_i}{b[i]} is normally distributed.
+  as a normal mixture with unknown number of components as in Richardson
+  and Green (1997) and random effect \eqn{b_i}{b[i]} is normally distributed.
 
-  See included paper (/inst/doc directory of this library)
+  See \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006) or
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2005)
   for more detailed description of prior assumptions.
   
   Sampled values are stored on a disk to be further worked out by e.g.
   \code{coda} or \code{boa}.
 }
 \usage{
-bayessurvreg1(
-     formula,
-     random,
-     data = parent.frame(),
-     subset,
-     na.action = na.fail,
-     x = FALSE,
-     y = FALSE,                          
-     onlyX = FALSE,
-     nsimul = list(niter = 10, nthin = 1, nburn = 0, nnoadapt = 0, nwrite = 10),
-     prior = list(kmax = 5, k.prior = "poisson", poisson.k = 3,
-                  dirichlet.w = 1,
-                  mean.mu = NULL, var.mu = NULL,
-                  shape.invsig2 = 1.5,
-                  shape.hyper.invsig2 = 0.8, rate.hyper.invsig2 = NULL,
-                  pi.split = NULL, pi.birth = NULL,
-                  Eb0.depend.mix = FALSE),
-     prior.beta,
-     prior.b,
-     prop.revjump,
-     init = list(iter = 0, mixture = NULL, beta = NULL, b = NULL, D = NULL,
-                 y = NULL, r = NULL, otherp = NULL, u = NULL),
-     store = list(y = TRUE, r = TRUE, b = TRUE, u = TRUE,
-                  MHb = FALSE, regresres = FALSE),
-     dir = getwd(),
-     toler.chol = 1e-10,
-     toler.qr = 1e-10,
-     \dots)
+bayessurvreg1(formula, random,
+   data = parent.frame(), subset,
+   na.action = na.fail,
+   x = FALSE, y = FALSE, onlyX = FALSE,
+   nsimul = list(niter = 10, nthin = 1, nburn = 0,
+                 nnoadapt = 0, nwrite = 10),
+   prior = list(kmax = 5, k.prior = "poisson", poisson.k = 3,
+                dirichlet.w = 1,
+                mean.mu = NULL, var.mu = NULL,
+                shape.invsig2 = 1.5,
+                shape.hyper.invsig2 = 0.8, rate.hyper.invsig2 = NULL,
+                pi.split = NULL, pi.birth = NULL,
+                Eb0.depend.mix = FALSE),
+   prior.beta, prior.b, prop.revjump,
+   init = list(iter = 0, mixture = NULL, beta = NULL,
+               b = NULL, D = NULL,
+               y = NULL, r = NULL, otherp = NULL, u = NULL),
+   store = list(y = TRUE, r = TRUE, b = TRUE, u = TRUE,
+                MHb = FALSE, regresres = FALSE),
+   dir = getwd(),
+   toler.chol = 1e-10, toler.qr = 1e-10, \dots)
 }
 \arguments{
   \item{formula}{model formula for the `fixed' part of the model, i.e. the
@@ -58,6 +53,9 @@ bayessurvreg1(
     consequence \code{-1} in the model formula does not have any effect
     on the model.
 
+    The left-hand side of the \code{formula} must be an~objecy created
+    using \code{\link[survival]{Surv}}.
+    
     If \code{random} is used then the formula must contain
     an identification of clusters in the form \code{cluster(id)}, where
     \code{id} is a name of the variable that determines clusters, e.g.
@@ -180,7 +178,7 @@ bayessurvreg1(
       \eqn{\beta}{beta} parameter in the model.}
     \item{var.prior}{a vector specifying a prior variance for each
       \eqn{\beta}{beta} parameter. It is recommended to run the function
-      \code{bayesAFT} first with its argument \code{onlyX} set to
+      \code{bayessurvreg1} first with its argument \code{onlyX} set to
       \code{TRUE} to find out how the \eqn{\beta}{beta}s are
       sorted. They must correspond to a design matrix X.}
     \item{blocks}{a list with the following components.
@@ -490,17 +488,19 @@ bayessurvreg1(
   function (some of them are created only on request, see \code{store}
   parameter of this function).
   \describe{
-    \item{iteration.sim}{one columns labeled \code{iteration} with
+    \item{iteration.sim}{one column labeled \code{iteration} with
       indeces of McMC iterations to which the stored sampled values correspond.}
     \item{loglik.sim}{two columns labeled \code{loglik} and
       \code{randomloglik}.
-      \deqn{\mbox{\code{loglik}} = \sum_{i=1}^{N}\sum_{l=1}^{n_i}
-	\log\Bigl(\sum_{j=1}^k w_j \varphi_j(y_{i,l} - \beta^T x_{i,l} - b_i^T
-	z_{i,l})\Bigr),}{%
-        \code{loglik} = sum[i=1][N]sum[l=1][n[i]] log(sum[j=1][k]
-	w[j]*phi[j](y[i,l] - beta'*x[i,l] - b[i]*z[i,l])),}
-      where \eqn{\varphi_j}{phi[j]} is a density of
-      \eqn{N(\mu_j, \sigma^2_j)}{N(mu[j], sigma[j]^2)},
+      \deqn{\mbox{\code{loglik}} = \sum_{i=1}^{N}\sum_{l=1}^{n_i}\Biggl[
+	\biggl\{
+        \log\Bigl(\frac{1}{\sqrt{2\pi\sigma_{r_{i,l}}^2}}\Bigr)
+	-\frac{(y_{i,l} - \beta^T x_{i,l} - b_i^T z_{i,l} - \mu_{r_{i,l}})^2}{2\sigma_{r_{i,l}}^2}
+	\biggr\}
+	\Biggr],}{%
+        \code{loglik} = sum[i=1][N]sum[l=1][n[i]]
+        (log(1/sqrt(2*pi*sigma[r[i,l]]^2)) - 0.5*sigma[r[i,l]]^(-2)*(y[i,l] - beta'*x[i,l] - b[i]*z[i,l]-mu[r[i,l]])^2),}
+      where
       \eqn{y_{i,l}}{y[i,l]} denotes (sampled) \emph{(i,l)}th true
       log-event time,
       \eqn{b_i}{b[i]} sampled value of the random effect vector for the
@@ -603,10 +603,16 @@ bayessurvreg1(
   }        
 }
 \references{
-\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2004).
-Bayesian Accelerated Failure Time Model for Correlated Censored Data
-with a Normal Mixture as an Error Distribution.
-\emph{In preparation, see /doc/KomarekLesaffre2004.pdf in this R package.}
+\eqn{\mbox{Kom\'{a}rek, A.}}{Komarek, A.} (2006).
+\emph{Accelerated Failure Time Models for Multivariate
+  Interval-Censored Data with Flexible Distributional Assumptions}.
+  PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
+  
+\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
+Bayesian accelerated failure time model for correlated interval-censored data
+with a normal mixture as an error distribution.
+\emph{Submitted.} \cr
+See \code{Komarek_Lesaffre_2005.pdf}.
   
 Brooks, S. P., Giudici, P., and Roberts, G. O. (2003).
 Efficient construction of reversible jump Markov chain Monte Carlo
@@ -621,22 +627,22 @@ Richardson, S., and Green, P. J. (1997).
 On Bayesian analysis of mixtures with unknown number of components (with
 Discussion).
 \emph{Journal of the Royal Statistical Society B,} \bold{59,} 731 - 792.
-
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \examples{
-  ## There are two vignettes with this package that describe analyses presented
-  ## in Komarek and Lesaffre (2004). You should find them in /doc directory
-  ## of this library (cgd1.Rnw, tandmob.Rnw are sources to create the vignettes).
-  
-  ## I hope they give enough material to understand how the package works.
+## See the description of R commands for
+## the models described in
+## Komarek (2006),
+## Komarek and Lesaffre (2005).
+## 
+## R commands available
+## in the documentation
+## directory of this package as
+## cgd.pdf, cgd.R
+## tandmobMixture.pdf, tandmobMixture.R
 }
 \keyword{survival}
 \keyword{regression}
-
-
-
-
-
+\keyword{multivariate}

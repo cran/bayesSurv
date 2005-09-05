@@ -14,7 +14,7 @@
 //          * moreover, the full conditional distribution is somewhat more complex
 //            since also distribution of random effects must be taken into account
 
-#include "bayessurvreg.h"
+#include "updateMeans.h"
 
 using namespace std;
 

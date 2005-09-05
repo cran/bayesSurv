@@ -1,15 +1,17 @@
 #########################################################
 #### AUTHOR:     Arnost Komarek                      ####
-####             (05/05/2004)                        ####
+####             (2004)                              ####
 ####                                                 ####
 #### FILE:       densplot2.R                         ####
 ####                                                 ####
 #### FUNCTIONS:  densplot2                           ####
 #########################################################
-##
+
+### ======================================
+### densplot2
+### ======================================
 ## Slightly modified 'densplot' function of 'coda' library
-##
-## ========================================================
+## 05/05/2004
 ##
 ## argument 'plot' added to indicate whether a plot is to be created directly
 ## or a list with data.frames for future plotting is to be returned

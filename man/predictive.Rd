@@ -2,7 +2,8 @@
 \alias{predictive}
 \alias{predictive.control}
 \title{
-  Compute predictive quantities based on a Bayesian survival regression model.
+  Compute predictive quantities based on a Bayesian survival regression
+  model fitted using bayessurvreg1 function.  
 }
 \description{
   This function runs additional McMC to compute predictive survivor and
@@ -19,34 +20,22 @@
   checks inside the main function \code{predictive}.
 }
 \usage{
-predictive(
-     formula,
-     random,
-     time0 = 0,
-     data = parent.frame(),
-     grid,
-     type,
-     subset,
-     na.action = na.fail,
+predictive(formula, random, time0 = 0, data = parent.frame(),
+     grid, type = "mixture", subset, na.action = na.fail,
      quantile = c(0, 0.025, 0.5, 0.975, 1),                       
-     nsimul = list(niter = 10, nwrite = 10),
-     predict = list(Et=TRUE, t=FALSE, Surv=TRUE,
-                    hazard=FALSE, cum.hazard=FALSE),
-     store = list(Et=TRUE, t = FALSE, Surv = FALSE,
-                  hazard = FALSE, cum.hazard=FALSE),
+     skip = 0, by = 1, last.iter, nwrite, only.aver = FALSE,
+     predict = list(Et=TRUE, t=FALSE, Surv=TRUE, hazard=FALSE, cum.hazard=FALSE),
+     store = list(Et=TRUE, t = FALSE, Surv = FALSE, hazard = FALSE, cum.hazard=FALSE),
      Eb0.depend.mix = FALSE,
-     dir = getwd(),
-     toler.chol = 1e-10,
-     toler.qr = 1e-10,
-     \dots)
+     dir = getwd(), toler.chol = 1e-10, toler.qr = 1e-10)
 
-predictive.control(predict, store, quantile)
+predictive.control(predict, store, only.aver, quantile)
 }
 \arguments{
-  \item{formula}{same formula as that one used to sample from the
+  \item{formula}{the same formula as that one used to sample from the
     posterior distribution of unknown quantities by the function
     \code{\link{bayessurvreg1}}.}
-  \item{random}{same \code{random} statement as that one used to sample from the
+  \item{random}{the same \code{random} statement as that one used to sample from the
     posterior distribution of unknown quantities by the function
     \code{\link{bayessurvreg1}}.}
   \item{time0}{starting time for the survival model. This option is used
@@ -77,18 +66,17 @@ predictive.control(predict, store, quantile)
     \code{na.fail}.}
   \item{quantile}{a vector of quantiles that are to be computed for each
     predictive quantity.}
-  \item{nsimul}{a list giving the length of the simulation used to
-    sample from posterior predictive distribution. It should be
-    consistent with already simulated values obtained by
-    \code{\link{bayessurvreg1}} function. The list has the following
-    components.
-    \describe{
-      \item{niter}{number of iterations that are to be performed. It
-	should not be higher than the number already simulated values.}
-      \item{nwrite}{interval in which predictive quantities are written
-	to files.}
-    }      
-  }
+  \item{skip}{number of rows that should be skipped at the beginning of
+    each *.sim file with the stored sample.}
+  \item{by}{additional thinning of the sample.}
+  \item{last.iter}{index of the last row from *.sim files that should be
+    used. If not specified than it is set to the maximum available
+    determined according to the file \code{mixmoment.sim}.}
+  \item{nwrite}{frequency with which is the user informed about the
+    progress of computation (every \code{nwrite}th iteration count of
+    iterations change).}
+  \item{only.aver}{if \code{TRUE} only posterior predictive mean is
+    computed for all quantities and no quantiles.}
   \item{predict}{a list of logical values indicating which predictive quantities are to be sampled.
     Components of the list:
     \describe{
@@ -118,16 +106,36 @@ predictive.control(predict, store, quantile)
     A full path must be given, e.g. `/home/arnost/'.}
   \item{toler.chol}{tolerance for the Cholesky decomposition.}
   \item{toler.qr}{tolerance for the QR decomposition.}  
-  \item{\dots}{who knows?}
 }
 \value{
   An integer which should be equal to zero if everything ran fine.
+}
+\references{
+\eqn{\mbox{Kom\'{a}rek, A.}}{Komarek, A.} (2006).
+\emph{Accelerated Failure Time Models for Multivariate
+  Interval-Censored Data with Flexible Distributional Assumptions}.
+  PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
+
+\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
+  Bayesian accelerated failure time model for correlated interval-censored data
+  with a normal mixture as an error distribution.
+  \emph{Submitted.} \cr
+  See \code{Komarek_Lesaffre_2005.pdf}.
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \examples{
-  ## See attached files.
+## See the description of R commands for
+## the models described in
+## Komarek (2006),
+## Komarek and Lesaffre (2005).
+##
+## R commands available
+## in the documentation
+## directory of this package as
+## cgd.pdf, cgd.R
+## tandmobMixture.pdf, tandmobMixture.R
 }
 \keyword{survival}
 \keyword{regression}

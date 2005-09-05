@@ -3,7 +3,7 @@
 // 11/12/2003: start working on it
 // 16/02/2004: completely changed
 
-#include "bayessurvreg.h"
+#include "propVector.h"
 
 extern "C"{
 

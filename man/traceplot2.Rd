@@ -1,14 +1,14 @@
 \name{traceplot2}
 \alias{traceplot2}
 \title{
-  Trace plot of McMC output.
+  Trace plot of MCMC output.
 }
 \description{  
   Displays a plot of iterations vs. sampled values for each variable in
   the chain, with a separate plot per variable.
 
   This is slightly modified version of \code{\link[coda]{traceplot}} function
-  of a \code{coda} library to conform to my personal preferences.
+  of a \code{coda} package to conform to my personal preferences.
 }
 \usage{
 traceplot2(x, chains, bty = "n", main, xlab, ...)
@@ -20,6 +20,6 @@ traceplot2(x, chains, bty = "n", main, xlab, ...)
     \code{\link{plot.default}} function.}
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \keyword{hplot}

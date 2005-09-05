@@ -6,7 +6,7 @@
 //             (no considerable changes in splitCombine move were needed since due to moments-matching,
 //             neither overall mixture mean nor overall mixture variance change with split-combine move)
 //
-#include "bayessurvreg.h"
+#include "splitCombine.h"
 
 using namespace std;
 
@@ -95,11 +95,11 @@ splitCombine(int* acceptedP,                int* splitP,
              const double* priorParmu,      const double* transParmu,
              const int* priorForkP,         double (*logdtrans) (double), const int* nP)
 {
-  if (*priorForkP == Fixed) return;
+  if (*priorForkP == Fixed_k) return;
 
   int errorType = Mixture;
 
-  int i, j;
+  int i;
   double unif;
   int accepted = 1;
   int split = 0;
@@ -520,7 +520,6 @@ allocCombine(int* proprM,               List<int>* propinvrM,    int* propmixtur
       // Change allocation of the observations from the combined components
     if (invrM[jsplit].length() || invrM[jsplit + 1].length()){    // Will be the combined component non-empty?
 
-      double unif;
       double probs[2];
       double sumprobs;
       double winvsigmaM[2];

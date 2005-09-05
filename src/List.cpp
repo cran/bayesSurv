@@ -11,7 +11,7 @@ using namespace std;
 
 // ***** Implicit constructor
 // ============================
-template<typename T>
+ template<typename T>
 List<T>::List() 
   : first (NULL), 
     last (NULL), 
@@ -22,7 +22,7 @@ List<T>::List()
 
 // ***** Copy constructor
 // ========================
-template<typename T>
+ template<typename T>
 List<T>::List (const List<T>& ls)
 {
   size = 0;
@@ -50,7 +50,7 @@ List<T>::List (const List<T>& ls)
 
 // ***** Destructor
 // =================
-template<typename T>
+ template<typename T>
 List<T>::~List()
 {
   Node* temp;
@@ -64,7 +64,7 @@ List<T>::~List()
 
 // ***** Assignment operator
 // ==========================
-template<typename T>
+ template<typename T>
 List<T>&
 List<T>::operator=(const List<T>& ls)
 {
@@ -107,7 +107,7 @@ List<T>::operator=(const List<T>& ls)
 
 // ***** Retrieve the ith element of the List
 // ==========================================
-template<typename T>
+ template<typename T>
 T& 
 List<T>::operator[] (const int i) const
 {
@@ -128,7 +128,7 @@ List<T>::operator[] (const int i) const
 
 // ***** Return the length of the List
 // ====================================
-template<typename T>
+ template<typename T>
 int
 List<T>::length() const
 {
@@ -138,7 +138,7 @@ List<T>::length() const
 
 // ***** Find out whether the List is empty
 // =========================================
-template<typename T>
+ template<typename T>
 bool
 List<T>::isEmpty() const
 {
@@ -149,7 +149,7 @@ List<T>::isEmpty() const
 
 // ***** Add a new node to the end of the List
 // =============================================
-template<typename T>
+ template<typename T>
 void
 List<T>::addNode(const T& element)
 {
@@ -171,7 +171,7 @@ List<T>::addNode(const T& element)
 
 // ***** operator << 
 // ===================
-template<typename S>
+ template<typename S>
 std::ostream&
 operator<<(std::ostream& os, const List<S>& ls)
 {

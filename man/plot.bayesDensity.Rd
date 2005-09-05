@@ -8,7 +8,7 @@
 }
 \usage{
 \method{plot}{bayesDensity}(x, k.cond, dim.plot = TRUE, over = TRUE,
-   alegend = TRUE, standard = TRUE,
+   alegend = TRUE, standard = TRUE, center = FALSE,
    type = "l", bty = "n",
    xlab = expression(epsilon), ylab = expression(f(epsilon)),
    lty, xlim, ylim, xleg, yleg, main, \dots)
@@ -29,14 +29,16 @@
      plot for each density is created.}
    \item{alegend}{an indicator whether an automatic legend should be
      added to the plot.}
-   \item{standard}{logical, do we want to plot standardized or
-     unstandardized density?}
+   \item{standard}{logical, do we want to plot standardized density?}
+   \item{center}{logical, do we want to plot centered density?, set both
+     \code{standard} and \code{center} to \code{FALSE} if you wish to
+     plot unstandardized density.}
    \item{xleg, yleg}{position of the legend if \code{over = TRUE}.}
    \item{type, bty, xlab, ylab, lty, xlim, ylim, main, \dots}{other
      arguments passed to the \code{plot.default} function.}
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.ac.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
 }
 \keyword{hplot}
 

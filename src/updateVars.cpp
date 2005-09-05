@@ -4,7 +4,7 @@
 // 13/01/2004: start woking on it
 // 14/03/2004: general mean of the random intercept allowed
 
-#include "bayessurvreg.h"
+#include "updateVars.h"
 
 using namespace std;
 
@@ -35,6 +35,7 @@ updateVars(double* invsigma2M,        double* mixMomentM,      double* Eb0,
 {
   int obs, j;
   double intcptadd;
+  double tmp;
 
 //double* resid = new double[*nP];
 //double* pars = new double[*kP *2];
@@ -49,9 +50,15 @@ updateVars(double* invsigma2M,        double* mixMomentM,      double* Eb0,
     proposalShape[j] = *zetaP;
     proposalScale[j] = 0.0;
   }
+  
+  const double* regRes = regresResM;
+  const int* rp = rM;
   for (obs = 0; obs < *nP; obs++){
-//resid[obs] = regresResM[obs] - muM[rM[obs]];
-    proposalScale[rM[obs]] += ((regresResM[obs] - muM[rM[obs]] + intcptadd) * (regresResM[obs] - muM[rM[obs]] + intcptadd));
+//resid[obs] = *regRes - muM[*rp];
+    tmp = *regRes - muM[*rp] + intcptadd;
+    proposalScale[*rp] += tmp*tmp;
+    regRes++;
+    rp++;
   }
 
 //writeToFile(proposalScale, 1, *kP, "/home/arnost/temp", "/sumsqbijVar.sim", 'a');
@@ -65,7 +72,10 @@ updateVars(double* invsigma2M,        double* mixMomentM,      double* Eb0,
     proposalScale[j] += (*etaP);                   // this is now the rate of the proposal distrib.
     proposalScale[j] = 1/proposalScale[j];         // this is now its scale
     proposalShape[j] += (0.5 * mixtureNM[j]);
-    if (proposalScale[j] <= SCALE_ZERO) proposalScale[j] = SCALE_ZERO;
+    if (proposalScale[j] <= SCALE_ZERO){
+      Rprintf("\nWARNING: proposal scale for update of the mixture inverse-variance is close to zero\n");
+      proposalScale[j] = SCALE_ZERO;
+    }
     invsigma2M[j] = rgamma(proposalShape[j], proposalScale[j]);    
 //pars[2*j] = proposalShape[j];
 //pars[2*j + 1] = 1/proposalScale[j];

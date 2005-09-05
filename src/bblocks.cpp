@@ -3,7 +3,7 @@
 // 05/02/2004: start working on it
 // 30/07/2004: added possibility to have a uniform prior for sd(b) if the random effect is univariate
 //
-#include "bayessurvreg.h"
+#include "bblocks.h"
 
 using namespace std;
 
@@ -183,8 +183,8 @@ bblocks::bblocks(double* bbM,              int* parmI,   double* parmD,
     // Integer components
     // ==================
     _nCluster = parmI[1];    
-    if (_nCluster <= 1)
-      throw returnR("C++ Error: At least 2 clusters have to be present when random effects included", 1);
+    if (_nCluster <= 0)
+      throw returnR("C++ Error: Number of clusters must be positive in bblocks constructor", 1);
 
     priorD = parmI + 2; 
     if (*priorD != InvWishart && _nRandom > 1)

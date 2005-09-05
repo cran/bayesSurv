@@ -1,8 +1,20 @@
+####################################################
+#### AUTHOR:     Arnost Komarek                 ####
+####             (2004)                         ####
+####                                            ####
+#### FILE:       bayessurvreg1.writeHeaders.R   ####
+####                                            ####
+#### FUNCTIONS:  bayessurvreg1.writeHeaders     ####
+####################################################
+
+### ======================================
+### bayessurvreg1.writeHeaders
+### ======================================
 ## Subfunction for bayessurvreg1.R
 ##  -> just to make it more readable
 ##
 ## Write headers to files where simulated values will be stored
-
+##
 bayessurvreg1.writeHeaders <- function(dir, prior, store, nX, X, names.random, ncluster, nrandom,
                                        rnamesX, unique.cluster, nBetaBlocks, nbBlocks)
 {   

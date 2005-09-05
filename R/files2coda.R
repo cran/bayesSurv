@@ -9,7 +9,6 @@
 ## 11/04/2004: rewritten such that it returns directly mcmc object
 ##             with chains for all parameters
 
-
 ### ======================================
 ### files2coda
 ### ======================================

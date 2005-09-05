@@ -24,7 +24,7 @@
 //                     recalculated
 // errorTypeP......... type of the error distribution
 //
-#include "bayessurvreg.h"
+#include "updateRegres.h"
 
 using namespace std;
 

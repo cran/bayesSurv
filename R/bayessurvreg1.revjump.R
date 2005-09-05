@@ -1,8 +1,20 @@
+####################################################
+#### AUTHOR:     Arnost Komarek                 ####
+####             (2004)                         ####
+####                                            ####
+#### FILE:       bayessurvreg1.revjump.R        ####
+####                                            ####
+#### FUNCTIONS:  bayessurvreg1.revjump          ####
+####################################################
+
+### ======================================
+### bayessurvreg1.revjump
+### ======================================
 ## Subfunction for bayessurvreg1.R
 ##  -> just to make it more readable
 ##
 ## Manipulation with the specification of proposal jumps algorithms
-
+##
 bayessurvreg1.revjump <- function(prop.revjump)
 {
   if (is.null(prop.revjump$algorithm)) prop.revjump$algorithm <- "basic"

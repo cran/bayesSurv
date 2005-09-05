@@ -8,7 +8,7 @@
 // 03/02/2004: start working on it
 // 13/03/2004: allow for general mean of the random intercept
 //
-#include "bayessurvreg.h"
+#include "randomLogLikelihood.h"
 
 using namespace std;
 

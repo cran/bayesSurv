@@ -6,7 +6,7 @@
 // 13/03/2004: allow a general mean of the random intercept
 // 02/08/2004: uniform prior for std. deviation of univariate random effects added
 //
-#include "bayessurvreg.h"
+#include "updateCovMatRandom.h"
 
 using namespace std;
 

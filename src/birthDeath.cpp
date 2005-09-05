@@ -9,7 +9,7 @@
 //           only a value of Eb0 must be changed)
 //             
 //
-#include "bayessurvreg.h"
+#include "birthDeath.h"
 
 using namespace std;
 
@@ -90,7 +90,7 @@ birthDeath(int* acceptedP,             int* birthP,                   int* kP,
            const int* indbinXA,        const int* nP,                 const int* nclusterP,
            double (*logdtrans) (double))
 {
-  if (*priorForkP == Fixed) return;
+  if (*priorForkP == Fixed_k) return;
 
   int errorType = Mixture;
   bool RichardsonGreen = true;       // Is the proposal for w, mu and invsigma2 same as their prior? I.e. that one
@@ -113,7 +113,7 @@ birthDeath(int* acceptedP,             int* birthP,                   int* kP,
     *birthP += 1;
   }
 
-  //  cout << (birth ? "BIRTH" : "DEATH") << endl;
+//  cout << (birth ? "BIRTH" : "DEATH") << endl;
 
   int* emptyCompM = new int[*kP];
   for (j = 0; j < *kP; j++) emptyCompM[j] = -1;
@@ -210,6 +210,7 @@ birthDeath(int* acceptedP,             int* birthP,                   int* kP,
   *acceptedP += 1;
   moveParamsBirthDeath(jdeath, wM, muM, invsigma2M, rM, invrM, mixtureNM, propkP, vM, &birth);
   *kP = *propkP;
+
   if (!birth){
     for (i = 0; i < 3; i++) uM[i - 3] = propuM[i];
   }

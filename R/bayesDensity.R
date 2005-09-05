@@ -14,10 +14,14 @@
 ### ======================================
 bayesDensity <- function(dir = getwd(),
                          stgrid,
+                         centgrid,
                          grid,
                          n.grid = 100,
-                         skip = 0,                         
+                         skip = 0,
+                         by = 1,
+                         last.iter,
                          standard = TRUE,
+                         center = TRUE,
                          unstandard = TRUE)
 {
   thispackage = "bayesSurv"
@@ -26,7 +30,8 @@ bayesDensity <- function(dir = getwd(),
   ## * further,  whether at least first row has correct number of elements
   ## * and determine the MC sample size
   ## ==============================================================
-  filesindir <- dir(dir)    ## character vector with available files   
+  filesindir <- dir(dir)    ## character vector with available files
+  if (!length(filesindir)) stop("Empty directory with simulated values?")  
   if (sum(!is.na(match(filesindir, "mweight.sim")))){
     mix <- read.table(paste(dir, "/mweight.sim", sep = ""), nrows = 1)
     k.max <- length(mix)
@@ -50,26 +55,40 @@ bayesDensity <- function(dir = getwd(),
   else
     stop("File with simulated values of mixture variances not found.")
 
+  ## nsimul, skip, by  
   if (sum(!is.na(match(filesindir, "mixmoment.sim")))){
     mix <- read.table(paste(dir, "/mixmoment.sim", sep = ""), header = TRUE)
-    M <- dim(mix)[1]    
+    if (missing(last.iter)) M <- dim(mix)[1]
+    else{
+      M <- last.iter
+      if (last.iter > dim(mix)[1]) M <- dim(mix)[1]
+      if (last.iter <= 0)          M <- dim(mix)[1]
+    }      
   }
   else
     stop("File mixmoment.sim not found.")     
-
-  k.cond <- 1:k.max
     
   if (missing(skip)) skip <- 0
   else{
     if (skip > M) stop("You ask to skip more rows from the file than available.")
-    if (skip < 0) skip <- 0
+    if (is.na(skip) || skip < 0) skip <- 0
   }
+  if (missing(by)) by <- 1
+  else{
+    if (is.na(by) || by <= 0) by <- 1
+  }    
 
+  lvalue <- 1 + (M - skip - 1) %/% by
+#  if (missing(nwrite)) nwrite <- lvalue
+#  if (nwrite > lvalue) nwrite <- lvalue
+    
+  k.cond <- 1:k.max
 
   ## Try to guess the grid (from first at most 20 mixtures) if not given by the user
   if (!unstandard) grid <- 0
   if (!standard) stgrid <- 0
-  if (missing(grid)){
+  if (!center) centgrid <- 0
+  if (missing(grid) | missing(centgrid)){
     mus <- scan(paste(dir, "/mmean.sim", sep = ""), nlines = 20, skip = 1)
     sigma2s <- scan(paste(dir, "/mvariance.sim", sep = ""), nlines = 20, skip = 1)    
     mu.min <- min(mus)
@@ -77,25 +96,34 @@ bayesDensity <- function(dir = getwd(),
     sd.min <- sqrt(min(sigma2s))
     sd.max <- sqrt(max(sigma2s))
     sd.mean <- sqrt(mean(sigma2s))
-    grid <- seq(mu.min - 2*sd.mean, mu.max + 2*sd.mean, length = n.grid)
+    grid <- seq(mu.min - 2.5*sd.mean, mu.max + 2.5*sd.mean, length = n.grid)
+    centgrid <- seq(-2.5*sd.mean, 2.5*sd.mean, length = n.grid)
   }
   if (missing(stgrid)){
-    stgrid <- seq(-3, 3, length = n.grid)
+    stgrid <- seq(-2.5, 2.5, length = n.grid)
   }
+  if (!unstandard) grid <- 0
+  if (!center) centgrid <- 0
   ngrid <- length(grid)
   nstgrid <- length(stgrid)
-  type <- 0*(standard & unstandard) + 1*(unstandard & (!standard) + 2*(!unstandard & standard))
+  ncentgrid <- length(centgrid)
+  if (!unstandard) ngrid <- 0
+  if (!standard) nstgrid <- 0
+  if (!center) ncentgrid <- 0
 
-  mcmc <- .C("bayesDensity", aver = double(ngrid * (1 + k.max)),  staver = double(nstgrid * (1 + k.max)),
-                             intercept = double(M),               scale = double(M),
-                             M.k = integer(1 + k.max),            as.character(dir),
-                             as.double(grid),                     as.double(stgrid),
-                             as.integer(k.max),                   as.integer(M),
-                             as.integer(skip),
-                             as.integer(ngrid),                   as.integer(nstgrid),
-                             as.integer(type),                    err = integer(1),
+  mcmc <- .C("bayesDensity", aver = double(ngrid * (1 + k.max)),           staver = double(nstgrid * (1 + k.max)),
+                             centaver = double(ncentgrid * (1 + k.max)),
+                             intercept = double(lvalue),                   scale = double(lvalue),
+                             M.k = integer(1 + k.max),                     as.character(dir),
+                             as.double(grid),                              as.double(stgrid),
+                             as.double(centgrid),
+                             as.integer(k.max),                            as.integer(M),
+                             as.integer(skip),                             as.integer(by),
+                             as.integer(ngrid),                            as.integer(nstgrid),
+                             as.integer(ncentgrid),
+                             err = integer(1),
              PACKAGE = thispackage)
-
+  
   if (mcmc$err) stop("No results produced, something is wrong.")
 
   if (unstandard){
@@ -112,12 +140,19 @@ bayesDensity <- function(dir = getwd(),
     rownames(mcmc$staver) <- paste(1:nstgrid)
     colnames(mcmc$staver) <- c("grid", "unconditional", paste("k = ", 1:k.max, sep = ""))        
   }
+  if (center){
+    mcmc$centaver <- matrix(mcmc$centaver, nrow = ncentgrid)
+    mcmc$centaver <- cbind(centgrid, mcmc$centaver)
+    mcmc$centaver <- as.data.frame(mcmc$centaver)
+    rownames(mcmc$centaver) <- paste(1:ncentgrid)
+    colnames(mcmc$centaver) <- c("grid", "unconditional", paste("k = ", 1:k.max, sep = ""))        
+  }
   names(mcmc$M.k) <- c("unconditional", paste(1:k.max))
-  names(mcmc$intercept) <- paste(1:M)
-  names(mcmc$scale) <- paste(1:M)    
+  names(mcmc$intercept) <- paste(1:lvalue)
+  names(mcmc$scale) <- paste(1:lvalue)    
     
   charact <- data.frame(intercept = mcmc$intercept, scale = mcmc$scale)
-  rownames(charact) <- paste(1:M)          
+  rownames(charact) <- paste(1:lvalue)          
 
   density <- list()
   if (standard) density$standard <- mcmc$staver
@@ -126,6 +161,9 @@ bayesDensity <- function(dir = getwd(),
   if (unstandard) density$unstandard <- mcmc$aver
   else            density$unstandard <- "Not asked."
 
+  if (center) density$center <- mcmc$centaver
+  else        density$center <- "Not asked."  
+  
   attr(density, "sample.size") <- mcmc$M.k
   attr(density, "moments") <- charact
   attr(density, "k") <- data.frame(k = mix[,1])
@@ -145,6 +183,9 @@ print.bayesDensity <- function(x, ...)
 
   cat("\nUnstandardized McMC average: \n")
   print(x$unstandard)  
+
+  cat("\nCentered McMC average: \n")
+  print(x$center)  
   
   return(invisible(x))
 }  
@@ -159,6 +200,7 @@ plot.bayesDensity <- function(x,
                               over = TRUE,
                               alegend = TRUE,
                               standard = TRUE,
+                              center = FALSE,
                               type = "l",
                               bty = "n",
                               xlab = expression(epsilon),
@@ -210,8 +252,11 @@ plot.bayesDensity <- function(x,
     return(invisible(x))
   }    
 
-  if (standard) mcmc <- x$standard
-  else          mcmc <- x$unstandard
+  if (standard){ mcmc <- x$standard }
+  else{
+    if (center){ mcmc <- x$center }
+    else       { mcmc <- x$unstandard }
+  }  
 
   if (is.character(mcmc)) stop("You have to first compute McMC averages.")
   grid <- mcmc$grid

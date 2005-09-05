@@ -1,21 +1,36 @@
+####################################################
+#### AUTHOR:     Arnost Komarek                 ####
+####             (2004)                         ####
+####                                            ####
+#### FILE:       predictive                     ####
+####                                            ####
+#### FUNCTIONS:  predictive                     ####
+####################################################
+
+### ======================================
+### predictive
+### ======================================
 predictive <- function(
      formula,
      random,
      time0 = 0,
      data = parent.frame(),
      grid,
-     type,
+     type = "mixture",
      subset,
      na.action = na.fail,
      quantile = c(0, 0.025, 0.5, 0.975, 1),                       
-     nsimul = list(niter = 10, nwrite = 10),
+     skip = 0,
+     by = 1,
+     last.iter,
+     nwrite,
+     only.aver = FALSE,
      predict = list(Et=TRUE, t=FALSE, Surv=TRUE, hazard=FALSE, cum.hazard=FALSE),
      store = list(Et=TRUE, t = FALSE, Surv = FALSE, hazard = FALSE, cum.hazard=FALSE),
      Eb0.depend.mix = FALSE,
      dir = getwd(),
      toler.chol = 1e-10,
-     toler.qr = 1e-10,
-     ...)
+     toler.qr = 1e-10)
 {
    thispackage = "bayesSurv"
   
@@ -25,9 +40,11 @@ predictive <- function(
    typeError<- pmatch(type, table = c("mixture", "spline", "polya.tree"), nomatch = 0) - 1
    if (typeError == -1 || typeError >= 2) stop("Unknown or not yet implemented error type.")
    
-   control <- predictive.control(predict, store, quantile)
+   control <- predictive.control(predict, store, only.aver, quantile)
    predict <- control$predict
    store <- control$store
+   only.aver <- control$only.aver
+   quantile <- control$quantile
    predictShch <- predict$Surv || predict$hazard || predict$cum.hazard
 
    ## Starting time for the survival model
@@ -43,7 +60,8 @@ predictive <- function(
    ## Check whether needed files are available
    ## and whether at least first row has correct number of elements
    ## ==============================================================
-   filesindir <- dir(dir)    ## character vector with available files   
+   filesindir <- dir(dir)    ## character vector with available files
+   if (!length(filesindir)) stop("Empty directory with simulated values?")   
    if (sum(!is.na(match(filesindir, "mweight.sim")))){
      mix <- read.table(paste(dir, "/mweight.sim", sep = ""), nrows = 1)     
      kmax <- length(mix)
@@ -66,10 +84,7 @@ predictive <- function(
    }
    else
      stop("File with simulated values of mixture variances not found.")
-
-   if (sum(!is.na(match(filesindir, "mixmoment.sim"))) == 0)
-     stop("File mixmoment.sim not found.")     
-   
+      
    nbeta <- des$nfixed + des$nrandom - des$randomInt
    if (nbeta){
      if (sum(!is.na(match(filesindir, "beta.sim")))){
@@ -90,10 +105,33 @@ predictive <- function(
        stop("File with simulated values of a covariance matrix of random effects not found.")
    }
 
-   ## nsimul
-   ## =======
-   if (is.null(nsimul$nwrite)) nsimul$nwrite <- nsimul$niter
-   if (nsimul$nwrite > nsimul$niter) nsimul$nwrite <- nsimul$niter
+   ## nsimul, skip, by
+   ## ================   
+   if (sum(!is.na(match(filesindir, "mixmoment.sim")))){
+     mix <- read.table(paste(dir, "/mixmoment.sim", sep = ""), header = TRUE)
+     if (missing(last.iter)) M <- dim(mix)[1]
+     else{
+       M <- last.iter
+       if (last.iter > dim(mix)[1]) M <- dim(mix)[1]
+       if (last.iter <= 0)          M <- dim(mix)[1]
+     }      
+   }
+   else
+     stop("File mixmoment.sim not found.")     
+    
+   if (missing(skip)) skip <- 0
+   else{
+     if (skip > M) stop("You ask to skip more rows from the file than available.")
+     if (is.na(skip) || skip < 0) skip <- 0
+   }
+   if (missing(by)) by <- 1
+   else{
+     if (is.na(by) || by <= 0) by <- 1
+   }    
+
+   lvalue <- 1 + (M - skip - 1) %/% by
+   if (missing(nwrite)) nwrite <- lvalue
+   if (nwrite > lvalue) nwrite <- lvalue
    
    ## Grids
    ## ======  
@@ -151,11 +189,11 @@ predictive <- function(
 
    ## Sample
    ## ========
-   dims <- c(des$n, des$ncluster, des$nwithin, des$nY, des$nX, des$nfixed, des$nrandom, 1*des$randomInt, nsimul$nwrite)
+   dims <- c(des$n, des$ncluster, des$nwithin, des$nY, des$nX, des$nfixed, des$nrandom, 1*des$randomInt, nwrite)
    dims2 <- c(length(quantile) ,ngrid)
    predictV <- c(predict$Et, predict$t, predict$Surv, predict$hazard, predict$cum.hazard)
    storeV <- c(store$Et, store$t, store$Surv, store$hazard, store$cum.hazard)
-   nsimul <- c(nsimul$niter, 0, nsimul$nwrite)       ## (nthin is ignored)
+   nsimul <- c(M, 0, nwrite)       ## (nthin is ignored)
    tolers <- c(toler.chol, toler.qr)
    prior.pari <- c(kmax, 0, 1*Eb0.depend.mix)
 
@@ -171,6 +209,9 @@ predictive <- function(
                            prior.pari = as.integer(prior.pari),
                            prior.pard = as.double(time0),
                            nsimul = as.integer(nsimul),
+                           skip = as.integer(skip),
+                           by = as.integer(by),
+                           only.aver = as.integer(only.aver),
                            predict = as.integer(predictV),
                            store = as.integer(storeV),
                            tolers = as.double(tolers),

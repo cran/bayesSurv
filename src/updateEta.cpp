@@ -7,7 +7,7 @@
 //    sigma2 ~ Inv-Gamma(zeta, eta)
 //       eta ~ Gamma(g, h)
 
-#include "bayessurvreg.h"
+#include "updateEta.h"
 
 using namespace std;
 

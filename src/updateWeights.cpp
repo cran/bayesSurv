@@ -6,7 +6,7 @@
 // 26/11/2003: start woking on it
 // 15/03/2004: dependence of Eb0 on mixture allowed
 
-#include "bayessurvreg.h"
+#include "updateWeights.h"
 
 using namespace std;
 

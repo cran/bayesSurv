@@ -8,8 +8,7 @@
 
 // 28/01/2004: start working on it
 //
-
-#include "bayessurvreg.h"
+#include "MHblocks.h"
 
 using namespace std;
 
@@ -326,7 +325,7 @@ MHblocks::MHblocks(double* parP,             int* parmI,        double* parmD,
         if (indbA[indBlock[i][j]] < 0) nFixedB[i]++;
         else                           nRandomB[i]++;
       }      
-  }
+    }
 
     typeUpd = parmI + 2 + _nBlocks + 2 + _nParams;
 
@@ -485,41 +484,41 @@ MHblocks::print() const
 {
   int i, dimi;
 
-  cout << "nBlocks = " << _nBlocks;
-  cout << ",   nParams = " << _nParams;
-  cout << ",   maxnInBlock = " << _maxnInBlock << endl;
-  cout << ",   isdprior = " << _isdprior << endl;
+  std::cout << "nBlocks = " << _nBlocks;
+  std::cout << ",   nParams = " << _nParams;
+  std::cout << ",   maxnInBlock = " << _maxnInBlock << std::endl;
+  std::cout << ",   isdprior = " << _isdprior << std::endl;
 
   if (_nBlocks > 0){
-    cout << "nFixedB = "; printArray(nFixedB, &_nBlocks);
-    cout << "nRandomB = "; printArray(nRandomB, &_nBlocks);
+    std::cout << "nFixedB = "; printArray(nFixedB, &_nBlocks);
+    std::cout << "nRandomB = "; printArray(nRandomB, &_nBlocks);
 
-    cout << "par = "; printArray(par, &_nParams);
-    cout << "proppar = "; printArray(proppar, &_nParams);
-    cout << "meanpar = "; printArray(meanpar, &_nParams);
-    cout << "halfRangeUnif = "; printArray(halfRangeUnif, &_nParams);
+    std::cout << "par = "; printArray(par, &_nParams);
+    std::cout << "proppar = "; printArray(proppar, &_nParams);
+    std::cout << "meanpar = "; printArray(meanpar, &_nParams);
+    std::cout << "halfRangeUnif = "; printArray(halfRangeUnif, &_nParams);
 
-    cout << "priorMean = "; printArray(priorMean, &_nParams);
-    cout << "priorSD = "; printArray(priorSD, &_nParams);
-    cout << "priorInvVar = "; printArray(priorInvVar, &_nParams);
+    std::cout << "priorMean = "; printArray(priorMean, &_nParams);
+    std::cout << "priorSD = "; printArray(priorSD, &_nParams);
+    std::cout << "priorInvVar = "; printArray(priorInvVar, &_nParams);
 
-    cout << "logdprior = "; printArray(logdprior, &_nBlocks);
-    cout << "typeUpd = "; printArray(typeUpd, &_nBlocks);
-    cout << "nInBlock = "; printArray(nInBlock, &_nBlocks);
+    std::cout << "logdprior = "; printArray(logdprior, &_nBlocks);
+    std::cout << "typeUpd = "; printArray(typeUpd, &_nBlocks);
+    std::cout << "nInBlock = "; printArray(nInBlock, &_nBlocks);
     for (i = 0; i < _nBlocks; i++){
       dimi = (nInBlock[i] * (nInBlock[i] + 1))/2;
-      cout << "Block " << i << ":";
-      cout << "  indBlock = "; printArray(indBlock[i], nInBlock + i);
-      cout << "          diagI = "; printArray(diagI[i], nInBlock + i);    
-      cout << "          covpar = "; printArray(covpar[i], &dimi);    
-      cout << "          chcovpar = "; printArray(chcovpar[i], &dimi);        
+      std::cout << "Block " << i << ":";
+      std::cout << "  indBlock = "; printArray(indBlock[i], nInBlock + i);
+      std::cout << "          diagI = "; printArray(diagI[i], nInBlock + i);    
+      std::cout << "          covpar = "; printArray(covpar[i], &dimi);    
+      std::cout << "          chcovpar = "; printArray(chcovpar[i], &dimi);        
     }
 
-    cout << "weightUnif = "; printArray(weightUnif, &_nBlocks);
-    cout << "eps = "; printArray(eps, &_nBlocks);
-    cout << "sdNum = "; printArray(sdNum, &_nBlocks);
-    cout << "sumAccept = "; printArray(sumAccept, &_nBlocks);
-    cout << endl;
+    std::cout << "weightUnif = "; printArray(weightUnif, &_nBlocks);
+    std::cout << "eps = "; printArray(eps, &_nBlocks);
+    std::cout << "sdNum = "; printArray(sdNum, &_nBlocks);
+    std::cout << "sumAccept = "; printArray(sumAccept, &_nBlocks);
+    std::cout << std::endl;
   }
 
   return;

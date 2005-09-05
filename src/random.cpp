@@ -2,8 +2,9 @@
 
 // 27/11/2003: start working on it
 // 02/08/2004: left-truncated gamma distribution, random generator added
+// 24/11/2004: 'discreteSampler2' added
 
-#include "bayessurvreg.h"
+#include "random.h"
 
 extern "C"{
 
@@ -29,6 +30,7 @@ rltruncGamma(double* x,
 
   if (*callFromR) GetRNGstate();
 
+  /* Rprintf("minx = %e, shape = %e, rate = %e\n", *minx, *shape, *rate);  */
   double scale = 1/(*rate);
   double Flower = pgamma(*minx, *shape, scale, 1, 0);
   if (Flower >= 1 - NORM_ZERO)   // truncation time irrealistic large => sampled values = minx
@@ -116,7 +118,7 @@ discreteUniformSampler(int* sampledj,
 //
 // propA ................. array of either proportions or cumulative proportions
 // kP .................... length of the array propA
-// n ..................... number of random variates to be sampled 
+// nP .................... number of random variates to be sampled 
 // cumul ................. logical, true if the array propA gives cumulative proportions
 // callFromR ............. logical true = if this function is called directly from R (random seed must be got and put)
 //
@@ -125,58 +127,113 @@ discreteUniformSampler(int* sampledj,
 // sampledj .............. array of sampled values
 //
 void
-discreteSampler(int* sampledj,
-                double* propA,
-                const int* kP,
-                const int* nP,
-                const int* cumul,
-                const int* callFromR)
+discreteSampler(int* sampledj,  double* propA,
+                const int* kP,  const int* nP,  const int* cumul,  const int* callFromR)
 {
-  int i, j;
-  double u;
+  try{
+    int i, j;
+    double u;
 
-  if (*kP <= 1){
-    for (i = 0; i < *nP; i++) sampledj[i] = 0;
-    return;
+    if (*kP <= 1){
+      for (i = 0; i < *nP; i++) sampledj[i] = 0;
+      return;
+    }
+
+    if (*callFromR) GetRNGstate();
+
+    // Compute cumulative proportions if necessary
+    if (!(*cumul)){
+      for (j = 1; j < *kP; j++)
+        propA[j] += propA[j-1];
+    }
+
+    // Check whether all cumulative probabilities are distinc
+    int* origInd = new int[*kP];                 // correspondence between original and non-zero indeces
+    double* _nonZeropropA = new double[*kP];     // cumulative probabilities for non-zero components only
+
+    if (origInd == NULL || _nonZeropropA == NULL) throw returnR("C++ Error: Could not allocate a memory for 'discreteSampler'", 1);
+    int kNonZero = 1;
+    j = 0;
+    while (propA[j] <= ZERO){ j++; }
+    origInd[0] = j;
+    _nonZeropropA[0] = propA[j];
+    for (int m = j + 1; m < *kP; m++){
+      if (propA[m] - propA[m - 1] <= ZERO) continue;
+      origInd[kNonZero] = m;
+      _nonZeropropA[kNonZero] = propA[m]; 
+      kNonZero++;
+    }
+
+    int sampledInd;
+    if (kNonZero == 1) for (i = 0; i < *nP; i++) sampledj[i] = origInd[0];
+    else               for (i = 0; i < *nP; i++){
+                          u = runif(0, _nonZeropropA[kNonZero - 1]);
+                          sampledInd = findIndex(u, 0, kNonZero - 1, _nonZeropropA);
+                          sampledj[i] = origInd[sampledInd];
+                       }
+
+    if (*callFromR) PutRNGstate();
+    delete [] origInd;
+    delete [] _nonZeropropA;
+    return;  
   }
-
-  if (*callFromR) GetRNGstate();
-
-  // Compute cumulative proportions if necessary
-  if (!(*cumul)){
-    for (j = 1; j < *kP; j++)
-      propA[j] += propA[j-1];
+  catch (returnR){
+    if (*callFromR){
+      PutRNGstate();
+      return;
+    }
+    throw;
   }
-
-  // Check whether all cumulative probabilities are distinct
-  int* origInd = new int[*kP];                // correspondence between original and non-zero indeces
-  double* nonZeropropA = new double[*kP];     // cumulative probabilities for non-zero components only
-  int kNonZero = 1;
-  j = 0;
-  while (propA[j] <= ZERO) j++;
-  origInd[0] = j;
-  nonZeropropA[0] = propA[j];
-  for (int m = j + 1; m < *kP; m++){
-    if (propA[m] - propA[m - 1] <= ZERO) continue;
-    origInd[kNonZero] = m;
-    nonZeropropA[kNonZero] = propA[m]; 
-    kNonZero++;
-  }
-
-  int sampledInd;
-  if (kNonZero == 1) for (i = 0; i < *nP; i++) sampledj[i] = origInd[0];
-  else               for (i = 0; i < *nP; i++){
-                        u = runif(0, nonZeropropA[kNonZero - 1]);
-                        sampledInd = findIndex(u, 0, kNonZero - 1, nonZeropropA);
-                        sampledj[i] = origInd[sampledInd];
-                     }
-
-  if (*callFromR) PutRNGstate();
-  delete [] origInd;
-  delete [] nonZeropropA;
-  return;  
-
 }   // end of function discreteSampler
+
+
+// ********** discreteSampler2 **********
+//
+// Just small modification of 'discreteSampler'
+//   * it does not check which proportions are zero
+//   * to be used primarily by update_Alloc_GS
+//
+// PARAMETERS:
+//
+//  see 'discreteSampler'
+//
+void
+discreteSampler2(int* sampledj,  double* propA,
+                 const int* kP,  const int* nP,  const int* cumul,  const int* callFromR)
+{ 
+  try{
+    int i, j;
+    double u;
+
+    if (*kP <= 1){
+      for (i = 0; i < *nP; i++) sampledj[i] = 0;
+      return;
+    }
+
+    if (*callFromR) GetRNGstate();
+
+    // Compute cumulative proportions if necessary
+    if (!(*cumul)){
+      for (j = 1; j < *kP; j++)
+        propA[j] += propA[j-1];
+    }
+
+    for (i = 0; i < *nP; i++){
+      u = runif(0, propA[(*kP) - 1]);
+      sampledj[i] = findIndex(u, 0, (*kP) - 1, propA);
+    }
+
+    if (*callFromR) PutRNGstate();
+    return;  
+  }
+  catch (returnR){
+    if (*callFromR){
+      PutRNGstate();
+      return;
+    }
+    throw;
+  }
+}   // end of function discreteSampler2
 
 
 // ********** findUniformIndex **********

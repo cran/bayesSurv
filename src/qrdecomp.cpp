@@ -4,7 +4,7 @@
 // 
 // 03/02/2004: start working on it 
 //
-#include "bayessurvreg.h"
+#include "qrdecomp.h"
 
 extern "C"{
 
@@ -97,7 +97,8 @@ using namespace std;
 void 
 dqrdc2CPP(double* x, const int* n, const int* p, const double* tol, int* k, double* qraux, int* jpvt)
 {
-  double* work = new double[(*p)*2];
+  double* work = (double*) calloc((*p)*2, sizeof(double));
+  if (!work) throw returnR("Could not allocate working space for dqrdc2CPP", 1);
   int i, j, l, lp1, lup;
   double tt,ttt;
   double nrmxl,t;
@@ -212,7 +213,7 @@ dqrdc2CPP(double* x, const int* n, const int* p, const double* tol, int* k, doub
 
   *k = (*k-1 < *n ? *k-1 : *n);
 
-  delete [] work;
+  free(work);
   return;
 }    // end of the function dqrdc2
 

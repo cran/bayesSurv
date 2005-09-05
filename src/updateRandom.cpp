@@ -12,7 +12,7 @@
 // 12/02/2004: first working version
 // 14/03/2004: added possibility of a general mean of a random intercept
 //
-#include "bayessurvreg.h"
+#include "updateRandom.h"
 
 using namespace std;
 
@@ -82,7 +82,6 @@ updateRandom(bblocks* bb,                   double* regresResM,    double* propr
 
   double* propb = new double[nRandom];
   double proploglik, proprandomloglik, cl_loglik, propcl_loglik;
-  bool minInfty;
 
   switch (bb->typeUpd[0]){
     case RandomWalk:          // standard MH step or adaptive Metropolis step
