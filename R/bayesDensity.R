@@ -83,12 +83,16 @@ bayesDensity <- function(dir = getwd(),
 #  if (nwrite > lvalue) nwrite <- lvalue
     
   k.cond <- 1:k.max
-
+  
   ## Try to guess the grid (from first at most 20 mixtures) if not given by the user
   if (!unstandard) grid <- 0
   if (!standard) stgrid <- 0
   if (!center) centgrid <- 0
-  if (missing(grid) | missing(centgrid)){
+  if (missing(grid)) miss.grid <- TRUE
+  else               miss.grid <- FALSE
+  if (missing(centgrid)) miss.centgrid <- TRUE
+  else                   miss.centgrid <- FALSE
+  if (miss.grid | miss.centgrid){
     mus <- scan(paste(dir, "/mmean.sim", sep = ""), nlines = 20, skip = 1)
     sigma2s <- scan(paste(dir, "/mvariance.sim", sep = ""), nlines = 20, skip = 1)    
     mu.min <- min(mus)
@@ -96,8 +100,8 @@ bayesDensity <- function(dir = getwd(),
     sd.min <- sqrt(min(sigma2s))
     sd.max <- sqrt(max(sigma2s))
     sd.mean <- sqrt(mean(sigma2s))
-    grid <- seq(mu.min - 2.5*sd.mean, mu.max + 2.5*sd.mean, length = n.grid)
-    centgrid <- seq(-2.5*sd.mean, 2.5*sd.mean, length = n.grid)
+    if (miss.grid) grid <- seq(mu.min - 2.5*sd.mean, mu.max + 2.5*sd.mean, length = n.grid)
+    if (miss.centgrid) centgrid <- seq(-2.5*sd.mean, 2.5*sd.mean, length = n.grid)
   }
   if (missing(stgrid)){
     stgrid <- seq(-2.5, 2.5, length = n.grid)

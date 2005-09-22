@@ -150,11 +150,11 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   prior$rate.sigma <- rate.sigma  
 
   tmp <- match("k.overrelax.sigma", inmcmc.par, nomatch=NA)
+  if (!is.na(tmp) & length(mcmc.par$k.overrelax.sigma) == 1) mcmc.par$k.overrelax.sigma <- rep(mcmc.par$k.overrelax.sigma[1], dim)
   if(is.na(tmp)) mcmc.par$k.overrelax.sigma <- rep(1, dim)
   mcmc.par$k.overrelax.sigma <- mcmc.par$k.overrelax.sigma[1:dim]
   if (sum(is.na(mcmc.par$k.overrelax.sigma))) stop("Incorrect mcmc.par$k.overrelax.sigma given")
   if (sum(mcmc.par$k.overrelax.sigma <= 0)) stop("Incorrect mcmc.par$k.overrelax.sigma given (must be all positive)")  
-
   
   ## Prior gamma and parameters for the prior
   ## ========================================
@@ -223,8 +223,9 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   prior$rate.scale <- rate.scale  
 
   tmp <- match("k.overrelax.scale", inmcmc.par, nomatch=NA)
+  if (!is.na(tmp) & length(mcmc.par$k.overrelax.scale) == 1) mcmc.par$k.overrelax.scale <- rep(mcmc.par$k.overrelax.scale[1], dim)  
   if(is.na(tmp)) mcmc.par$k.overrelax.scale <- rep(1, dim)
-  mcmc.par$k.overrelax.a <- mcmc.par$k.overrelax.a[1:dim]
+  mcmc.par$k.overrelax.scale <- mcmc.par$k.overrelax.scale[1:dim]
   if (sum(is.na(mcmc.par$k.overrelax.scale))) stop("Incorrect mcmc.par$k.overrelax.scale given")
   if (sum(mcmc.par$k.overrelax.scale <= 0)) stop("Incorrect mcmc.par$k.overrelax.scale given (must be all positive)")  
 
