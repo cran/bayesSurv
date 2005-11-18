@@ -1,7 +1,7 @@
 \name{credible.region}
 \alias{credible.region}
 \title{
-  Compute a simultaneous confidence region from a sample for a vector valued parameter.
+  Compute a simultaneous credible region (rectangle) from a sample for a vector valued parameter.
 }
 \description{
   See the two references for more detail.
