@@ -159,7 +159,7 @@ bayesGspline <- function(dir = getwd(),
 
 
 ### ======================================
-### plot.bayesDensity
+### plot.bayesGspline
 ### ======================================
 plot.bayesGspline <- function(x,
                               add = FALSE,

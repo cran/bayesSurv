@@ -142,6 +142,15 @@
   Kapucijnenvoer 35, 3000 Leuven, Belgium
 
   \code{URL:} \code{http://med.kuleuven.be/biostat/}
+
+  Data collection was supported by Unilever, Belgium.
+  The Signal Tandmobiel project comprises the following partners:
+  D. Declerck (Dental School, Catholic University Leuven),
+  L. Martens (Dental School, University Ghent),
+  J. Vanobbergen (Oral Health Promotion and Prevention, Flemish Dental Association),
+  P. Bottenberg (Dental School, University Brussels),
+  E. Lesaffre (Biostatistical Centre, Catholic University Leuven),
+  K. Hoppenbrouwers (Youth Health Department, Catholic University Leuven; Flemish Association for Youth Health Care).
 }
 \references{
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).

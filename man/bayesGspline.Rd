@@ -133,7 +133,8 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
   returned otherwise also values of the G-spline at each iteration are
   returned (which might ask for quite lots of memory).}
 \item{standard}{\code{TRUE/FALSE}, if \code{TRUE}, each G-spline is
-  standardized to have zero mean and unit variance.}
+  standardized to have zero mean and unit variance. Only applicable if
+  \code{version} = 30 or 31, otherwise \code{standard} is always set to \code{FALSE}.}
 \item{version}{
   this argument indicates by which \code{bayes*survreg*} function the
   chains used by \code{bayesGspline} were created. Use the following:
@@ -158,17 +159,17 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
 \value{
   An object of class \code{bayesGspline} is returned. This object is a
   list with components
-  \code{grid}, \code{value} for the univariate G-spline and
-  components \code{grid1}, \code{grid2}, \code{value} for the bivariate G-spline.
+  \code{grid}, \code{average} for the univariate G-spline and
+  components \code{grid1}, \code{grid2}, \code{average} for the bivariate G-spline.
   \item{grid}{this is a grid of values (vector) at which the McMC average of the
     G-spline was computed.}
-  \item{value}{these are McMC averages of the G-spline (vector) evaluated in
+  \item{average}{these are McMC averages of the G-spline (vector) evaluated in
     \code{grid}.}
   \item{grid1}{this is a grid of values (vector) for the first dimension
     at which the McMC average of the G-spline was computed.}
   \item{grid2}{this is a grid of values (vector) for the second dimension
     at which the McMC average of the G-spline was computed.}
-  \item{value}{this is a matrix \code{length(grid1)} times
+  \item{average}{this is a matrix \code{length(grid1)} times
     \code{length(grid2)} with McMC averages of the G-spline evaluated in
     \tabular{lccc}{
       x1 = \tab ( grid1 \tab \dots \tab grid1 ) \cr
@@ -184,7 +185,7 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
   There exists a method to plot objects of the class \code{bayesGspline}.
 }
 \section{Attributes}{
-  Additionally, the object of class \code{bayesGspline} has the follwing
+  Additionally, the object of class \code{bayesGspline} has the following
   attributes:
   \describe{
     \item{\code{sample.size}}{a length of the McMC sample used to compute the McMC average.

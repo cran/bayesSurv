@@ -375,24 +375,26 @@ nsimul.PA <- list(niter=250000, nthin=3, nburn=225000, nwrite=100)
 ###################################################
 ### chunk number 22: sample02 eval=FALSE
 ###################################################
-sides <- c("RIGHT", "LEFT")
-sample.PA <- list()
-for (k in 1:2){
-  cat("\nPerforming ", sides[k], " part of the mouth\n", sep="")
-  cat("===========================================\n")
-  
-  data.now <- data.PA[[k]]
-  sample.PA[[k]] <- bayesBisurvreg(
-    formula=Surv(Ebeg, Eend, type="interval2")~ Girl + cluster(Idnr),
-    formula2=Surv(Fbeg, Fend, type="interval2")~ Girl + Brush + Plaque + Seal + Prim5+ cluster(Idnr),
-    onlyX=FALSE,
-    dir=chaindir.PA[k], nsimul=nsimul.PA,
-    prior=prior.PA.gspl.emerg, prior2=prior.PA.gspl.caries,
-    prior.beta=prior.PA.beta.emerg, prior.beta2=prior.PA.beta.caries,
-    init=init.PA.emerg[[k]], init2=init.PA.caries[[k]],
-    store=list(a=FALSE, a2=FALSE),                                   
-    data=data.now)
-}
+## ##dyn.load("/home/komari/Rlib/bayesSurvival/bayessurvreg02/src/bayessurvreg.so")
+## ##source("/home/komari/Rlib/bayesSurvival/bayessurvreg02/Rextra/toSource.R")
+## sides <- c("RIGHT", "LEFT")
+## sample.PA <- list()
+## for (k in 1:2){
+##   cat("\nPerforming ", sides[k], " part of the mouth\n", sep="")
+##   cat("===========================================\n")
+##   
+##   data.now <- data.PA[[k]]
+##   sample.PA[[k]] <- bayesBisurvreg(
+##     formula=Surv(Ebeg, Eend, type="interval2")~ Girl + cluster(Idnr),
+##     formula2=Surv(Fbeg, Fend, type="interval2")~ Girl + Brush + Plaque + Seal + Prim5+ cluster(Idnr),
+##     onlyX=FALSE,
+##     dir=chaindir.PA[k], nsimul=nsimul.PA,
+##     prior=prior.PA.gspl.emerg, prior2=prior.PA.gspl.caries,
+##     prior.beta=prior.PA.beta.emerg, prior.beta2=prior.PA.beta.caries,
+##     init=init.PA.emerg[[k]], init2=init.PA.caries[[k]],
+##     store=list(a=FALSE, a2=FALSE),                                   
+##     data=data.now)
+## }
 
 
 ###################################################
@@ -443,113 +445,113 @@ end <- list(maxilla=seq(2, ncov, by=2), mandible=seq(ncov+2, 2*ncov, by=2))
 ###################################################
 ### chunk number 27: predict05 eval=FALSE
 ###################################################
-pred.PA <- list()
-for (k in 1:2){    ## loop over right and left
-  cat("Performing ", side[k], " side\n", sep="")
-  
-  for (jj in 1:2){  ## loop over maxilla and mandible
-    cat("Performing ", jaw[jj], " jaw\n", sep="")    
-    pred.PA[[(k-1)*2 + jj]] <- list()
-    
-    for (ii in 1:length(start[[jj]])){  ## loop over sets of covariates      
-      cat("Performing the covariate set number ", ii, "\n", sep="")
-      pdata.now <- pred.data[start[[jj]][ii]:end[[jj]][ii], ]
-      nr <- nrow(pdata.now)
-      pred.PA[[(k-1)*2+jj]][[ii]] <- 
-          predictive2(Surv(rep(1, nr), rep(1, nr)) ~ Girl+Brush+Plaque+Seal+Prim5+ cluster(Idnr),
-                      obs.dim=pdata.now$Dimension, grid=pred.grid, data=pdata.now,
-                      Gspline=list(dim=2, K=c(15, 15)), quantile=quants,
-                      skip=skip, by=1, nwrite=nwrite, only.aver=FALSE,
-                      predict=list(density=TRUE, Surv=TRUE, hazard=TRUE),
-                      dir=chaindir.PA[k], extens="_2")
-    }
-  }
-}  
-tnames <- c("16", "46", "26", "36")
-names(pred.PA) <- tnames
+## pred.PA <- list()
+## for (k in 1:2){    ## loop over right and left
+##   cat("Performing ", side[k], " side\n", sep="")
+##   
+##   for (jj in 1:2){  ## loop over maxilla and mandible
+##     cat("Performing ", jaw[jj], " jaw\n", sep="")    
+##     pred.PA[[(k-1)*2 + jj]] <- list()
+##     
+##     for (ii in 1:length(start[[jj]])){  ## loop over sets of covariates      
+##       cat("Performing the covariate set number ", ii, "\n", sep="")
+##       pdata.now <- pred.data[start[[jj]][ii]:end[[jj]][ii], ]
+##       nr <- nrow(pdata.now)
+##       pred.PA[[(k-1)*2+jj]][[ii]] <- 
+##           predictive2(Surv(rep(1, nr), rep(1, nr)) ~ Girl+Brush+Plaque+Seal+Prim5+ cluster(Idnr),
+##                       obs.dim=pdata.now$Dimension, grid=pred.grid, data=pdata.now,
+##                       Gspline=list(dim=2, K=c(15, 15)), quantile=quants,
+##                       skip=skip, by=1, nwrite=nwrite, only.aver=FALSE,
+##                       predict=list(density=TRUE, Surv=TRUE, hazard=TRUE),
+##                       dir=chaindir.PA[k], extens="_2")
+##     }
+##   }
+## }  
+## tnames <- c("16", "46", "26", "36")
+## names(pred.PA) <- tnames
 
 
 ###################################################
 ### chunk number 28: predict06 eval=FALSE
 ###################################################
-predd.PA <- list()
-for (tt in 1:4){    ## loop over teeth
-  predd.PA[[tt]] <- list()
-  predd.PA[[tt]]$grid <- pred.PA[[tt]][[1]]$grid
-  
-  predd.PA[[tt]]$Surv <- pred.PA[[tt]][[1]]$Surv
-  predd.PA[[tt]]$hazard <- pred.PA[[tt]][[1]]$hazard
-  predd.PA[[tt]]$density <- pred.PA[[tt]][[1]]$density
-
-  predd.PA[[tt]]$quant.Surv <- pred.PA[[tt]][[1]]$quant.Surv
-  predd.PA[[tt]]$quant.hazard <- pred.PA[[tt]][[1]]$quant.hazard
-  predd.PA[[tt]]$quant.density <- pred.PA[[tt]][[1]]$quant.density
-  
-  for (ii in 2:length(start[[1]])){
-    predd.PA[[tt]]$Surv <- rbind(predd.PA[[tt]]$Surv, pred.PA[[tt]][[ii]]$Surv)
-    predd.PA[[tt]]$hazard <- rbind(predd.PA[[tt]]$hazard, pred.PA[[tt]][[ii]]$hazard)    
-    predd.PA[[tt]]$density <- rbind(predd.PA[[tt]]$density, pred.PA[[tt]][[ii]]$density)
-
-    templ <- length(predd.PA[[tt]]$quant.Surv)
-    for (ij in 1:length(pred.PA[[tt]][[ii]]$quant.Surv)){    
-      predd.PA[[tt]]$quant.Surv[[templ + ij]] <- pred.PA[[tt]][[ii]]$quant.Surv[[ij]]
-      predd.PA[[tt]]$quant.hazard[[templ + ij]] <- pred.PA[[tt]][[ii]]$quant.hazard[[ij]]
-      predd.PA[[tt]]$quant.density[[templ + ij]] <- pred.PA[[tt]][[ii]]$quant.density[[ij]]      
-    }
-    
-  }  
-}  
-names(predd.PA) <- tnames
-pred.PA <- predd.PA
-rm(list="predd.PA")
+## predd.PA <- list()
+## for (tt in 1:4){    ## loop over teeth
+##   predd.PA[[tt]] <- list()
+##   predd.PA[[tt]]$grid <- pred.PA[[tt]][[1]]$grid
+##   
+##   predd.PA[[tt]]$Surv <- pred.PA[[tt]][[1]]$Surv
+##   predd.PA[[tt]]$hazard <- pred.PA[[tt]][[1]]$hazard
+##   predd.PA[[tt]]$density <- pred.PA[[tt]][[1]]$density
+## 
+##   predd.PA[[tt]]$quant.Surv <- pred.PA[[tt]][[1]]$quant.Surv
+##   predd.PA[[tt]]$quant.hazard <- pred.PA[[tt]][[1]]$quant.hazard
+##   predd.PA[[tt]]$quant.density <- pred.PA[[tt]][[1]]$quant.density
+##   
+##   for (ii in 2:length(start[[1]])){
+##     predd.PA[[tt]]$Surv <- rbind(predd.PA[[tt]]$Surv, pred.PA[[tt]][[ii]]$Surv)
+##     predd.PA[[tt]]$hazard <- rbind(predd.PA[[tt]]$hazard, pred.PA[[tt]][[ii]]$hazard)    
+##     predd.PA[[tt]]$density <- rbind(predd.PA[[tt]]$density, pred.PA[[tt]][[ii]]$density)
+## 
+##     templ <- length(predd.PA[[tt]]$quant.Surv)
+##     for (ij in 1:length(pred.PA[[tt]][[ii]]$quant.Surv)){    
+##       predd.PA[[tt]]$quant.Surv[[templ + ij]] <- pred.PA[[tt]][[ii]]$quant.Surv[[ij]]
+##       predd.PA[[tt]]$quant.hazard[[templ + ij]] <- pred.PA[[tt]][[ii]]$quant.hazard[[ij]]
+##       predd.PA[[tt]]$quant.density[[templ + ij]] <- pred.PA[[tt]][[ii]]$quant.density[[ij]]      
+##     }
+##     
+##   }  
+## }  
+## names(predd.PA) <- tnames
+## pred.PA <- predd.PA
+## rm(list="predd.PA")
 
 
 ###################################################
 ### chunk number 29: predict07 eval=FALSE
 ###################################################
-for (tt in 1:4){
-  sink(paste(predCurvesdir, "predDensCaries.", tnames[tt], ".PA.", "dat", sep=""))
-  cat(pred.PA[[tt]]$grid, "\n", sep="   ")
-  for (j in 1:ncov) cat(pred.PA[[tt]]$density[j,], "\n", sep="   ")
-  sink()
-
-  sink(paste(predCurvesdir, "predSurvCaries.", tnames[tt], ".PA.", "dat", sep=""))
-  cat(pred.PA[[tt]]$grid, "\n", sep="   ")
-  for (j in 1:ncov) cat(pred.PA[[tt]]$Surv[j,], "\n", sep="   ")
-  sink()
-
-  sink(paste(predCurvesdir, "predhazardCaries.", tnames[tt], ".PA.", "dat", sep=""))  
-  cat(pred.PA[[tt]]$grid, "\n", sep="   ")
-  for (j in 1:ncov) cat(pred.PA[[tt]]$hazard[j,], "\n", sep="   ")
-  sink()
-}
+## for (tt in 1:4){
+##   sink(paste(predCurvesdir, "predDensCaries.", tnames[tt], ".PA.", "dat", sep=""))
+##   cat(pred.PA[[tt]]$grid, "\n", sep="   ")
+##   for (j in 1:ncov) cat(pred.PA[[tt]]$density[j,], "\n", sep="   ")
+##   sink()
+## 
+##   sink(paste(predCurvesdir, "predSurvCaries.", tnames[tt], ".PA.", "dat", sep=""))
+##   cat(pred.PA[[tt]]$grid, "\n", sep="   ")
+##   for (j in 1:ncov) cat(pred.PA[[tt]]$Surv[j,], "\n", sep="   ")
+##   sink()
+## 
+##   sink(paste(predCurvesdir, "predhazardCaries.", tnames[tt], ".PA.", "dat", sep=""))  
+##   cat(pred.PA[[tt]]$grid, "\n", sep="   ")
+##   for (j in 1:ncov) cat(pred.PA[[tt]]$hazard[j,], "\n", sep="   ")
+##   sink()
+## }
 
 
 ###################################################
 ### chunk number 30: predict08 eval=FALSE
 ###################################################
-for (tt in 1:4){
-  sink(paste(predCurvesdir, "quantDensCaries.", tnames[tt], ".PA.", "dat", sep=""))
-  cat(pred.PA[[tt]]$grid, "\n", sep="   ")  
-  for (j in 1:ncov){
-    for (jj in 1:nquant) cat(pred.PA[[tt]]$quant.density[[j]][jj,], "\n", sep="   ")
-  }
-  sink()
-
-  sink(paste(predCurvesdir, "quantSurvCaries.", tnames[tt], ".PA.", "dat", sep=""))  
-  cat(pred.PA[[tt]]$grid, "\n", sep="   ")  
-  for (j in 1:ncov){
-    for (jj in 1:nquant) cat(pred.PA[[tt]]$quant.Surv[[j]][jj,], "\n", sep="   ")
-  }
-  sink()
-
-  sink(paste(predCurvesdir, "quanthazardCaries.", tnames[tt], ".PA.", "dat", sep=""))    
-  cat(pred.PA[[tt]]$grid, "\n", sep="   ")  
-  for (j in 1:ncov){
-    for (jj in 1:nquant) cat(pred.PA[[tt]]$quant.hazard[[j]][jj,], "\n", sep="   ")
-  }
-  sink()
-}
+## for (tt in 1:4){
+##   sink(paste(predCurvesdir, "quantDensCaries.", tnames[tt], ".PA.", "dat", sep=""))
+##   cat(pred.PA[[tt]]$grid, "\n", sep="   ")  
+##   for (j in 1:ncov){
+##     for (jj in 1:nquant) cat(pred.PA[[tt]]$quant.density[[j]][jj,], "\n", sep="   ")
+##   }
+##   sink()
+## 
+##   sink(paste(predCurvesdir, "quantSurvCaries.", tnames[tt], ".PA.", "dat", sep=""))  
+##   cat(pred.PA[[tt]]$grid, "\n", sep="   ")  
+##   for (j in 1:ncov){
+##     for (jj in 1:nquant) cat(pred.PA[[tt]]$quant.Surv[[j]][jj,], "\n", sep="   ")
+##   }
+##   sink()
+## 
+##   sink(paste(predCurvesdir, "quanthazardCaries.", tnames[tt], ".PA.", "dat", sep=""))    
+##   cat(pred.PA[[tt]]$grid, "\n", sep="   ")  
+##   for (j in 1:ncov){
+##     for (jj in 1:nquant) cat(pred.PA[[tt]]$quant.hazard[[j]][jj,], "\n", sep="   ")
+##   }
+##   sink()
+## }
 
 
 ###################################################
@@ -731,34 +733,34 @@ nwrite <- 5000
 ###################################################
 ### chunk number 41: errDens02 eval=FALSE
 ###################################################
-grid1.emerg <- seq(0, 0.8, length=50)
-grid2.emerg <- seq(0, 0.8, length=50)
-dens.emerg <- list()
-for (k in 1:2){
-  dens.emerg[[k]] <- bayesGspline(chaindir.PA[k], grid1=grid1.emerg, grid2=grid2.emerg, skip=skip, by=1, nwrite=nwrite, only.aver=TRUE)
-  sink(paste(chaindir.PA[k], "/densEmerg.dat", sep=""), append=FALSE)
-  cat(dens.emerg[[k]]$grid1, "\n", sep="  ")
-  cat(dens.emerg[[k]]$grid2, "\n", sep="  ")
-  cat(dens.emerg[[k]]$average, "\n", sep="  ")
-  sink()
-}
+## grid1.emerg <- seq(0, 0.8, length=50)
+## grid2.emerg <- seq(0, 0.8, length=50)
+## dens.emerg <- list()
+## for (k in 1:2){
+##   dens.emerg[[k]] <- bayesGspline(chaindir.PA[k], grid1=grid1.emerg, grid2=grid2.emerg, skip=skip, by=1, nwrite=nwrite, only.aver=TRUE)
+##   sink(paste(chaindir.PA[k], "/densEmerg.dat", sep=""), append=FALSE)
+##   cat(dens.emerg[[k]]$grid1, "\n", sep="  ")
+##   cat(dens.emerg[[k]]$grid2, "\n", sep="  ")
+##   cat(dens.emerg[[k]]$average, "\n", sep="  ")
+##   sink()
+## }
 
 
 ###################################################
 ### chunk number 42: errDens03 eval=FALSE
 ###################################################
-grid1.caries <- seq(-0.5, 8.0, length=50)
-grid2.caries <- seq(-0.5, 8.0, length=50)
-dens.caries <- list()
-for (k in 1:2){
-  dens.caries[[k]] <- bayesGspline(chaindir.PA[k], extens="_2",
-                                   grid1=grid1.caries, grid2=grid2.caries, skip=0, by=1, nwrite=100, only.aver=TRUE)
-  sink(paste(chaindir.PA[k], "/densCaries.dat", sep=""), append=FALSE)
-  cat(dens.caries[[k]]$grid1, "\n", sep="  ")
-  cat(dens.caries[[k]]$grid2, "\n", sep="  ")
-  cat(dens.caries[[k]]$average, "\n", sep="  ")
-  sink()
-}
+## grid1.caries <- seq(-0.5, 8.0, length=50)
+## grid2.caries <- seq(-0.5, 8.0, length=50)
+## dens.caries <- list()
+## for (k in 1:2){
+##   dens.caries[[k]] <- bayesGspline(chaindir.PA[k], extens="_2",
+##                                    grid1=grid1.caries, grid2=grid2.caries, skip=0, by=1, nwrite=100, only.aver=TRUE)
+##   sink(paste(chaindir.PA[k], "/densCaries.dat", sep=""), append=FALSE)
+##   cat(dens.caries[[k]]$grid1, "\n", sep="  ")
+##   cat(dens.caries[[k]]$grid2, "\n", sep="  ")
+##   cat(dens.caries[[k]]$average, "\n", sep="  ")
+##   sink()
+## }
 
 
 ###################################################
@@ -850,14 +852,130 @@ for (k in 1:2){
 
 
 ###################################################
-### chunk number 48: chains01
+### chunk number 48: marg.errDens01
+###################################################
+skip <- 0
+nwrite <- 1000
+last.iter <- 1000
+
+
+###################################################
+### chunk number 49: marg.errDens02
+###################################################
+KK <- prior.PA.gspl.emerg$K
+grid1.emerg <- seq(0, 0.8, length=100)
+grid2.emerg <- seq(0, 0.8, length=100)
+marg.dens.emerg <- list()
+for (k in 1:2){
+  marg.dens.emerg[[k]] <- marginal.bayesGspline(chaindir.PA[k], grid1=grid1.emerg, grid2=grid2.emerg, K=KK, skip=skip, by=1, nwrite=nwrite, last.iter=last.iter, only.aver=TRUE)
+}
+
+
+###################################################
+### chunk number 50: marg.errDens03
+###################################################
+KK <- prior.PA.gspl.caries$K
+grid1.caries <- seq(-0.5, 8.0, length=100)
+grid2.caries <- seq(-0.5, 8.0, length=100)
+marg.dens.caries <- list()
+for (k in 1:2){
+  marg.dens.caries[[k]] <- marginal.bayesGspline(chaindir.PA[k], extens="_2", grid1=grid1.caries, grid2=grid2.caries, K=KK, skip=skip, by=1, nwrite=nwrite, last.iter=last.iter, only.aver=TRUE)
+}
+
+
+###################################################
+### chunk number 51: plot.marg.ErrDens01
+###################################################
+pdfwidth <- 9
+pdfheight <- 6
+
+
+###################################################
+### chunk number 52: plot.marg.ErrDens02
+###################################################
+pmain <- paste("Error density, EMERGENCE, tooth ", c(16, 26, 36, 46), sep="")
+pdf(paste(figuredir, "margErrDensEmerg_PA.pdf", sep=""), width=pdfwidth, height=pdfheight)
+par(bty="n", mfrow=c(2, 2), mar=c(4, 4, 4, 2)+0.1)
+plot(marg.dens.emerg[[1]]$margin1$grid, marg.dens.emerg[[1]]$margin1$average, type="l", xlab="y", ylab="g(y)", main=pmain[1])
+plot(marg.dens.emerg[[2]]$margin1$grid, marg.dens.emerg[[2]]$margin1$average, type="l", xlab="y", ylab="g(y)", main=pmain[2])
+plot(marg.dens.emerg[[2]]$margin2$grid, marg.dens.emerg[[2]]$margin2$average, type="l", xlab="y", ylab="g(y)", main=pmain[3])
+plot(marg.dens.emerg[[1]]$margin2$grid, marg.dens.emerg[[1]]$margin2$average, type="l", xlab="y", ylab="g(y)", main=pmain[4])
+dev.off()
+
+
+###################################################
+### chunk number 53: plot.marg.ErrDens03
+###################################################
+pmain <- paste("Error density, CARIES, tooth ", c(16, 26, 36, 46), sep="")
+pdf(paste(figuredir, "margErrDensCaries_PA.pdf", sep=""), width=pdfwidth, height=pdfheight)
+par(bty="n", mfrow=c(2, 2), mar=c(4, 4, 4, 2)+0.1)
+plot(marg.dens.caries[[1]]$margin1$grid, marg.dens.caries[[1]]$margin1$average, type="l", xlab="y", ylab="g(y)", main=pmain[1])
+plot(marg.dens.caries[[2]]$margin1$grid, marg.dens.caries[[2]]$margin1$average, type="l", xlab="y", ylab="g(y)", main=pmain[2])
+plot(marg.dens.caries[[2]]$margin2$grid, marg.dens.caries[[2]]$margin2$average, type="l", xlab="y", ylab="g(y)", main=pmain[3])
+plot(marg.dens.caries[[1]]$margin2$grid, marg.dens.caries[[1]]$margin2$average, type="l", xlab="y", ylab="g(y)", main=pmain[4])
+dev.off()
+
+
+###################################################
+### chunk number 54: kendall.tau01
+###################################################
+skip <- 0
+nwrite <- 1000
+last.iter <- 1000
+
+
+###################################################
+### chunk number 55: kendall.tau02
+###################################################
+KK <- prior.PA.gspl.emerg$K
+ktau.emerg <- list()
+for (k in 1:2){
+  ktau.emerg[[k]] <- sampled.kendall.tau(chaindir.PA[k], K=KK, skip=skip, nwrite=nwrite, last.iter=last.iter)
+}
+names(ktau.emerg) <- c("RIGHT", "LEFT")
+
+
+###################################################
+### chunk number 56: kendall.tau03
+###################################################
+KK <- prior.PA.gspl.caries$K
+ktau.caries <- list()
+for (k in 1:2){
+  ktau.caries[[k]] <- sampled.kendall.tau(chaindir.PA[k], extens="_2", K=KK, skip=skip, nwrite=nwrite, last.iter=last.iter)
+}
+names(ktau.caries) <- c("RIGHT", "LEFT")
+
+
+###################################################
+### chunk number 57: kendall.tau04
+###################################################
+lapply(ktau.emerg, give.summary)
+lapply(ktau.caries, give.summary)
+
+
+###################################################
+### chunk number 58: kendall.tau05
+###################################################
+pdfwidth <- 9
+pdfheight <- 6
+pdf(paste(figuredir, "histKendallTau_PA.pdf", sep=""), width=pdfwidth, height=pdfheight)
+par(bty="n", mfrow=c(2, 2), mar=c(4, 4, 4, 2)+0.1)
+hist(ktau.emerg[[1]], xlab="Kendall tau", main="Emergence, teeth 16-46")
+hist(ktau.emerg[[2]], xlab="Kendall tau", main="Emergence, teeth 26-36")
+hist(ktau.caries[[1]], xlab="Kendall tau", main="Caries, teeth 16-46")
+hist(ktau.caries[[2]], xlab="Kendall tau", main="Caries, teeth 26-36")
+dev.off()
+
+
+###################################################
+### chunk number 59: chains01
 ###################################################
 nbeta.emerg.PA <- 1
 nbeta.caries.PA <- 5
 
 
 ###################################################
-### chunk number 49: chains02
+### chunk number 60: chains02
 ###################################################
 itersInd.1 <- read.table(paste(chaindir.PA[1], "/iteration.sim", sep=""), header=TRUE)[,1]
 itersInd.2 <- read.table(paste(chaindir.PA[2], "/iteration.sim", sep=""), header=TRUE)[,1]
@@ -869,7 +987,7 @@ str(itersInd)
 
 
 ###################################################
-### chunk number 50: chains03
+### chunk number 61: chains03
 ###################################################
 mixmoment.emerg.PA <- list()
 error.emerg.PA <- list()
@@ -912,7 +1030,7 @@ lambda.emerg.PA <- data.frame(lambda16=lambda.emerg.PA[[1]][,1], lambda26=lambda
 
 
 ###################################################
-### chunk number 51: chains04
+### chunk number 62: chains04
 ###################################################
 str(error.emerg.PA$right)
 str(beta.emerg.PA$right)
@@ -921,7 +1039,7 @@ str(lambda.emerg.PA)
 
 
 ###################################################
-### chunk number 52: chain05
+### chunk number 63: chain05
 ###################################################
 mixmoment.caries.PA <- list()
 error.caries.PA <- list()
@@ -968,7 +1086,7 @@ lambda.caries.PA <- data.frame(lambda16=lambda.caries.PA[[1]][,1], lambda26=lamb
 
 
 ###################################################
-### chunk number 53: chains06
+### chunk number 64: chains06
 ###################################################
 str(error.caries.PA$right)
 str(beta.caries.PA$right)
@@ -977,7 +1095,7 @@ str(lambda.caries.PA)
 
 
 ###################################################
-### chunk number 54: summary01
+### chunk number 65: summary01
 ###################################################
 summ.error.emerg.PA <- lapply(error.emerg.PA, give.summary)
 summ.error.caries.PA <- lapply(error.caries.PA, give.summary)
@@ -988,7 +1106,7 @@ summ.lambda.caries.PA <- give.summary(lambda.caries.PA)
 
 
 ###################################################
-### chunk number 55: summary02
+### chunk number 66: summary02
 ###################################################
 rsumm.error.emerg.PA <- lapply(summ.error.emerg.PA, round, dig=4)
 rsumm.error.caries.PA <- lapply(summ.error.caries.PA, round, dig=4)
@@ -999,7 +1117,7 @@ rsumm.lambda.caries.PA <- round(summ.lambda.caries.PA, dig=4)
 
 
 ###################################################
-### chunk number 56: summary03
+### chunk number 67: summary03
 ###################################################
 print(rsumm.beta.emerg.PA)
 print(rsumm.error.emerg.PA)
@@ -1007,7 +1125,7 @@ print(rsumm.lambda.emerg.PA)
 
 
 ###################################################
-### chunk number 57: summary04
+### chunk number 68: summary04
 ###################################################
 print(rsumm.beta.caries.PA)
 print(rsumm.error.caries.PA)
@@ -1015,7 +1133,7 @@ print(rsumm.lambda.caries.PA)
 
 
 ###################################################
-### chunk number 58: postDens01
+### chunk number 69: postDens01
 ###################################################
 plfun <- "densplot2"
 plname <- "dens"
@@ -1026,7 +1144,7 @@ tt <- c(16, 26, 36, 46)
 
 
 ###################################################
-### chunk number 59: postDens02
+### chunk number 70: postDens02
 ###################################################
 pdf(paste(figuredir, plname, "_emergBeta.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1047,7 +1165,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 60: postDens03
+### chunk number 71: postDens03
 ###################################################
 pdf(paste(figuredir, plname, "_emergIntcpt.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1067,7 +1185,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 61: postDens04
+### chunk number 72: postDens04
 ###################################################
 pdf(paste(figuredir, plname, "_emergScale.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1087,7 +1205,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 62: postDens05
+### chunk number 73: postDens05
 ###################################################
 pdf(paste(figuredir, plname, "_emergCovCor.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1108,7 +1226,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 63: postDens06
+### chunk number 74: postDens06
 ###################################################
 pdf(paste(figuredir, plname, "_emergLambda.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1120,7 +1238,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 64: postDens07
+### chunk number 75: postDens07
 ###################################################
 pdf(paste(figuredir, plname, "_cariesBeta1.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1141,7 +1259,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 65: postDens08
+### chunk number 76: postDens08
 ###################################################
 pdf(paste(figuredir, plname, "_cariesBeta2.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1162,7 +1280,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 66: postDens09
+### chunk number 77: postDens09
 ###################################################
 pdf(paste(figuredir, plname, "_cariesBeta3.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1183,7 +1301,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 67: postDens10
+### chunk number 78: postDens10
 ###################################################
 pdf(paste(figuredir, plname, "_cariesIntcpt.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1203,7 +1321,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 68: postDens11
+### chunk number 79: postDens11
 ###################################################
 pdf(paste(figuredir, plname, "_cariesScale.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1223,7 +1341,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 69: postDens12
+### chunk number 80: postDens12
 ###################################################
 pdf(paste(figuredir, plname, "_cariesCovCor.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1244,7 +1362,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 70: postDens13
+### chunk number 81: postDens13
 ###################################################
 pdf(paste(figuredir, plname, "_cariesLambda.pdf", sep=""), width=pdfwidth, height=pdfheight)
 par(mfrow=c(2,2), bty="n")
@@ -1256,7 +1374,7 @@ dev.off()
 
 
 ###################################################
-### chunk number 71: tracePlot01
+### chunk number 82: tracePlot01
 ###################################################
 plfun <- "traceplot2"
 plname <- "trace"

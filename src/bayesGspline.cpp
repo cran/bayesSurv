@@ -68,6 +68,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
   try{
     bool test = false;
     int ix, i, j;
+    double* pvalue;
 
     *errP = 0;
     string dir        = *dirP;
@@ -102,8 +103,10 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
       mu[j]     = (double*) calloc(*total_length, sizeof(double));
       if (!ind_mu[j] || !mu[j]) throw returnR("Not enough memory available in bayesGspline (ind_mu[j]/mu[j])", 1);
     }
-    std::string kpath = dir + "/mixmoment" + extens + ".sim";    std::string wpath = dir + "/mweight" + extens + ".sim";
-    std::string mupath = dir + "/mmean" + extens + ".sim";       std::string sigmapath = dir + "/gspline" + extens + ".sim";
+    std::string kpath = dir + "/mixmoment" + extens + ".sim";    
+    std::string wpath = dir + "/mweight" + extens + ".sim";
+    std::string mupath = dir + "/mmean" + extens + ".sim";       
+    std::string sigmapath = dir + "/gspline" + extens + ".sim";
     std::ifstream kfile, wfile, mufile, sigmafile;
     openGsplineFiles(kfile, wfile, mufile, sigmafile, kpath, wpath, mupath, sigmapath, *skip + 1);   /* skip also header */
 
@@ -126,6 +129,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
 
     /* Loop over McMC iterations */
     if (*skip >= *M) throw returnR("More McMC iterations should be skipped than available", 1);
+    pvalue = value;
     readGsplineFromFiles(&k_effect, w, ind_mu, mu, gamma, sigma, delta, intcpt, scale, 0, *skip, dim, *total_length, 
                          kfile, wfile, mufile, sigmafile, kpath, wpath, mupath, sigmapath);
     if (*standard){
@@ -134,7 +138,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
     if (*version >= 30){
       adjust_intercept(intcpt, version, &E_gx, 0, *skip, int_adjfile, int_adjpath);
     }
-    evalGspline(average, value, nx1, nx2, x, &dim, &k_effect, w, mu, intcpt, sigma, scale, min_half_inv_sig2, standard, &E_gx, &sd_gx);
+    evalGspline(average, pvalue, nx1, nx2, x, &dim, &k_effect, w, mu, intcpt, sigma, scale, min_half_inv_sig2, standard, &E_gx, &sd_gx);
     *M_now = 1;
     if (test) printReadGspline(*skip + 1, dim, k_effect, w, mu, intcpt, sigma, scale);
 
@@ -142,7 +146,8 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
     int jump_value = (*onlyAver ? 0 : ngrid);
     int backs = 0;
     Rprintf("Iteration ");
-    for (int iter = *skip + 1 + (*by); iter <= *M; iter += (*by)){
+    for (int iter = *skip + 1 + (*by); iter <= *M; iter += (*by)){      
+      pvalue += jump_value;
       readGsplineFromFiles(&k_effect, w, ind_mu, mu, gamma, sigma, delta, intcpt, scale, by_1, iter, dim, *total_length, 
                            kfile, wfile, mufile, sigmafile, kpath, wpath, mupath, sigmapath);
       if (*standard){
@@ -151,8 +156,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
       if (*version >= 30){
         adjust_intercept(intcpt, version, &E_gx, by_1, iter, int_adjfile, int_adjpath);
       }
-      evalGspline(average, value + jump_value*(*M_now), nx1, nx2, x, &dim, &k_effect, w, mu, 
-                  intcpt, sigma, scale, min_half_inv_sig2, standard, &E_gx, &sd_gx);
+      evalGspline(average, pvalue, nx1, nx2, x, &dim, &k_effect, w, mu, intcpt, sigma, scale, min_half_inv_sig2, standard, &E_gx, &sd_gx);
       (*M_now)++;
       if (test) printReadGspline(iter, dim, k_effect, w, mu, intcpt, sigma, scale);
 

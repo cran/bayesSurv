@@ -20,6 +20,9 @@
 // 06/02/2005: 'readGsplineFromFiles3'
 // 16/05/2005: 'readMean_and_Scale'
 //             'adjust_intercept' slightly changed 
+// 26/11/2005: 'openGsplineFiles_forTau'
+// 27/11/2005: 'readGsplineFiles_forTau'
+//             'readGsplineFiles_forMarginal'
 //
 #include "in_output_GS.h"
 
@@ -307,6 +310,23 @@ openGsplineFiles(std::ifstream& kfile,      std::ifstream& wfile,      std::ifst
 }
 
 
+// ===========================================================================================================================
+// ***** openGsplineFiles_forTau: Open files where sampled G-spline are stored for reading (to be used by sampledKendallTau)
+//                                and skip first 'skip' rows that the user wishes to skip
+// ===========================================================================================================================
+void
+openGsplineFiles_forTau(std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile,
+                        const std::string& kpath,  const std::string& wpath,  const std::string& mupath,
+                        const int& skip)
+{
+  open_File_toRead(kfile, kpath, skip);
+  open_File_toRead(wfile, wpath, skip);
+  open_File_toRead(mufile, mupath, skip);
+
+  return;
+}
+
+
 // ==================================================================================
 // ***** open_File_toRead: Open file for reading and skip first 'skip' rows
 //   * written first to be used by 'bayesGspline' to open a file
@@ -443,9 +463,220 @@ readGsplineFromFiles(int* k_effect,             double* w,                 int**
 }
 
 
+// ===============================================================================================
+// ***** readGsplineFromFiles_forMarginal: Function to read one sampled G-spline from four files 
+//   version used by 'marginal_bayesGspline'
+//
+// --> transform also ind_mu into the scale 0,..., 2*K
+// --> compute marginal weights
+//  (this is different from 'readGsplineFromFiles' function!!!)
+//
+// ===============================================================================================
+//
+// w_temp[total_length] ........ read weights, only first k_effect components of this array are filled
+// w[dim][2*KK[j]+1] ........... weights in each margin
+// mu[dim][2*KK[j]+1] .......... means in each margin
+// gamma[dim] .................. middle knots in each dimension
+// sigma[dim] .................. basis standard deviations in each dimension
+// delta[dim] .................. delta parameter in each dimension
+// intcpt[dim] ................. intercept in each dimension
+// scale[dim] .................. scale parameter in each dimension
+// KK[dim] ..................... numbers of knots at each side of the reference knot
+// skip ........................ number of rows that should be skipped before reading real data
+// row ......................... how many rows of the data will be read at the end of the function call
+// dim ......................... dimension of the G-spline
+// total_length ................ maximal number of components in the G-spline
+// kfile ....................... usually stream associated with 'mixmoment*.sim'
+// wfile ....................... usually stream associated with 'mweight*.sim'
+// mufile ...................... usually stream associated with 'mmean*.sim'
+// sigmafile ................... usually stream associated with 'gspline*.sim'
+//
+void
+readGsplineFromFiles_forMarginal
+   (double* w_temp,            double** w,                double** mu,
+    double* gamma,             double* sigma,             double* delta,
+    double* intcpt,            double* scale,
+    const int* KK,             
+    const int& skip,           const int& row,            const int& total_length,
+    std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile,      std::ifstream& sigmafile,
+    const std::string& kpath,  const std::string& wpath,  const std::string& mupath,  const std::string& sigmapath)
+{
+  try{
+    const int dim = 2;
+    static int ind0, ind1;
+    static int j, dd, k_current, ihelp;
+    static char ch;
+    static std::string errmes;
+
+    /** Reset marginal weights  **/
+    for (dd = 0; dd < dim; dd++){
+      for (j = 0; j < 2*KK[dd] + 1; j++){
+        w[dd][j] = 0.0;
+      }
+    }
+
+    /**  Skip rows that are to be skipped  **/
+    for (j = 0; j < skip; j++){
+      kfile.get(ch);        while (ch != '\n') kfile.get(ch);
+      wfile.get(ch);        while (ch != '\n') wfile.get(ch);
+      mufile.get(ch);       while (ch != '\n') mufile.get(ch);
+      sigmafile.get(ch);    while (ch != '\n') sigmafile.get(ch);
+    }
+
+    /**  Read effective k **/
+    if (kfile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + kpath + " before "
+               + char(ihelp) + std::string(" values were read.");
+      throw returnR(errmes, 99);
+    }
+    kfile >> k_current;
+    if (k_current > total_length) throw returnR("C++ Error: k value higher than indicated total_length of the G-spline was read.", 99);
+    kfile.get(ch);                     while (ch != '\n') kfile.get(ch);
+
+    /** Read G-spline weights **/
+    if (wfile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + wpath + " before "
+               + char(ihelp) + std::string(" sets of G-spline weights were read.");
+      throw returnR(errmes, 99);
+    }
+    for (j = 0; j < k_current; j++) wfile >> w_temp[j];
+    wfile.get(ch);                 while (ch != '\n') wfile.get(ch);
+
+    /** Read G-spline intercept, standard deviations and distance between two knots **/
+    if (sigmafile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + sigmapath + " before "
+               + char(ihelp) + std::string(" sets of G-spline intercepts/std. deviations were read.");
+      throw returnR(errmes, 99);
+    }
+    for (dd = 0; dd < dim; dd++) sigmafile >> gamma[dd];
+    for (dd = 0; dd < dim; dd++) sigmafile >> sigma[dd];
+    for (dd = 0; dd < dim; dd++) sigmafile >> delta[dd];
+    for (dd = 0; dd < dim; dd++) sigmafile >> intcpt[dd];
+    for (dd = 0; dd < dim; dd++) sigmafile >> scale[dd];
+    sigmafile.get(ch);            while (ch != '\n') sigmafile.get(ch);
+
+    /** Calculate means (knots) **/
+    for (dd = 0; dd < dim; dd++){
+      mu[dd][0] = gamma[dd] - KK[dd]*delta[dd];
+      for (j = 1; j < 2*KK[dd]+1; j++) mu[dd][j] = mu[dd][j-1] + delta[dd];
+    }
+
+    /** Read indeces of G-spline means and calculate marginal weights **/
+    if (mufile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + mupath + " before "
+               + char(ihelp) + std::string(" sets of G-spline means were read.");
+      throw returnR(errmes, 99);
+    }
+    for (j = 0; j < k_current; j++){
+      mufile >> ind0;
+      mufile >> ind1;
+      ind0 += KK[0];
+      ind1 += KK[1];
+      w[0][ind0] += w_temp[j];
+      w[1][ind1] += w_temp[j];
+    }
+    mufile.get(ch);                while (ch != '\n') mufile.get(ch);
+
+    return;    
+  }  // end of try
+  catch(returnR){
+    throw;
+  }  
+}
+
+
+// ==================================================================================
+// ***** readGsplineFromFiles_forTau: Function to read one sampled G-spline from four files 
+//   version used by 'sampledKendallTau'
+//
+// --> transform also ind_mu into the scale 0,..., 2*K
+//     (this is different from 'readGsplineFromFiles' function!!!)
+//
+// ==================================================================================
+//
+// k_effect .................... effective number of mixture components read
+// w[total_length] ............. read weights, only first k_effect components of this array are filled
+// ind_mu[dim][total_length] ... indeces of means (on the scale -K,...,K) corresponding to w
+// skip ........................ number of rows that should be skipped before reading real data
+// row ......................... how many rows of the data will be read at the end of the function call
+// dim ......................... dimension of the G-spline
+// KK[dim] ..................... numbers of knots at each side of the reference knot
+// total_length ................ maximal number of components in the G-spline
+// kfile ....................... usually stream associated with 'mixmoment*.sim'
+// wfile ....................... usually stream associated with 'mweight*.sim'
+// mufile ...................... usually stream associated with 'mmean*.sim'
+//
+void
+readGsplineFromFiles_forTau(int* k_effect,             double* w,                 int** ind_mu,
+                            const int& skip,           const int& row,            const int& dim,             
+                            const int* KK,             const int& total_length,
+                            std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile, 
+                            const std::string& kpath,  const std::string& wpath,  const std::string& mupath)
+{
+  try{
+    static int j, dd, k_current, ihelp;
+    static char ch;
+    static std::string errmes;
+
+    /**  Skip rows that are to be skipped  **/
+    for (j = 0; j < skip; j++){
+      kfile.get(ch);        while (ch != '\n') kfile.get(ch);
+      wfile.get(ch);        while (ch != '\n') wfile.get(ch);
+      mufile.get(ch);       while (ch != '\n') mufile.get(ch);
+    }
+
+    /**  Read effective k **/
+    if (kfile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + kpath + " before "
+               + char(ihelp) + std::string(" values were read.");
+      throw returnR(errmes, 99);
+    }
+    kfile >> k_current;
+    if (k_current > total_length) throw returnR("C++ Error: k value higher than indicated total_length of the G-spline was read.", 99);
+    *k_effect = k_current;
+    kfile.get(ch);                     while (ch != '\n') kfile.get(ch);
+
+    /** Read G-spline weights **/
+    if (wfile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + wpath + " before "
+               + char(ihelp) + std::string(" sets of G-spline weights were read.");
+      throw returnR(errmes, 99);
+    }
+    for (j = 0; j < k_current; j++) wfile >> w[j];
+    wfile.get(ch);                 while (ch != '\n') wfile.get(ch);
+
+    /** Read indeces of G-spline means  **/
+    if (mufile.eof()){
+      ihelp = row + 1;
+      errmes = std::string("C++ Error: Reached end of file ") + mupath + " before "
+               + char(ihelp) + std::string(" sets of G-spline means were read.");
+      throw returnR(errmes, 99);
+    }
+    for (j = 0; j < k_current; j++){
+      for (dd = 0; dd < dim ; dd++){
+        mufile >> ind_mu[dd][j];
+        ind_mu[dd][j] += KK[dd];
+      }
+    }
+    mufile.get(ch);                while (ch != '\n') mufile.get(ch);
+
+    return;    
+  }  // end of try
+  catch(returnR){
+    throw;
+  }  
+}
+
+
 // ============================================================================================
 // ***** readMean_and_Scale: read mixture mean and standard deviation from the file mixmoment
-//
+// ============================================================================================
 void
 readMean_and_Scale(double* E_gx,                  double* sd_gx,
                    const int& skip,               const int& row,  

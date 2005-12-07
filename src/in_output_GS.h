@@ -85,6 +85,11 @@ openGsplineFiles(std::ifstream& kfile,      std::ifstream& wfile,      std::ifst
                  const int& skip);
 
 void
+openGsplineFiles_forTau(std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile,
+                        const std::string& kpath,  const std::string& wpath,  const std::string& mupath,
+                        const int& skip);
+
+void
 open_File_toRead(std::ifstream& file,  const std::string& path,  const int& skip);
 
 void
@@ -94,6 +99,22 @@ readGsplineFromFiles(int* k_effect,             double* w,                 int**
                      const int& skip,           const int& row,            const int& dim,             const int& total_length,
                      std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile,      std::ifstream& sigmafile,
                      const std::string& kpath,  const std::string& wpath,  const std::string& mupath,  const std::string& sigmapath);
+void
+readGsplineFromFiles_forMarginal
+   (double* w_temp,            double** w,                double** mu,
+    double* gamma,             double* sigma,             double* delta,
+    double* intcpt,            double* scale,
+    const int* KK,             
+    const int& skip,           const int& row,            const int& total_length,
+    std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile,      std::ifstream& sigmafile,
+    const std::string& kpath,  const std::string& wpath,  const std::string& mupath,  const std::string& sigmapath);
+
+void
+readGsplineFromFiles_forTau(int* k_effect,             double* w,                 int** ind_mu,
+                            const int& skip,           const int& row,            const int& dim,             
+                            const int* KK,             const int& total_length,
+                            std::ifstream& kfile,      std::ifstream& wfile,      std::ifstream& mufile, 
+                            const std::string& kpath,  const std::string& wpath,  const std::string& mupath);
 
 void
 readMean_and_Scale(double* E_gx,                  double* sd_gx,

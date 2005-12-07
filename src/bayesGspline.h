@@ -1,8 +1,8 @@
 // ============================================================================================
 // ***** Header for bayesGspline.cpp:                                                  ***** //
 // ============================================================================================
-#ifndef _BAYES_G_SPLINE_CPP_
-#define _BAYES_G_SPLINE_CPP_
+#ifndef _BAYES_G_SPLINE_H_
+#define _BAYES_G_SPLINE_H_
 
 #include <R.h>
 #include <Rmath.h>
@@ -19,7 +19,7 @@ extern "C"{
 void
 bayesGspline(double* average,          double* value,   int* M_now,          const int* onlyAver,
              char** dirP,              char** extensP,  char** extens_adjP,  
-             double* x1,               double* x2,   
+             double* x1,         double* x2,   
              const int* total_length,  const int* M,    const int* skip,     const int* by,         const int* nwrite,
              const int* nx1,           int* nx2,        const int* version,  int* standard,
              int* errP);
