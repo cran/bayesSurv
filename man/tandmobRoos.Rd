@@ -27,6 +27,16 @@
   
   This data set was then used in the analyses presented in
   \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006, 2006b).
+
+  \bold{IMPORTANT NOTICE:} It is possible to use these data for your
+  research work under the condition that each manuscript is first
+  approved by \cr
+  Prof. Emmanuel Lesaffre \cr
+  Biostatistical Centre Katholieke Universiteit Leuven \cr
+  Kapucijnenvoer 35 \cr
+  B-3000 Leuven \cr
+  Belgium \cr
+  <\code{emmanuel.lesaffre@med.kuleuven.be}>  
 }
 \usage{data(tandmobRoos)}
 \format{a~data frame with 4\,394 rows and the following
@@ -160,10 +170,9 @@
   See \code{Komarek_Lesaffre_2006.pdf}.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
-  Bayesian semiparametric accelerated failurew time model for paired
-  doubly-interval-censored data.
-  \emph{Submitted.}  \cr
-  See \code{Komarek_Lesaffre_2006b.pdf}.
+  Bayesian semi-parametric accelerated failurew time model for paired
+  doubly interval-censored data.
+  \emph{Statistical Modelling}, \bold{6}, 3--22.
 
   Leroy, R., Bogaerts, K., Lesaffre, E., and Declerck, D. (2005).
   Effect of caries experience in primary molars on cavity formation

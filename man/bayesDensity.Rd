@@ -83,7 +83,7 @@ bayesDensity(dir = getwd(), stgrid, centgrid, grid, n.grid = 100,
 \eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
   Bayesian accelerated failure time model for correlated interval-censored data
   with a normal mixture as an error distribution.
-  \emph{Submitted.} \cr
+  \emph{Statistica Sinica.} Accepted.\cr
   See \code{Komarek_Lesaffre_2005.pdf}.
 }  
 \author{

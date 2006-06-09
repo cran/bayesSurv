@@ -1,68 +1,79 @@
-##01# Subset of Signal Tandmobiel dataset used in papers
-##02# Komarek, A., Lesaffre, E. (2004). 
-##03# Lesaffre, E., Komarek, A., Declerck, D. (2004).
-##04# 
-##05# 
-##06# 
-##07# One row per child (4430 rows, 38 children who were never checked are already removed).
-##08# Columns are space separated.
-##09# 
-##10# Variables:
-##11# 
-##12# IDNR ......... id number in original Signal Tandmobiel database 
-##13# GENDER ....... string: boy/girl 
-##14# GENDERNum .... 1 for girls, 0 for boys 
-##15# DOB .......... string: date of birth in format DDmmmYY where mmm stands for first three letters of the month 
-##16# PROVINCE ..... code of the province 
-##17#             0 = Antwerpen 
-##18#             1 = Vlaams Brabant 
-##19#             2 = Limburg 
-##20#             3 = Oost Vlaanderen
-##21#             4 = West Vlaanderen
-##22# EDUC ......... code of the educational system 
-##23#             0 = Free 
-##24#             1 = Community school 
-##25#             2 = Province/council school 
-##26# 
-##27# STARTBR ...... a factor variable with 
-##28#             1 = start brushing in [0, 1] years 
-##29#             2 = start brushing in (1, 2] years 
-##30#             3 = start brushing in (2, 3] years 
-##31#             4 = start brushing in (3, 4] years 
-##32#             5 = start brushing in (4, 5] years 
-##33#             6 = start brushing in (5, Infty) years 
-##34# 
-##35# FLUOR ........ fluorosis as explained in other paper (submitted to Biostatistics) (0 = no, 1 = yes) 
-##36# 
-##37# BAD.xx ....... indicator whether a deciduous tooth xx was removed because of orthodontical reasons or not 
-##28# 
-##39# EBEG.xx ...... left limit of emergence (in years of age) of the permanent tooth xx 
-##40#                (NA if the emergence was left censored) 
-##41# EEND.xx ...... right limit of emergence (in years of age) of the permanent tooth xx 
-##42#                (NA if the emergence was right censored) 
-##43# FBEG.xx ...... left limit of caries appearance (in years of age) of the permanent tooth xx 
-##44#                (NA if the caries time was left censored) 
-##45# FEND.xx ...... right limit of caries appearance (in years of age) of the permanent tooth xx 
-##46#                (NA if the caries time was right censored) 
-##47#                                                           
-##48# 
-##49# Txx.DMF ...... indicator whether a deciduous tooth xx was decayed or missing or filled 
-##50#                on at most the last examination before the first examination when  
-##51#                the appropriate permanent tooth emerged 
-##52#                (only for deciduous teeth x3, x4, x5 
-##53#                                   
-##54# Txx.CAR ...... indicator whether a deciduous tooth xx was removed due to the orthodontical reasons 
-##55#                or decayed on at most the last examination before the first examination when  
-##56#                the appropriate permanent tooth emerged 
-##57#                (only for deciduous teeth x3, x4, x5 
-##58# 
-##59# To be read in R: 
-##60#   read.table(paste(dir, tandmob2.dat, sep = ), skip = 65, header = TRUE, 
-##61#            as.is = c(T, F, T, T, rep(F, 3), rep(T, 149)))   
-##62# 
-##63# Arnost Komarek 
-##64# 25/02/2004 
-##65# 
+##01#  IMPORTANT NOTICE: It is possible to use these data for your
+##02#  research work under the condition that each manuscript is first
+##03#  approved by
+##04#
+##05#   Prof. Emmanuel Lesaffre
+##06#   Biostatistical Centre Katholieke Universiteit Leuven
+##07#   Kapucijnenvoer 35
+##08#   B-3000 Leuven
+##09#   Belgium
+##10#   <emmanuel.lesaffre@med.kuleuven.be>
+##11#
+##12# Subset of Signal Tandmobiel dataset used in papers
+##13# Komarek, A., Lesaffre, E. (2004). 
+##14# Lesaffre, E., Komarek, A., Declerck, D. (2004).
+##15# 
+##16# 
+##17# 
+##18# One row per child (4430 rows, 38 children who were never checked are already removed).
+##19# Columns are space separated.
+##20# 
+##21# Variables:
+##22# 
+##23# IDNR ......... id number in original Signal Tandmobiel database 
+##24# GENDER ....... string: boy/girl 
+##25# GENDERNum .... 1 for girls, 0 for boys 
+##26# DOB .......... string: date of birth in format DDmmmYY where mmm stands for first three letters of the month 
+##27# PROVINCE ..... code of the province 
+##28#             0 = Antwerpen 
+##29#             1 = Vlaams Brabant 
+##30#             2 = Limburg 
+##31#             3 = Oost Vlaanderen
+##32#             4 = West Vlaanderen
+##33# EDUC ......... code of the educational system 
+##34#             0 = Free 
+##35#             1 = Community school 
+##36#             2 = Province/council school 
+##37# 
+##38# STARTBR ...... a factor variable with 
+##39#             1 = start brushing in [0, 1] years 
+##40#             2 = start brushing in (1, 2] years 
+##41#             3 = start brushing in (2, 3] years 
+##42#             4 = start brushing in (3, 4] years 
+##43#             5 = start brushing in (4, 5] years 
+##44#             6 = start brushing in (5, Infty) years 
+##45# 
+##46# FLUOR ........ fluorosis as explained in other paper (submitted to Biostatistics) (0 = no, 1 = yes) 
+##47# 
+##48# BAD.xx ....... indicator whether a deciduous tooth xx was removed because of orthodontical reasons or not 
+##49# 
+##50# EBEG.xx ...... left limit of emergence (in years of age) of the permanent tooth xx 
+##51#                (NA if the emergence was left censored) 
+##52# EEND.xx ...... right limit of emergence (in years of age) of the permanent tooth xx 
+##53#                (NA if the emergence was right censored) 
+##54# FBEG.xx ...... left limit of caries appearance (in years of age) of the permanent tooth xx 
+##55#                (NA if the caries time was left censored) 
+##56# FEND.xx ...... right limit of caries appearance (in years of age) of the permanent tooth xx 
+##57#                (NA if the caries time was right censored) 
+##58#                                                           
+##59# 
+##60# Txx.DMF ...... indicator whether a deciduous tooth xx was decayed or missing or filled 
+##61#                on at most the last examination before the first examination when  
+##62#                the appropriate permanent tooth emerged 
+##63#                (only for deciduous teeth x3, x4, x5 
+##64#                                   
+##65# Txx.CAR ...... indicator whether a deciduous tooth xx was removed due to the orthodontical reasons 
+##66#                or decayed on at most the last examination before the first examination when  
+##67#                the appropriate permanent tooth emerged 
+##68#                (only for deciduous teeth x3, x4, x5 
+##69# 
+##70# To be read in R: 
+##71#   read.table(paste(dir, tandmob2.dat, sep = ), skip = 76, header = TRUE, 
+##72#            as.is = c(T, F, T, T, rep(F, 3), rep(T, 149)))   
+##73# 
+##74# Arnost Komarek 
+##75# 25/02/2004 
+##76# 
 "IDNR"  "GENDER"  "GENDERNum"  "DOB"  "PROVINCE"  "EDUC"  "STARTBR"  "FLUOR"  "BAD.53"  "BAD.63"  "BAD.73"  "BAD.83"  "BAD.54"  "BAD.64"  "BAD.74"  "BAD.84"  "BAD.55"  "BAD.65"  "BAD.75"  "BAD.85"  "EBEG.11"  "EEND.11"  "EBEG.21"  "EEND.21"  "EBEG.31"  "EEND.31"  "EBEG.41"  "EEND.41"  "EBEG.12"  "EEND.12"  "EBEG.22"  "EEND.22"  "EBEG.32"  "EEND.32"  "EBEG.42"  "EEND.42"  "EBEG.13"  "EEND.13"  "EBEG.23"  "EEND.23"  "EBEG.33"  "EEND.33"  "EBEG.43"  "EEND.43"  "EBEG.14"  "EEND.14"  "EBEG.24"  "EEND.24"  "EBEG.34"  "EEND.34"  "EBEG.44"  "EEND.44"  "EBEG.15"  "EEND.15"  "EBEG.25"  "EEND.25"  "EBEG.35"  "EEND.35"  "EBEG.45"  "EEND.45"  "EBEG.16"  "EEND.16"  "EBEG.26"  "EEND.26"  "EBEG.36"  "EEND.36"  "EBEG.46"  "EEND.46"  "EBEG.17"  "EEND.17"  "EBEG.27"  "EEND.27"  "EBEG.37"  "EEND.37"  "EBEG.47"  "EEND.47"  "FBEG.11"  "FEND.11"  "FBEG.21"  "FEND.21"  "FBEG.31"  "FEND.31"  "FBEG.41"  "FEND.41"  "FBEG.12"  "FEND.12"  "FBEG.22"  "FEND.22"  "FBEG.32"  "FEND.32"  "FBEG.42"  "FEND.42"  "FBEG.13"  "FEND.13"  "FBEG.23"  "FEND.23"  "FBEG.33"  "FEND.33"  "FBEG.43"  "FEND.43"  "FBEG.14"  "FEND.14"  "FBEG.24"  "FEND.24"  "FBEG.34"  "FEND.34"  "FBEG.44"  "FEND.44"  "FBEG.15"  "FEND.15"  "FBEG.25"  "FEND.25"  "FBEG.35"  "FEND.35"  "FBEG.45"  "FEND.45"  "FBEG.16"  "FEND.16"  "FBEG.26"  "FEND.26"  "FBEG.36"  "FEND.36"  "FBEG.46"  "FEND.46"  "FBEG.17"  "FEND.17"  "FBEG.27"  "FEND.27"  "FBEG.37"  "FEND.37"  "FBEG.47"  "FEND.47"  "T53.DMF"  "T63.DMF"  "T73.DMF"  "T83.DMF"  "T54.DMF"  "T64.DMF"  "T74.DMF"  "T84.DMF"  "T55.DMF"  "T65.DMF"  "T75.DMF"  "T85.DMF"  "T53.CAR"  "T63.CAR"  "T73.CAR"  "T83.CAR"  "T54.CAR"  "T64.CAR"  "T74.CAR"  "T84.CAR"  "T55.CAR"  "T65.CAR"  "T75.CAR"  "T85.CAR"
    1  "girl"  1  "22MAR89"  3  0   3   0  0  0  0  0  0  0  0  0  0  0  0  0  NA   7.7  NA   7.7  NA   7.7  NA   7.7  NA   7.7  NA   7.7  NA   7.7  NA   7.7   8.5   9.5   8.5   9.5   8.5   9.5   8.5   9.5   7.7   8.5   7.7   8.5   8.5   9.5   8.5   9.5   9.5  10.2  10.2  11.2  10.2  11.2  11.2  NA  NA   7.7  NA   7.7  NA   7.7  NA   7.7  11.2  NA  11.2  NA  11.2  NA  11.2  NA  10.2  11.2  11.2  NA  11.2  NA  11.2  NA  10.2  11.2  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  10.2  11.2  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA  11.2  NA   0   0   0   0   1   1   1   1   0   1   1   1   0   0   0   0   1   1   1   1   0   1   1   1
    2  "boy"  0  "27JUN89"  0  2   6   0  0  0  0  0  0  0  0  1  0  0  0  0  NA   7.4  NA   7.4  NA   7.4  NA   7.4   8.4   9.3   8.4   9.3  NA   7.4  NA   7.4   9.3  10.2  10.2  10.9   8.4   9.3   8.4   9.3   9.3  10.2   7.4   8.4   9.3  10.2  10.2  10.9  10.2  10.9   9.3  10.2  10.2  10.9  10.2  10.9  NA   7.4  NA   7.4  NA   7.4  NA   7.4  10.9  12.0  12.0  NA  10.9  12.0  10.9  12.0  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA  12.0  NA   7.4   8.4   8.4   9.3   7.4   8.4   7.4   8.4  12.0  NA  12.0  NA  12.0  NA  12.0  NA   0   0   0   0   0   1   0   1   1   1   1   1   0   0   0   0   0   1   0   0   1   1   1   1

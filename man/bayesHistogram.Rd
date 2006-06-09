@@ -799,10 +799,9 @@ bayesHistogram(y1, y2,
   See \code{Komarek_Lesaffre_2006.pdf}.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
-  Bayesian accelerated failure time model for paired
-  doubly-interval-censored data.
-  \emph{Submitted.} \cr
-  See \code{Komarek_Lesaffre_2006b.pdf}.
+  Bayesian semi-parametric accelerated failurew time model for paired
+  doubly interval-censored data.
+  \emph{Statistical Modelling}, \bold{6}, 3--22.
   
   Neal, R. M. (2003).
   Slice sampling (with Discussion).

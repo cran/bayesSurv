@@ -215,10 +215,9 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
   See \code{Komarek_Lesaffre_2006.pdf}.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
-  Bayesian semiparametric accelerated failurew time model for paired
-  doubly-interval-censored data.
-  \emph{Submitted.}  \cr
-  See \code{Komarek_Lesaffre_2006b.pdf}.
+  Bayesian semi-parametric accelerated failurew time model for paired
+  doubly interval-censored data.
+  \emph{Statistical Modelling}, \bold{6}, 3--22.
   
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. Lesaffre, E., and Legrand, C. (2006).
   EORTC data article.

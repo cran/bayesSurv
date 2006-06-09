@@ -106,10 +106,9 @@ marginal.bayesGspline(dir = getwd(), extens = "", K, grid1, grid2,
     PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
-  Bayesian semiparametric accelerated failurew time model for paired
-  doubly-interval-censored data.
-  \emph{Submitted.}  \cr
-  See \code{Komarek_Lesaffre_2006b.pdf}.  
+  Bayesian semi-parametric accelerated failurew time model for paired
+  doubly interval-censored data.
+  \emph{Statistical Modelling}, \bold{6}, 3--22.
 }  
 \author{
   \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}

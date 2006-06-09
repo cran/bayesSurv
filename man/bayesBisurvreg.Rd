@@ -585,12 +585,11 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
-    
+
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
-  Bayesian semiparametric accelerated failure time model for paired
-  doubly-interval-censored data.
-  \emph{Submitted.} \cr
-  See \code{Komarek_Lesaffre_2006b.pdf}.
+  Bayesian semi-parametric accelerated failurew time model for paired
+  doubly interval-censored data.
+  \emph{Statistical Modelling}, \bold{6}, 3--22.
   
   Neal, R. M. (2003).
   Slice sampling (with Discussion).

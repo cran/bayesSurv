@@ -22,6 +22,16 @@
   \eqn{\mbox{Kom\'{a}rek}}{Komarek} et al. (2005), in
   Lesaffre, \eqn{\mbox{Kom\'{a}rek}}{Komarek}, and Declerck (2005) and in
   \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2005).
+
+  \bold{IMPORTANT NOTICE:} It is possible to use these data for your
+  research work under the condition that each manuscript is first
+  approved by \cr
+  Prof. Emmanuel Lesaffre \cr
+  Biostatistical Centre Katholieke Universiteit Leuven \cr
+  Kapucijnenvoer 35 \cr
+  B-3000 Leuven \cr
+  Belgium \cr
+  <\code{emmanuel.lesaffre@med.kuleuven.be}>  
 }
 \usage{data(tandmob2)}
 \format{a~data frame with 4\,430 rows (38 sampled children did not come
@@ -144,7 +154,7 @@ data.
 \eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
 Bayesian accelerated failure time model for correlated interval-censored data
 with a normal mixture as an error distribution.
-\emph{Submitted.} \cr
+\emph{Statistica Sinica.} Accepted. \cr
 See \code{Komarek_Lesaffre_2005.pdf}.
 
 Lesaffre, E., \eqn{\mbox{Kom\'{a}rek},}{Komarek,} and Declerck,

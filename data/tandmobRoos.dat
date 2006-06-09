@@ -1,58 +1,69 @@
-##00# Originally: /home/komari/win/work/papers/gsplineTand/dataTXT/dmfRoos6.dat
-##00#
-##00#
-##01# Datafile with covariates and responses used in the analysis shown in Chapter 6                            
-##02# of Roos Leroy: Permanent Tooth Emergence and Oral Health in Flemish Children: an Epidemiological Approach 
-##03#                (PhD thesis, KU Leuven 2004)                                                               
-##04#                                                                                                           
-##05# Exported from SAS by Arnost Komarek on 20/01/2005                                                         
-##06# using /home/komari/win/work/papers/gsplineTand/anaDMF/sas/saspgm_ak/created_data.sas                      
-##07# and then adjusted in R using /home/komari/win/work/papers/gsplineTand/anaDMF/Rko/create_data2.R           
-##08#                                                                                                           
-##09# Variables:                                                                                                
-##10#    IDNR ......... id number of a child                                                                    
-##11#    GENDER ....... string: boy/girl                                                                        
-##12#    DOB .......... string: date of birth in format DDmmmYY where mmm stands for first three letters of the month 
-##13#    PROVINCE ..... code of the province                                                                    
-##14#             0 = Antwerpen                                                                                 
-##15#             1 = Vlaams Brabant                                                                            
-##16#             2 = Limburg                                                                                   
-##17#             3 = Oost Vlaanderen                                                                           
-##18#             4 = West Vlaanderen                                                                           
-##19#    EDUC ......... code of the educational system                                                          
-##20#             0 = Free                                                                                      
-##21#             1 = Community school                                                                          
-##22#             2 = Province/council school                                                                   
-##23#    GIRL ......... 1 for girls, 0 for boys                                                                 
-##24#    EBEG.xx ...... left limit of emergence (in years of age) of the permanent tooth xx                     
-##25#                   (NA if the emergence was left censored)                                                 
-##26#    EEND.xx ...... right limit of emergence (in years of age) of the permanent tooth xx                    
-##27#                   (NA if the emergence was right censored)                                                
-##28#    FBEG.xx ...... left limit of caries appearance (in years of age) of the permanent tooth xx             
-##29#                   (NA if the caries time was left censored)                                               
-##30#    FEND.xx ...... right limit of caries appearance (in years of age) of the permanent tooth xx            
-##31#                   (NA if the caries time was right censored)                                              
-##32#       !!! If both EBEG and EEND or FBEG and EEND are missing they should be removed from the analysis     
-##33#           These are children removed already by Kris when preparing the data for Chapter 6 of Roos        
-##34#    TOOTH.xx ..... 1 if not removed by Kris (see the previous line) and 0 if removed by Kris               
-##35#    t54d ........ indicator whether the primary tooth 54 was DECAYED                                       
-##36#    t54m ........ indicator whether the primary tooth 54 was MISSING due to caries                         
-##37#    t54f ........ indicator whether the primary tooth 54 was FILLED                                        
-##38#    t54s ........ indicator whether the primary tooth 54 was SOUND                                         
-##39#      * similarly for remaining deciduous molars 64, 74, 84, 55, 65, 75, 85                                
-##40#    SEAL.16 ..... pit and fissures sealed on tooth 16 (yes/no)                                             
-##41#      *similar for remaining permanent molars 26, 36, 46                                                   
-##42#    FREQ.BR ... frequency of brushing                                                                      
-##43#                    0 = not brushing every day                                                             
-##44#                    1 = at least once a day                                                                
-##45#    PLAQUE.16.1 ... occlusal plaque in pits and fissures (for permanent tooth 16) (0/1 variable)           
-##46#    PLAQUE.16.2 ... occlusal plaque on total occlusal surface (for permanent tooth 16) (0/1 variable)      
-##47#      * similarly for remaining permanent molars 26, 36, 46                                                
-##48#                                                                                                           
-##49#                                                                                                           
-##50# To be read in R:                                                                                          
-##51#    dmf <- read.table(paste(dir, dmfRoos6.dat, sep=), header=TRUE, skip=55, na.string=NA)                  
-##52#                                                                                                           
+##01#  IMPORTANT NOTICE: It is possible to use these data for your
+##02#  research work under the condition that each manuscript is first
+##03#  approved by
+##04#
+##05#   Prof. Emmanuel Lesaffre
+##06#   Biostatistical Centre Katholieke Universiteit Leuven
+##07#   Kapucijnenvoer 35
+##08#   B-3000 Leuven
+##09#   Belgium
+##10#   <emmanuel.lesaffre@med.kuleuven.be>
+##11#
+##12# Originally: /home/komari/win/work/papers/gsplineTand/dataTXT/dmfRoos6.dat
+##13#
+##14#
+##15# Datafile with covariates and responses used in the analysis shown in Chapter 6                            
+##16# of Roos Leroy: Permanent Tooth Emergence and Oral Health in Flemish Children: an Epidemiological Approach 
+##17#                (PhD thesis, KU Leuven 2004)                                                               
+##18#                                                                                                           
+##19# Exported from SAS by Arnost Komarek on 20/01/2005                                                         
+##20# using /home/komari/win/work/papers/gsplineTand/anaDMF/sas/saspgm_ak/created_data.sas                      
+##21# and then adjusted in R using /home/komari/win/work/papers/gsplineTand/anaDMF/Rko/create_data2.R           
+##22#                                                                                                           
+##23# Variables:                                                                                                
+##24#    IDNR ......... id number of a child                                                                    
+##25#    GENDER ....... string: boy/girl                                                                        
+##26#    DOB .......... string: date of birth in format DDmmmYY where mmm stands for first three letters of the month 
+##27#    PROVINCE ..... code of the province                                                                    
+##28#             0 = Antwerpen                                                                                 
+##29#             1 = Vlaams Brabant                                                                            
+##30#             2 = Limburg                                                                                   
+##31#             3 = Oost Vlaanderen                                                                           
+##32#             4 = West Vlaanderen                                                                           
+##33#    EDUC ......... code of the educational system                                                          
+##34#             0 = Free                                                                                      
+##35#             1 = Community school                                                                          
+##36#             2 = Province/council school                                                                   
+##37#    GIRL ......... 1 for girls, 0 for boys                                                                 
+##38#    EBEG.xx ...... left limit of emergence (in years of age) of the permanent tooth xx                     
+##39#                   (NA if the emergence was left censored)                                                 
+##40#    EEND.xx ...... right limit of emergence (in years of age) of the permanent tooth xx                    
+##41#                   (NA if the emergence was right censored)                                                
+##42#    FBEG.xx ...... left limit of caries appearance (in years of age) of the permanent tooth xx             
+##43#                   (NA if the caries time was left censored)                                               
+##44#    FEND.xx ...... right limit of caries appearance (in years of age) of the permanent tooth xx            
+##45#                   (NA if the caries time was right censored)                                              
+##46#       !!! If both EBEG and EEND or FBEG and EEND are missing they should be removed from the analysis     
+##47#           These are children removed already by Kris when preparing the data for Chapter 6 of Roos        
+##48#    TOOTH.xx ..... 1 if not removed by Kris (see the previous line) and 0 if removed by Kris               
+##49#    t54d ........ indicator whether the primary tooth 54 was DECAYED                                       
+##50#    t54m ........ indicator whether the primary tooth 54 was MISSING due to caries                         
+##51#    t54f ........ indicator whether the primary tooth 54 was FILLED                                        
+##52#    t54s ........ indicator whether the primary tooth 54 was SOUND                                         
+##53#      * similarly for remaining deciduous molars 64, 74, 84, 55, 65, 75, 85                                
+##54#    SEAL.16 ..... pit and fissures sealed on tooth 16 (yes/no)                                             
+##55#      *similar for remaining permanent molars 26, 36, 46                                                   
+##56#    FREQ.BR ... frequency of brushing                                                                      
+##57#                    0 = not brushing every day                                                             
+##58#                    1 = at least once a day                                                                
+##59#    PLAQUE.16.1 ... occlusal plaque in pits and fissures (for permanent tooth 16) (0/1 variable)           
+##60#    PLAQUE.16.2 ... occlusal plaque on total occlusal surface (for permanent tooth 16) (0/1 variable)      
+##61#      * similarly for remaining permanent molars 26, 36, 46                                                
+##62#                                                                                                           
+##63#                                                                                                           
+##64# To be read in R:                                                                                          
+##65#    dmf <- read.table(paste(dir, dmfRoos6.dat, sep=), header=TRUE, skip=66, na.string=NA)                  
+##66#                                                                                                           
 "IDNR"   "GENDER"   "DOB"   "PROVINCE"   "EDUC"   "GIRL"   "EBEG.16"   "EEND.16"   "FBEG.16"   "FEND.16"   "EBEG.26"   "EEND.26"   "FBEG.26"   "FEND.26"   "EBEG.36"   "EEND.36"   "FBEG.36"   "FEND.36"   "EBEG.46"   "EEND.46"   "FBEG.46"   "FEND.46"   "TOOTH.16"   "TOOTH.26"   "TOOTH.36"   "TOOTH.46"   "T54d"   "T54m"   "T54f"   "T54s"   "T55d"   "T55m"   "T55f"   "T55s"   "T64d"   "T64m"   "T64f"   "T64s"   "T65d"   "T65m"   "T65f"   "T65s"   "T74d"   "T74m"   "T74f"   "T74s"   "T75d"   "T75m"   "T75f"   "T75s"   "T84d"   "T84m"   "T84f"   "T84s"   "T85d"   "T85m"   "T85f"   "T85s"   "SEAL.16"   "SEAL.26"   "SEAL.36"   "SEAL.46"   "FREQ.BR"   "PLAQUE.16.1"   "PLAQUE.16.2"   "PLAQUE.26.1"   "PLAQUE.26.2"   "PLAQUE.36.1"   "PLAQUE.36.2"   "PLAQUE.46.1"   "PLAQUE.46.2"
    1   "girl"   "22MAR89"   3   0   1   6.7    7.7   11.2   NA   5.0    7.7   11.2   NA    6.7    7.7   11.2   NA   6.7    7.7   11.2   NA   1   1   1   1    1    0    0    0    0    0    0    1    1    0    0    0    1    0    0    0    0    0    1    0    0    0    0    1    0    0    0    1    0    0    0    1    1    1    1    1    0    0    0    0    0    0    0    0    0
    2   "boy"   "27JUN89"   0   2   0   5.0    7.4    7.4    8.4   5.0    7.4    8.4    9.3    5.0    7.4    7.4    8.4   5.0    7.4    7.4    8.4   1   1   1   1    0    0    0    1    0    0    0    1    1    0    0    0    1    0    0    0    0    0    0    1    1    0    0    0    0    1    0    0    1    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
