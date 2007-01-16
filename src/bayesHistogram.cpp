@@ -192,7 +192,7 @@ bayesHistogram(char** dirP,           int* dimsP,
         iterTotalNow++;                     /* = (iter-1)*nthin + witer - nullthIter*nthin */
 
         update_Data_GS(YsM, y_left, y_right, status, rM, g_y, nP, &n_censored);
-        g_y->update_alla(mixtureNM, a_ipars, &iterTotalNow);
+        g_y->update_alla_lambda(mixtureNM, a_ipars, &iterTotalNow);
         switch (*specif){
         case 1:
           g_y->update_gamma(YsM, rM, nP);
@@ -203,7 +203,6 @@ bayesHistogram(char** dirP,           int* dimsP,
           g_y->update_Scale(YsM, rM, nP, &iterTotalNow);
           break;
         }
-        g_y->update_lambda();
         update_Alloc_GS(rM, mixtureNM, mu, log_poster + 0, log_poster + i_logpr, g_y, YsM, nP, iwork, dwork);
 
       }    /** end of the thinning cycle  **/

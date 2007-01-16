@@ -17,15 +17,20 @@
 
 #include "constants.h"
 #include "AK_Error.h"
+#include "AK_BasicFun.h"
 #include "random.h"
 #include "newton_raphson.h"
-#include "slice_sampler.h"
-#include "ars.h"
+//#include "slice_sampler.h"
+#include "Slice_sampler2.h"
+//#include "ars.h"
+#include "ARS2.h"
+#include "GMRF_Gspline.h"
+#include "GMRF_Gspline_Util.h"
 
 enum neighborSystem {uniCAR, eight_neighbors, twelve_neighbors};            // types of neighboring systems for 'a' coefficients
-enum priorForLambdaSigmaTypes {Fixed_, Gamma, SDUnif};                      // types of priors for sigma and lambda
+enum priorForSigmaTypes {Fixed_, Gamma, SDUnif};                            // types of priors for sigma
 enum priorForGammaTypes {_Fixed_, Normal};                                  // types of priors for gamma
-enum a_sampling_scheme {Slice, ARS_quantile, ARS_mode};                     // sampling schemes for a
+enum a_sampling_scheme {Slice, ARS_quantile, ARS_mode, Block};              // sampling schemes for a
 
 const int _max_dim = 2;                      // maximal dimension of the G-spline
 const bool _center_a = false;                // if true, 'a' coefficients are maintained such that their average is always zero
@@ -48,12 +53,13 @@ const int _maxiter_solver_nr = 10;           // maximum number of NR iterations
 const double _toler_solver_nr = 1e-3;        // tolerance to detect convergence of NR
 
 /** some other constants **/
-const double _emax = 64.0;                   // exp(-_emax) = 0.0
-const double _epsilon = exp(-_emax);
-const double _e_min_inf = 1e-300;            // log(_e_min_inf) = -inf
-const double _log_zero = log(_e_min_inf);
-const double _log_inf = log(FLT_MAX);  
-const double _prob[3] = {0.15, 0.50, 0.85};  // probs for quantiles of the upper hull to compute starting abscissae for the next iteration
+const double _emax      = 64.0;                   // exp(-_emax) = 0.0
+const double _epsilon   = exp(-_emax);
+const double _exp_emax  = exp(_emax); 
+const double _e_min_inf = 1e-300;                 // log(_e_min_inf) = -inf
+const double _log_zero  = log(_e_min_inf);
+const double _log_inf   = _emax;
+const double _prob[3]   = {0.15, 0.50, 0.85};  // probs for quantiles of the upper hull to compute starting abscissae for the next iteration
 
 const double _null_mass = 1e-6;              // area with this probability will be assigned a zero probability in some applications
                                              //   (point from such area would appear only every 1e6th iteration and I guess we will run 
@@ -74,6 +80,7 @@ class Gspline
 
   int  _total_izero;          // index of 'a' coefficient which is zero in a long vector                          1
   int* _izero;                // indeces of 'a' coefficients which are constantly zero (for each dimension)       _dim
+                              // or which are used as a reference    
 
   int  _order;                // order of autoregression in the prior for 'a'                                     1
                               //  if equal to 0, a coefficients are assumed to be fixed
@@ -89,7 +96,7 @@ class Gspline
   double  _sumexpa;          // sum(exp(a))                                                                      1
   double** _sumexpa_margin;  // sum of exp(a) over all indeces up to one index                                   _dim, _length[j]
                              //  * effectively present only if _dim >= 2         
-  double* _penalty;          // 0.5*sum (Delta a)^2 in the case of univariate CAR in each dimension              _dim
+  double* _penalty;          // -0.5*sum (Delta a)^2 in the case of univariate CAR in each dimension              _dim
                              //  * if _equal_lambda then _penalty[0] gives the sum of row- and column-penalties
                              //  * if _equal_lambda then _penalty[1], ... are sometimes used as working space
   int     _k_effect;         // number of weights that correspond to non-zero mass                               1
@@ -102,7 +109,7 @@ class Gspline
   double* _rwv;         // double working place for ARS                                                                9 + 6*(1+_ns)
   double* _hx;          // working array for ARS/slice sampler/update_sigma                                            _nabscis
   double* _hpx;         // working array for ARS/slice sampler/update_sigma                                            _nabscis
-  int _type_update_a;   // type of the a update (two types of ARS or slice sampler)                                    1
+  int _type_update_a;   // type of the a update (slice sampler, two types of ARS or in 1 block using MH)               1
   int _k_overrelax_a;   // how often (every kth) will be performed a normal update of a instead of overrelaxed one     1
                         // (applicable only for a slice sampler, ignored otherwise)
 
@@ -139,6 +146,29 @@ class Gspline
   double* _intcpt;      // intercept for each dimension (2nd specification)                                _dim
   double* _invscale2;   // scale^{-2} for each dimension (2nd specification)                               _dim
   double* _scale;       // scale for each dimension (2nd specification)                                    _dim
+
+  /** quantities needed for joint update of a coefficients **/
+  /** !!! Currently only implemented for _dim = 1 !!!      **/
+  /** !!! Set to NULL for _dim > 1 !!!                     **/
+  double *_w;                // weights (in a long array in column major order)                           _total_length
+  double _minw;              // minimal weight                                                            1
+  double *_Q;                // Q = t(D)*D                                                                LT(_total_length)
+  double *_Da;               // D*a in first _total_length - _order places                                _total_length
+  double *_Qa;               // Q*a = t(D)*D*a                                                            _total_length
+  int *_diffOper;            // vector defining the difference operator                                   _order + 1 (if _dim = 1)
+  int _constraint;           // type of the constraint (see GMRF_Gspline_Util.h for possible values)
+
+  double _par_rscale[6];     // parameters for the lambda proposal according to Rue and Held 
+                             // actually not used in this version
+
+  int _LTna;                  // = LT(_total_length)
+  int _LTna_1;                // = LT(_total_length - 1)
+  int _nworkML;
+  int _nworka;
+  int _nworkGMRF;
+  double *_workML;           // working arrays, see GMRF_Gspline.cpp for how long they should be
+  double *_worka;
+  double *_workGMRF;
 
  public:
 
@@ -293,6 +323,9 @@ class Gspline
   inline double*
   aP() const { return _a;}
 
+  inline double*
+  expaP() const { return _expa;}
+
   inline double
   penalty(const int& j) const
   {
@@ -302,6 +335,17 @@ class Gspline
 
   inline double*
   penaltyP() const { return _penalty;}
+
+  inline double
+  suma() const {
+    double *aP = _a;
+    double _suma_ = 0.0;
+    for (int i = 0; i < _total_length; i++){
+      _suma_ += *aP;
+      aP++;
+    }
+    return _suma_;
+  }
 
 
 /***** Indexing 'operators' *****/
@@ -425,13 +469,25 @@ class Gspline
   a2expa();
 
   void
+  a2expa_total_length();
+
+  void
   change_a(const double* newa, const int& ia);
 
   void
   update_k_effect();
 
   void
+  update_a_max();
+
+  void
+  update_a_max_block();
+
+  void
   update_a_max_center_and_k_effect();
+
+  void
+  update_a_max_center_and_k_effect2006();
 
   void
   moments(double* EY, double* varY) const;
@@ -484,7 +540,7 @@ class Gspline
   update_a(const int* ija,  const int* a_ipars,  const int* overrelax);
 
   void
-  update_alla(const int* mixtureNM,  int* a_ipars,  const int* iter);
+  update_alla_lambda(const int* mixtureNM,  int* a_ipars,  const int* iter);
 
 // =============================================================================================
 // ***** Gspline_update_lambda.cpp: Functions for update of precision parameters lambda ***** //

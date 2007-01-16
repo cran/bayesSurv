@@ -1,5 +1,16 @@
-// Slice sampling (univariate)
-//  and some additional supporting functions
+/*** AK_Optim.cpp ***/
+//
+//     AUTHOR:  Arnost Komarek (my name in TeX: Arno\v{s}t Kom\'arek)
+//              akom@email.cz
+//
+//    CREATED:  30/10/2006
+//              as a copy of slice_sampler.cpp from the bayesSurv package
+//
+// PURPOSE: Univariate slice sampling and some additional supporting functions
+//
+/* ********************************************************************************* */
+//
+// History of the original slice_sampler.cpp:
 //
 // 27/11/2004: ss_stepping_out
 //             ss_doubling
@@ -17,12 +28,14 @@
 //                  in the case when x is out of the range of the distribution (e.g. when there are bounds)
 //
 
-#include "slice_sampler.h"
+#include "Slice_sampler2.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
+namespace Slice_sampler{
 
 // ***** ss_stepping_out: Function for finding an interval around the current point 
 //                          using the "stepping out" procedure
@@ -393,9 +406,6 @@ ss_bisection_overrelax(double* x1,           double* interv,      const double* 
 //   g_interv[2] ..... log(f(x)) evaluated in the interval limits
 //   x0[1] ........... the current point
 //   z[1] ............ logarithm of the vertical level defining the slice
-//   w[1] ............ estimate of the typical size of slice
-//   unimodal[1] ..... indicator whether the distribution at question is unimodal or not
-//   doubling ........ 0/1 indicating whether doubling was used to find an interval
 //   (*eval) ......... routine to compute g(x) = log(f(x))
 //   deval[] ......... double paramaters for (*eval)
 //   ieval[] ......... integer parameters for (*eval)
@@ -472,6 +482,7 @@ ss_exact_overrelax(double* x1,           double* interv,  const double* x0, cons
   return;
 }    /* end of the function ss_exact_overrelax */
 
+}  /*** end of the namespace Slice_sampler ***/
 
 #ifdef __cplusplus
 }                          /* end of extern "C" */

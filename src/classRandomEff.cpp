@@ -1,6 +1,6 @@
 // Class to store random effects together with the prior information on them
 //   and methods to update them
-// * it should replace 'bblocks' class in all future version sof bayessurvreg
+// * it should replace 'bblocks' class in all future versions of bayessurvreg
 //
 // 28/01/2005: basics
 //             'GIBBSupdate'

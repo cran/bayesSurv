@@ -1,3 +1,5 @@
+/*** Slice_sampler2.h ***/
+
 #ifndef _SLICE_SAMPLER_H_
 #define _SLICE_SAMPLER_H_
 
@@ -13,6 +15,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+namespace Slice_sampler{
 
 void
 ss_stepping_out(double* interv,       double* g_interv,
@@ -56,6 +60,8 @@ void
 ss_exact_overrelax(double* x1,           double* interv,  const double* x0, const double* z,
                    void (*eval)(const double*, double*, const double*, const int*),
                    const double* deval,  const int* ieval);
+
+}  /*** end of the namespace Slice_sampler ***/
 
 #ifdef __cplusplus
 }

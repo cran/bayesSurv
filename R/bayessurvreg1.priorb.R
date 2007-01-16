@@ -19,6 +19,7 @@
 bayessurvreg1.priorb <- function(prior.b, nrandom, ncluster, toler.chol)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
 
   if (!nrandom){
     priori <- c(0, 0, 0, 0, 0, 0, 0, 0)

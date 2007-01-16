@@ -356,7 +356,13 @@ bayessurvreg2(formula, random, formula2, random2,
   }  %% end of item{init}  
   \item{mcmc.par}{a~list specifying how some of the G-spline parameters
     related to the distribution of the error term from \code{formula}
-    are to be updated. See \code{\link{bayesBisurvreg}} for more details.
+    are to be updated. See \code{\link{bayesBisurvreg}} for more
+    details.
+
+    In contrast to \code{\link{bayesBisurvreg}} function argument
+    \code{mcmc.par$type.update.a} can also be equal to
+    \code{"block"} in which case all \eqn{a}{a} coefficients are updated
+    in 1 block using the Metropolis-Hastings algorithm. 
   }  %% end of item{mcmc.par}
   \item{prior2}{a~list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model

@@ -90,8 +90,8 @@ Gspline::update_Scale(const double* regresResM,  const int* rM,  const int* nP, 
     /* Compute the interval defining the slice */
     itmp = (slice[0] <= _zero_invvariance ? 1 : 0);
     for (j_ = 1; j_ >= itmp; j_--){
-      full_sigma_logdens3(slice+j_, gx+j, &dgx, &tmp, zeta_1, ipars, 3);
-      solver_newton_raphson(slice+j_, gx+j, &dgx, &horiz, zeta_1, ipars, full_sigma_logdens3, 
+      full_sigma_logdens3(slice+j_, gx+j_, &dgx, &tmp, zeta_1, ipars, 3);
+      solver_newton_raphson(slice+j_, gx+j_, &dgx, &horiz, zeta_1, ipars, full_sigma_logdens3, 
                             &iter_nr, &_maxiter_solver_nr, &_toler_solver_nr, &_epsilon, &err_nr);
       if (err_nr >= 3){
         REprintf("\nerr_nr = %d\n", err_nr);
@@ -112,10 +112,10 @@ Gspline::update_Scale(const double* regresResM,  const int* rM,  const int* nP, 
 
     /* Sample the new point */
     if (overrelax){
-      ss_exact_overrelax(&newinvscale2, slice, _invscale2+j, &horiz, full_sigma_logdens0, zeta_1, ipars);
+      Slice_sampler::ss_exact_overrelax(&newinvscale2, slice, _invscale2+j, &horiz, full_sigma_logdens0, zeta_1, ipars);
     }
     else{
-      ss_exact_sample(&newinvscale2, slice, gx, _invscale2+j, &horiz, full_sigma_logdens0, zeta_1, ipars);
+      Slice_sampler::ss_exact_sample(&newinvscale2, slice, gx, _invscale2+j, &horiz, full_sigma_logdens0, zeta_1, ipars);
     }
 
     /* Update necessary quantities */

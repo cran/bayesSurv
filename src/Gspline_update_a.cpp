@@ -20,7 +20,8 @@
 //             'full_a_logdens3'
 // 22/02/2005: 'Gspline::update_a' extended such that centering of a's is possible after update of each a
 //             'Gspline::update_a' rewritten such that izero is ignored but it is checked that a's do not exceed
-//             a given value (_a_ceil)
+//               a given value (_a_ceil)
+// 29/11/2006:  Function Gspline::update_alla changed to Gspline::update_alla_lambda which updates both a's and lambda(s)
 //
 #include "Gspline.h"
 
@@ -111,10 +112,10 @@ Gspline::update_a(const int* ija,  const int* a_ipars,  const int* overrelax)
 }  /** end of the function Gspline::update_a **/
 
 
-/***** update_alla *****/
+/***** update_alla_lambda *****/
 //
-// Update all G-spline coefficients.
-//  Sequence of updating: try to minimize autocorrelation
+// Update all G-spline coefficients and also smoothing hyperparameter(s) lambda
+//  Sequence of updating (if not in 1 block): try to minimize autocorrelation
 //    * e.g. _dim = 1, _order = 3, update a[0], a[4], a[8], ...
 //                                        a[1], a[5], a[9], ...
 //                                        a[2], a[6], a[10], ...
@@ -147,9 +148,12 @@ Gspline::update_a(const int* ija,  const int* a_ipars,  const int* overrelax)
 // iter ............... number of iteration (to determine whether overrelaxation will be used)
 //
 void
-Gspline::update_alla(const int* mixtureNM,  int* a_ipars,  const int* iter)
+Gspline::update_alla_lambda(const int* mixtureNM,  int* a_ipars,  const int* iter)
 {
-  if (_order == 0) return;     // a's are fixed
+  static const int _ZERO_ = 0;
+  static int accept;
+
+  if (_order == 0) return;     // a's are fixed, and there is no lambda
 
   static int k0, k1;
   static int ija[2];
@@ -162,15 +166,38 @@ Gspline::update_alla(const int* mixtureNM,  int* a_ipars,  const int* iter)
   switch (_dim){
 
   case 1:
-    for (k0 = 0; k0 <= _order; k0++){
-      for (ija[0] = k0; ija[0] < _length[0]; ija[0] += (_order + 1)){
-        a_ipars[1] = mixtureNM[ija[0]];
-        update_a(ija + 0, a_ipars, &overrelax);
+    if (_type_update_a < Block){     /* Slice, ARS_quantile, ARS_mode */
+      update_lambda();
+      for (k0 = 0; k0 <= _order; k0++){
+        for (ija[0] = k0; ija[0] < _length[0]; ija[0] += (_order + 1)){
+          a_ipars[1] = mixtureNM[ija[0]];
+          update_a(ija + 0, a_ipars, &overrelax);
+        }
       }
+      update_a_max_center_and_k_effect2006();      /** Original 'update_a_max_center_and_k_effect()' replaced on 01/12/2006 **/
+      penalty();
     }
-    break;  /** end of _dim == 1 **/
+    else{                                /* _type_update_a == Block */
+      //Rprintf("\n_a: ");
+      //AK_BLAS_LAPACK::printArray(_a, _total_length);
+      //Rprintf("_expa (sum(exp(a)=%g)): ", _sumexpa);
+      //AK_BLAS_LAPACK::printArray(_expa, _total_length);
+      //Rprintf("_w (_minw = %g): ", _minw);
+      //AK_BLAS_LAPACK::printArray(_w, _total_length);
+      //Rprintf("_Da: ");
+      //AK_BLAS_LAPACK::printArray(_Da, _total_length);
+      //Rprintf("_Qa (penalty=%g): ", *_penalty);
+      //AK_BLAS_LAPACK::printArray(_Qa, _total_length);
+
+      GMRF_Gspline::update(&accept, _a, _lambda, _expa, &_sumexpa, _w, &_minw, _Da, _Qa, _penalty, _workML, _worka, _workGMRF,
+                           mixtureNM, _prior_for_lambda, _prior_lambda, _par_rscale, _Q, &_order, _diffOper, 
+                           &GMRF_Gspline::_null_mass, &_constraint, _izero, &_total_length, a_ipars, &_ZERO_);
+      if (accept) update_a_max_block();
+    }
+    return;  /** end of _dim == 1 **/
 
   case 2:
+    update_lambda();
     for (k1 = 0; k1 <= _order; k1++){
       for (k0 = 0; k0 <= _order; k0++){
         for (ija[0] = k0; ija[0] < _length[0]; ija[0] += (_order + 1)){
@@ -182,15 +209,14 @@ Gspline::update_alla(const int* mixtureNM,  int* a_ipars,  const int* iter)
         }
       }
     }
-    break;  /** end of _dim == 2 **/
+    update_a_max_center_and_k_effect();  
+    penalty();
+    return;  /** end of _dim == 2 **/
 
   default:
     throw returnR("C++ Error: Strange _dim in Gspline::update_Gspline", 1);
   }  /** end of switch(_dim) **/
 
-  update_a_max_center_and_k_effect();  
-  penalty();
-  return;
 }  /** end of the function update_alla **/
 
 
@@ -659,10 +685,10 @@ Gspline::sample_a_by_slice(double* newa, const int& ia, const double* a_pars, co
 
   /*** Sample the new point ***/
   if (*overrelax){
-    ss_exact_overrelax(newa, _abscis[ia], _a+ia, &horiz, full_a_logdens0, a_pars, a_ipars);
+    Slice_sampler::ss_exact_overrelax(newa, _abscis[ia], _a+ia, &horiz, full_a_logdens0, a_pars, a_ipars);
   }
   else{
-    ss_exact_sample(newa, _abscis[ia], _hx, _a+ia, &horiz, full_a_logdens0, a_pars, a_ipars);
+    Slice_sampler::ss_exact_sample(newa, _abscis[ia], _hx, _a+ia, &horiz, full_a_logdens0, a_pars, a_ipars);
   }
 
   return;
@@ -679,7 +705,7 @@ Gspline::sample_a_by_ARS(double* newa, const int& ia, const double* a_pars, cons
 
   /***  Initialize arrays for ARS, ifault can be either 0 or 5, other values (1, 2, 3, 4) are not possible  ***/
   ifault = 1;
-  initial_(&_ns, &_nabscis, &_emax, _abscis[ia], _hx, _hpx, &ZERO_INT, &hlb, &ZERO_INT, &hub, &ifault, _iwv, _rwv);
+  ARS::initial_(&_ns, &_nabscis, &_emax, _abscis[ia], _hx, _hpx, &ZERO_INT, &hlb, &ZERO_INT, &hub, &ifault, _iwv, _rwv);
   if (ifault > 0){    /*  numerical non-log-concavity detected -> use slice sampler instead */
     sample_a_by_slice(newa, ia, a_pars, a_ipars, &ZERO_INT);
     return;
@@ -693,7 +719,7 @@ Gspline::sample_a_by_ARS(double* newa, const int& ia, const double* a_pars, cons
     r_zero = 0;
     ifault = 6;    
     while (ifault == 6){    /* while random number generator generates zero */
-      sample_(_iwv, _rwv, full_a_logdens, a_pars, a_ipars, newa, &ifault);
+      ARS::sample_(_iwv, _rwv, full_a_logdens, a_pars, a_ipars, newa, &ifault);
       switch (ifault){
       case 5:    /*  numerical non-log-concavity detected -> use slice sampler instead */
         sample_a_by_slice(newa, ia, a_pars, a_ipars, &ZERO_INT);
@@ -713,7 +739,7 @@ Gspline::sample_a_by_ARS(double* newa, const int& ia, const double* a_pars, cons
   }
 
   /***  Compute starting abscissae for the next iteration of MCMC (if necessary)  ***/
-  if (_type_update_a == ARS_quantile) quantile_(_iwv, _rwv, &_nabscis, _prob + 0, _abscis[ia], &ZERO_INT);
+  if (_type_update_a == ARS_quantile) ARS::quantile_(_iwv, _rwv, &_nabscis, _prob + 0, _abscis[ia], &ZERO_INT);
   return;
 }
 
@@ -745,14 +771,16 @@ full_a_logdens0(const double* ai,  double* yu,  const double* a_pars,  const int
 {
   static double new_expai, new_sumexpa, a_min_A;
   if (*ai >= _log_inf){
-    REprintf("\na = %e leads to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
-             *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
-    throw returnR("Trap in full_a_logdens0.", 1);
-    new_expai = FLT_MAX;
-    new_sumexpa = FLT_MAX;
+    //REprintf("\na = %e leads to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //         *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    //throw returnR("Trap in full_a_logdens0.", 1);
+    //Rprintf("\na = %e may lead to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //        *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    new_expai   = _exp_emax;
+    new_sumexpa = _exp_emax;
   }
   else{
-    new_expai = exp(*ai);
+    new_expai   = exp(*ai);
     new_sumexpa = a_pars[3] - a_pars[2] + new_expai;   
   }
 
@@ -773,21 +801,23 @@ full_a_logdens(const double* ai,  double* yu,  double* ypu,  const double* a_par
 {
   static double new_expai, new_sumexpa, a_min_A, new_wi;
   if (*ai >= _log_inf){
-    REprintf("\na = %e leads to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
-             *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
-    throw returnR("Trap in full_a_logdens.", 1);
-    new_expai = FLT_MAX;
-    new_sumexpa = FLT_MAX;
+    //REprintf("\na = %e leads to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //         *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    //throw returnR("Trap in full_a_logdens.", 1);
+    //Rprintf("\na = %e may lead to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //        *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    new_expai   = _exp_emax;
+    new_sumexpa = _exp_emax;
   }
   else{
-    new_expai = exp(*ai);
+    new_expai   = exp(*ai);
     new_sumexpa = a_pars[3] - a_pars[2] + new_expai;   
   }
 
   a_min_A = (*ai) - a_pars[0];
-  new_wi = new_expai / new_sumexpa;
+  new_wi  = new_expai / new_sumexpa;
 
-  *yu = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
+  *yu  = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
   *ypu = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
 
   if (!R_finite(*yu)){
@@ -809,22 +839,24 @@ full_a_logdens2(const double* ai,  double* yu,  double* ypu,  double* yppu,  con
   static double new_expai, new_sumexpa, a_min_A, new_wi;
 
   if (*ai >= _log_inf){
-    REprintf("\na = %e leads to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
-             *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
-    throw returnR("Trap in full_a_logdens2.", 1);
-    new_expai = FLT_MAX;
-    new_sumexpa = FLT_MAX;
+    //REprintf("\na = %e leads to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //         *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    //throw returnR("Trap in full_a_logdens2.", 1);
+    //Rprintf("\na = %e may lead to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //        *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    new_expai   = _exp_emax;
+    new_sumexpa = _exp_emax;
   }
   else{
-    new_expai = exp(*ai);
+    new_expai   = exp(*ai);
     new_sumexpa = a_pars[3] - a_pars[2] + new_expai;   
   }
 
   a_min_A = (*ai) - a_pars[0];
-  new_wi = new_expai / new_sumexpa;
+  new_wi  = new_expai / new_sumexpa;
 
-  *yu = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
-  *ypu = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
+  *yu   = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
+  *ypu  = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
   *yppu = a_ipars[0]*new_wi*(1 - new_wi) + a_pars[1];
 
   if (!R_finite(*yu)){
@@ -856,26 +888,34 @@ full_a_logdens3(const double* ai,  double* yu,  double* ypu,  double* yppu,  con
 {
   static double new_expai, new_sumexpa, a_min_A, new_wi;
 
-  new_expai = exp(*ai);
-  new_sumexpa = a_pars[3] - a_pars[2] + new_expai;
+  if (*ai >= _log_inf){
+    //Rprintf("\na = %e may lead to exp(a) = Inf; a_pars = %e, %e, %e, %e;  a_ipars = %d, %d\n", 
+    //        *ai, a_pars[0], a_pars[1], a_pars[2], a_pars[3], a_ipars[0], a_ipars[1]);
+    new_expai   = _exp_emax;
+    new_sumexpa = _exp_emax;
+  }
+  else{
+    new_expai   = exp(*ai);
+    new_sumexpa = a_pars[3] - a_pars[2] + new_expai;
+  }
   a_min_A = (*ai) - a_pars[0];
   new_wi = new_expai / new_sumexpa;
 
   switch (what){
   case 0:
-    *yu = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
-    *ypu = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
+    *yu   = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
+    *ypu  = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
     *yppu = a_ipars[0]*new_wi*(1 - new_wi) + a_pars[1];
     return;
   case 1:
     *yu = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
     return;
   case 2:
-    *ypu = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
+    *ypu  = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
     *yppu = a_ipars[0]*new_wi*(1 - new_wi) + a_pars[1];
     return;
   case 3:
-    *yu = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
+    *yu  = a_ipars[1]*(*ai) - a_ipars[0]*log(new_sumexpa) - 0.5*a_pars[1]*a_min_A*a_min_A;
     *ypu = a_ipars[1] - a_ipars[0]*new_wi - a_pars[1]*a_min_A;
     return;
   default:

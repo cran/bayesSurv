@@ -23,6 +23,8 @@
 // 26/11/2005: 'openGsplineFiles_forTau'
 // 27/11/2005: 'readGsplineFiles_forTau'
 //             'readGsplineFiles_forMarginal'
+// 12/12/2006: 'writeToFiles_RandomEff32'
+// 13/12/2006: 'openD32File'
 //
 #include "in_output_GS.h"
 
@@ -95,6 +97,9 @@ closeFiles_bayesHistogram(
 //                  to start McMC again in case of some problems
 //                * possible 1 will always be reset to zero on return
 //
+// check_k_effect ... if positive (DEFAULT) then only components with high enough weights are written to files
+//                    otherwise all components are written
+//
 void
 writeToFiles_bayesHistogram(
     const Gspline* gg,     
@@ -107,9 +112,11 @@ writeToFiles_bayesHistogram(
     std::ofstream& mixmomentfile,      std::ofstream& mweightfile,      std::ofstream& mlogweightfile,
     std::ofstream& mmeanfile,          std::ofstream& Yfile,            std::ofstream& rfile,              
     std::ofstream& logposterfile,
-    const double& null_weight,         const int& prec,                 const int& width)
+    const double& null_weight,         const int& prec,                 const int& width,
+    const int& check_k_effect)
 {
-  int i;
+  int i, K0;
+  double sumexpa;
 
   /*** Middle knots, basis standard deviations and distance between two knots ***/  
   writeFiveToFile_1(gg->gammaP(), gg->sigmaP(), gg->deltaP(), gg->intcptP(), gg->scaleP(), 
@@ -120,38 +127,61 @@ writeToFiles_bayesHistogram(
   writeToFile_1(gg->lambdaP(), l_lambdaA, lambdafile, prec, width);
 
   /*** Mixture weights, indeces of means and effective number of components ***/
-  int k_effect_write = 0;
-  double gewicht;
-  double* pworkD = workD;
-  int* pworkI = workI;
-  for (i = 0; i < gg->k_effect(); i++){
-    gewicht = gg->w(gg->ind_w_effect(i));
-    if (gewicht >= null_weight){
-      *pworkD = gewicht;
-/*      for (j = 0; j < gg->dim(); j++){                                                                   */
-/*	  muA[nstored*l_muA + k_effect_write*gg->dim() + j] = gg->mu_component(j, gg->ind_w_effect(i));    */
-/*      }                                                                                                  */
-      switch (gg->dim()){
-      case 1: *pworkI = gg->ind_w_effect(i) - gg->K(0);
-	      break;
-      case 2: *pworkI     = gg->ind_w_effect(i) % gg->length(0) - gg->K(0);
-       	      pworkI++;
-	      *pworkI     = gg->ind_w_effect(i) / gg->length(0) - gg->K(1);
-              break;
-      default: throw returnR("C++ Error: Unimplemented part (dim > 2) of the function writeToFiles_bayesHistogram", 1);
-      }
-      pworkD++;
+  static int k_effect_write;
+  static double gewicht;
+  static double *pworkD, *expaP;
+  static int *pworkI;
+  if (check_k_effect){
+    k_effect_write = 0;
+    pworkD = workD;
+    pworkI = workI;
+    for (i = 0; i < gg->k_effect(); i++){
+      gewicht = gg->w(gg->ind_w_effect(i));
+      if (gewicht >= null_weight){
+        *pworkD = gewicht;
+  /*      for (j = 0; j < gg->dim(); j++){                                                                   */
+  /* 	    muA[nstored*l_muA + k_effect_write*gg->dim() + j] = gg->mu_component(j, gg->ind_w_effect(i));    */
+  /*      }                                                                                                  */
+        switch (gg->dim()){
+        case 1: *pworkI = gg->ind_w_effect(i) - gg->K(0);
+	        break;
+        case 2: *pworkI = gg->ind_w_effect(i) % gg->length(0) - gg->K(0);
+         	pworkI++;
+	        *pworkI = gg->ind_w_effect(i) / gg->length(0) - gg->K(1);
+                break;
+        default: throw returnR("C++ Error: Unimplemented part (dim > 2) of the function writeToFiles_bayesHistogram", 1);
+        }
+        pworkD++;
+        pworkI++;
+        k_effect_write++;
+      } 
+    }
+  }
+  else{
+    k_effect_write = gg->total_length();
+    K0 = gg->K(0);
+    sumexpa = gg->sumexpa();
+
+    if (gg->dim() > 1) throw returnR("C++ Error: check_k_effect must be > 0 if dim > 1 in writeToFiles_bayesHistogram", 1);
+    pworkI = workI;
+    pworkD = workD;
+    expaP  = gg->expaP();
+    for (i = 0; i < k_effect_write; i++){
+      *pworkI = i - K0; 
+      *pworkD = *expaP/sumexpa;
       pworkI++;
-      k_effect_write++;
+      pworkD++;
+      expaP++;
     }
   }
   writeToFile_1(workD, k_effect_write, mweightfile, prec, width);
   writeToFile_1(workI, gg->dim()*k_effect_write, mmeanfile, prec, width);
-  
+
+
   /*** Mixture moments ***/
   gg->moments(workD, workD + gg->dim());
   writeTwoToFile_1(&k_effect_write, workD, 0, l_momentsA, mixmomentfile, prec, width);
-
+  
   /*** Mixture a coefficients ***/
   if (*storeaP || *writeAll){
     writeToFile_1(gg->aP(), gg->total_length(), mlogweightfile, prec, width);
@@ -1072,6 +1102,84 @@ openRegresFiles(std::ifstream& betafile,      std::ifstream& Dfile,
 }
 
 
+// ==============================================================================================================
+// ***** openD32File: Open file where sampled D's are stored for reading
+//                          and skip first 'skip' rows that the user wishes to skip
+//     * used by "version=32" predictive_GS
+// ==============================================================================================================
+void
+openD32File(std::ifstream& D32file,  const std::string& D32path,  const int& skip)
+{
+  try{
+    std::string errmes;
+    char ch;
+    int i;
+
+    D32file.open(D32path.c_str(), std::ios::in);
+    if (!D32file){
+      errmes = std::string("C++ Error: Could not open ") + D32path;
+      throw returnR(errmes, 99);
+    } 
+    for (i = 0; i < skip; i++){
+      D32file.get(ch);        
+      while (ch != '\n') D32file.get(ch);
+    }
+
+    return;
+  }
+  catch(returnR){
+    throw;
+  }   
+}
+
+
+/*** =========================================================================== ***/
+/*** readDfromFile:  Read D matrix from the file                                 ***/
+/***                 and update accordingly corresponding elements               ***/
+/***                                                                             ***/
+/*** =========================================================================== ***/
+//
+// skip:     Number of rows to be skipped before reading
+// row:      How many rows of the data will be read at the end of the function call
+// Dfile:    Opened ifstream to the file with D values
+//           We are reading from the current row and its assumed that the row contains
+//           det(D), D(0,0), D(1,0), D(1,1)
+// Dpath:    String with the path to the D file (just to generate error messages in the case they are needed)
+//
+void
+readDfromFile(RandomEff32::RE *data,  const int &skip,  const int &row,  std::ifstream &Dfile,   const std::string &Dpath)
+{
+  static std::string errmes;
+  static double tmp, *DP;
+  static int j, ihelp;
+  static char ch;
+  const int lD = 3;
+
+  for (j = 0; j < skip; j++){
+    Dfile.get(ch);        
+    while (ch != '\n') Dfile.get(ch);
+  }
+  if (Dfile.eof()){
+    ihelp = row + 1;
+    errmes = std::string("Error: Reached end of file ") + Dpath + " before "
+             + char(ihelp) + std::string(" sets of random effects covariance matrices were read.");
+    throw returnR(errmes, 99);
+  }
+
+  Dfile >> tmp;                /* skip the first column with determinant */
+  DP = data->_D;
+  for (j = 0; j < data->_lD; j++){
+    Dfile >> (*DP);
+    DP++;
+  }
+  RandomEff32::updateAfterChangeD(data);
+  Dfile.get(ch);            
+  while (ch != '\n') Dfile.get(ch);
+
+  return;
+}
+
+
 // ==================================================================================
 // ***** readRegresFromFiles
 //  * used in predictive_GS in the case that random effects are NORMAL
@@ -1185,5 +1293,32 @@ writeToFiles_Gspl_intcpt(
     writeToFile_1(bb->bMP(), bb->lbMarray(), bbfile, prec, width);
   }
 
+  return;
+}
+
+
+// ==================================================================================
+// ***** writeToFiles_RandomEff32
+// ==================================================================================
+void
+writeToFiles_RandomEff32(
+    const RandomEff32::RE *db,
+    const int *storedP,         const int *storebP,      const int *writeAll,
+    std::ofstream &Dfile,       std::ofstream &ddfile,   std::ofstream &bbfile,
+    const int &prec,            const int &width)
+{
+
+  /*** Sampled covariance matrix of random effects (together with its determinant) ***/
+  writeTwoToFile_1(&db->_detD, db->_D, 0, db->_lD, Dfile, prec, width);
+
+  /*** Sampled random effects ***/
+  if (*writeAll){
+    writeToFile_1(db->_d, db->_nCluster, ddfile, prec, width);
+    writeToFile_1(db->_b, db->_nCluster, bbfile, prec, width);
+  }
+  else{
+    if (*storedP) writeToFile_1(db->_d, db->_nCluster, ddfile, prec, width);
+    if (*storebP) writeToFile_1(db->_b, db->_nCluster, bbfile, prec, width);
+  }
   return;
 }

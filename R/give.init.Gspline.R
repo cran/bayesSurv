@@ -18,6 +18,7 @@
 give.init.Gspline <- function(prior, init, mcmc.par, dim)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
 
   if(length(prior) == 0) inprior <- "arnost"
   else                   inprior <- names(prior)
@@ -271,14 +272,17 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   ## Type of update of a
   ## ===================
   tmp <- match("type.update.a", inmcmc.par, nomatch=NA)
-  if(is.na(tmp)) mcmc.par$type.update.a <- "slice"
+  if(is.na(tmp)){
+    if (dim == 1) mcmc.par$type.update.a <- "slice"
+    else          mcmc.par$type.update.a <- "slice"
+  }  
   tmp <- match("k.overrelax.a", inmcmc.par, nomatch=NA)
   if(is.na(tmp)) mcmc.par$k.overrelax.a <- 1
   mcmc.par$type.update.a <- mcmc.par$type.update.a[1]
   mcmc.par$k.overrelax.a <- mcmc.par$k.overrelax.a[1]
   if (is.na(mcmc.par$type.update.a)) stop("Incorrect mcmc.par$type.update.a given")
   if (is.na(mcmc.par$k.overrelax.a)) stop("Incorrect mcmc.par$k.overrelax.a given")  
-  type.update.a <- pmatch(mcmc.par$type.update.a, table=c("slice", "ars.quantile", "ars.mode"), nomatch=0) - 1
+  type.update.a <- pmatch(mcmc.par$type.update.a, table=c("slice", "ars.quantile", "ars.mode", "block"), nomatch=0) - 1
   if (type.update.a == -1) stop("Incorrect mcmc.par$type.update.a given")
   if (type.update.a == 0){
     if (mcmc.par$k.overrelax.a <= 0) stop("Incorrect mcmc.par$k.overrelax.a given (must be positive)")  
@@ -349,6 +353,12 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   
   ## Initial values for a
   ## ====================
+  #aconstraint <- "mean"   ### This causes problems if there are some too negative a's.
+                           ### Then there must be also too positive a's and exp(a) is Inf
+  aconstraint <- "reference"
+  aconstraint <- pmatch(aconstraint, table=c("mean", "reference"), nomatch=0)-1
+  if (aconstraint < 0) stop("Unimplemented identifiability constraint for a coefficients")
+  
   ### require library(smoothSurv)!!!
     ## dim == 1, get initial 'a' by minimizing third order penalty on standardized knots
     ## dim == 2, get initial 'a' by minimizing third order penalty for each margin and then take product of marginal weights
@@ -366,7 +376,12 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
       minp <- minPenalty(knots=knots, sdspline=sdspline, difforder=3, info=FALSE)
       if (minp$fail) stop("Unable to guess initial 'a' coefficients, give your own")
       acoef[[j]] <- minp$spline[, "a coef."]
-      acoef[[j]] <- as.vector(acoef[[j]] - acoef[[j]][prior$izero[j] + prior$K[j] + 1])
+      if (aconstraint == "mean"){
+        acoef[[j]] <- as.vector(acoef[[j]] - mean(acoef[[j]]))
+      }
+      else{
+        acoef[[j]] <- as.vector(acoef[[j]] - acoef[[j]][prior$izero[j] + prior$K[j] + 1])
+      }  
     }
     if (dim == 1){ init$a <- acoef[[1]] }
     else{                 if (dim == 2){ init$a <- outer(acoef[[1]], acoef[[2]], "+")                           }
@@ -384,10 +399,11 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   if (dim == 2) init$a <- matrix(init$a, nrow=2*prior$K[1] + 1, ncol=2*prior$K[2] + 1)
   
   ## Put G-spline parameters to long vectors
-  ## ========================================
+  ## ========================================  
   Gparmi <- c(dim, neighbor.system, equal.lambda, prior$K, prior$izero, prior$order, prior.lambda, prior.gamma, prior.sigma,
               prior.intercept, prior.scale,
-              type.update.a, mcmc.par$k.overrelax.a, mcmc.par$k.overrelax.sigma, mcmc.par$k.overrelax.scale)
+              type.update.a, mcmc.par$k.overrelax.a, mcmc.par$k.overrelax.sigma, mcmc.par$k.overrelax.scale,
+              aconstraint)
   names(Gparmi) <- c("dim", "neighbor.system", "equal.lambda", paste("K", 1:dim, sep=""),
                       paste("izeroR", 1:dim, sep=""), "order",
                       paste("prior.for.lambda", 1:dim, sep=""),
@@ -397,7 +413,8 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
                       paste("prior.for.scale", 1:dim, sep=""),
                       "type.update.a", "k.overrelax.a",
                       paste("k.overrelax.sigma", 1:dim, sep=""),
-                      paste("k.overrelax.scale", 1:dim, sep=""))
+                      paste("k.overrelax.scale", 1:dim, sep=""),
+                      "aconstraint")
   
   Gparmd <- c(acoef, init$lambda, init$gamma, init$sigma, init$intercept, init$scale,
               prior$c4delta, parms.lambda, parms.gamma, parms.sigma, parms.intercept, parms.scale)

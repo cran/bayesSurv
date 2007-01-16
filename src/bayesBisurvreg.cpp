@@ -374,7 +374,7 @@ bayesBisurvreg(char** dirP,             const int* dimsP,         const double* 
 
         update_Data_GS_regres(Y1, regresRes1, y1_left, y1_right, status1, r1, g_y1, nP);
         update_Alloc_GS(r1, mixtureN1, mu1, log_poster1 + 0, log_poster1 + i_logpr1, g_y1, regresRes1, nP, iwork1, dwork1);
-        g_y1->update_alla(mixtureN1, a_ipars, &iterTotalNow);
+        g_y1->update_alla_lambda(mixtureN1, a_ipars, &iterTotalNow);
         switch (specif[0]){
         case 1:
           g_y1->update_gamma(regresRes1, r1, nP);
@@ -386,13 +386,12 @@ bayesBisurvreg(char** dirP,             const int* dimsP,         const double* 
           break;
         }
         for (j = 0; j < g_y1->dim(); j++) g_y1->muP(j, mu1[j]);
-        g_y1->update_lambda();
         beta1->GIBBSfixed(regresRes1, nP, X1, XXtb1, g_y1, mu1, r1);
 
         if (*doubly){
           update_Data_GS_doubly(Y2, regresRes2, Y1, t2_left, t2_right, status2, r2, g_y2, nP);
           update_Alloc_GS(r2, mixtureN2, mu2, log_poster2 + 0, log_poster2 + i_logpr2, g_y2, regresRes2, nP, iwork2, dwork2);
-          g_y2->update_alla(mixtureN2, a_ipars, &iterTotalNow);
+          g_y2->update_alla_lambda(mixtureN2, a_ipars, &iterTotalNow);
           switch (specif[1]){
           case 1:
             g_y2->update_gamma(regresRes2, r2, nP);
@@ -404,7 +403,6 @@ bayesBisurvreg(char** dirP,             const int* dimsP,         const double* 
             break;
           }
           for (j = 0; j < g_y2->dim(); j++) g_y2->muP(j, mu2[j]);
-          g_y2->update_lambda();
           beta2->GIBBSfixed(regresRes2, nP, X2, XXtb2, g_y2, mu2, r2);
         }
       }    /** end of the thinning cycle  **/

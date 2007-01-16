@@ -33,6 +33,7 @@ predictive <- function(
      toler.qr = 1e-10)
 {
    thispackage = "bayesSurv"
+   #thispackage = NULL
   
    transform = function(t){log(t)}
    dtransform = function(t){1/t}

@@ -17,6 +17,7 @@
 marginal.bayesGspline <- function(dir = getwd(), extens = "", K, grid1, grid2, skip = 0, by = 1, last.iter, nwrite, only.aver = TRUE)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   standard <- FALSE
   dim <- 2
   n.in.mixmoment <- 1 + 2 + 3   ## number of columns in mixmoment.sim file

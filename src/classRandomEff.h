@@ -114,6 +114,14 @@ class RandomEff
     predictGspl_intcpt(const int* k_effect,      double* cum_w,  const double* prop_mu, 
                        const double* sig_scale,  int* rM_b);
 
+    friend void
+    Gspl_rho_intcpt_update(RandomEff *d,            RandomEff *b,              double *rho_zb,
+                           double *regResOnset,     double *regResTime,        int *rho_accept,
+                           const int *nP,           const int *rho_algor,      const double *rho_scaleL,
+                           const Gspline *gg_d,     double** const mu_d,       const int *rM_d,
+                           const Gspline *gg_b,     double** const mu_b,       const int *rM_b,
+                           const Gspline *gg_zeta,  double** const mu_zeta,    const int *rM_zeta,
+                           const Gspline *gg_eps,   double** const mu_eps,     const int *rM_eps);
 };
 
 

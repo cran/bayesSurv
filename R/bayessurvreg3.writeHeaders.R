@@ -15,7 +15,7 @@
 ##
 ## Write headers to files where simulated values will be stored
 ##
-bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, priorb2.di, store, design, design2)
+bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, priorb2.di, store, design, design2, version)
 {
   bayesBisurvreg.writeHeaders(dir=dir, dim=1, nP=design$n, doubly=doubly,
                               prior.init=prior.init, store=store, design=design, design2=design2)
@@ -47,24 +47,51 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
   }
 
   ## Files with sampled G-splines - distribution of the random intercept
-  if (design$nrandom){
-    write.headers.Gspline(dir=dir, dim=1, nP=design$ncluster, label="_b", gparmi=priorb.di$GsplI,
-                          store.a=store$a.b, store.y=FALSE, store.r=store$r.b, care.of.y=FALSE)
+  if (version == 32){
+    clean.Gspline(dir=dir, label="_b", care.of.y=FALSE)
+    clean.Gspline(dir=dir, label="_b2", care.of.y=FALSE)
+
+    sink(paste(dir, "/D.sim", sep = ""), append = FALSE)
+    D <- diag(2)
+    rows <- row(D)[lower.tri(row(D), diag = TRUE)]
+    cols <- col(D)[lower.tri(col(D), diag = TRUE)]            
+    cat("det", paste("D.", rows, ".", cols, sep = ""), "\n", sep = "      ")
+    sink()         
   }
   else{
-    clean.Gspline(dir=dir, label="_b", care.of.y=FALSE)
-  }    
-
-  if (doubly){
+    file.remove(paste(dir, "/D.sim", sep = ""))
+    
     if (design$nrandom){
-      write.headers.Gspline(dir=dir, dim=1, nP=design2$ncluster, label="_b2", gparmi=priorb2.di$GsplI,
-                            store.a=store$a.b2, store.y=FALSE, store.r=store$r.b2, care.of.y=FALSE)
+      write.headers.Gspline(dir=dir, dim=1, nP=design$ncluster, label="_b", gparmi=priorb.di$GsplI,
+                            store.a=store$a.b, store.y=FALSE, store.r=store$r.b, care.of.y=FALSE)
+    }
+    else{
+      clean.Gspline(dir=dir, label="_b", care.of.y=FALSE)
+    }    
+
+    if (doubly){
+      if (design$nrandom){
+        write.headers.Gspline(dir=dir, dim=1, nP=design2$ncluster, label="_b2", gparmi=priorb2.di$GsplI,
+                              store.a=store$a.b2, store.y=FALSE, store.r=store$r.b2, care.of.y=FALSE)
+      }
+      else{
+        clean.Gspline(dir=dir, label="_b2", care.of.y=FALSE)
+      }     
     }
     else{
       clean.Gspline(dir=dir, label="_b2", care.of.y=FALSE)
-    }     
+    }
+  }  
+
+  ## Files with sampled values of correlation coefficient between the random intercepts and its Fisher Z transform
+  if (version == 31){
+    sink(paste(dir, "/rho_b.sim", sep = ""), append = FALSE)
+    cat("rho    Z\n")
+    sink()
   }
   else{
-    clean.Gspline(dir=dir, label="_b2", care.of.y=FALSE)
-  }    
+    file.remove(paste(dir, "/rho_b.sim", sep = ""))
+  }  
+
+  
 }

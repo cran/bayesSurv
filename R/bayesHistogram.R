@@ -23,6 +23,7 @@ bayesHistogram <- function(
       dir = getwd())
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   store <- bayesHistogram.checkStore(store)
 
   ## Give a function call to be recorded in a resulting object.

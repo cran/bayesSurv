@@ -36,6 +36,7 @@ predictive2 <- function(
 )                        
 {
    thispackage = "bayesSurv"
+   #thispackage = NULL
    
    transform = function(t){log(t)}
    dtransform = function(t){1/t}
@@ -62,6 +63,13 @@ predictive2 <- function(
    if (length(quantile) == 0) only.aver <- TRUE
    n.quantile <- ifelse(only.aver, 0, length(quantile))
    
+   ## Onset/event? (Needed only by version = 32)
+   ## ==========================================
+   if (extens == "") Onset <- 1
+   else{
+     if (extens == "_2") Onset <- 0
+     else                warning("Somewhat strange value of the argument extens")
+   }  
    
    ## C++ parameters to hold 'betaGamma' object
    ## ==========================================
@@ -171,31 +179,52 @@ predictive2 <- function(
        mcmc.par.b <- list(type.update.a.b="slice", k.overrelax.a.b=1, k.overrelax.sigma.b=1, k.overrelax.scale.b=1)
        init.b <- list(b=rep(0, des$ncluster), lambda.b=1, sigma.b=0.3, gamma.b=0, scale.b=1, intercept.b=0, a.b=numeric(0))
        obj.b <- bayessurvreg3.priorb(prior.b=prior.b, init=init.b, design=des, mcmc.par=mcmc.par.b)
-     }    ## end of if (version == 3)
+     }    ## end of if (version == 3)     
      else{
-       if (sum(!is.na(match(filesindir, paste("D", extens, ".sim", sep=""))))){
-         DD <- read.table(paste(dir, "/D", extens, ".sim", sep = ""), nrows = 1)
-         lD <- 0.5*(des$nrandom*(1 + des$nrandom))
-         if (length(DD) != lD + 1){
-           stop(paste("File D.sim should contain ", lD+1, " columns, however it has ", length(DD), " columns", sep=""))
-         }             
+       if (version == 32){
+         lD <- 3
+         if (sum(!is.na(match(filesindir, paste("D", ".sim", sep=""))))){
+           DD <- read.table(paste(dir, "/D", ".sim", sep = ""), nrows = 1)
+           if (length(DD) != lD + 1){
+             stop(paste("File D.sim should contain ", lD+1, " columns, however it has ", length(DD), " columns", sep=""))
+           }             
+         }
+         else{
+           stop("File D.sim not found.")
+         }                  
        }
        else{
-         stop("File D.sim not found.")
-       }     
+         lD <- 0.5*(des$nrandom*(1 + des$nrandom))
+         if (sum(!is.na(match(filesindir, paste("D", extens, ".sim", sep=""))))){
+           DD <- read.table(paste(dir, "/D", extens, ".sim", sep = ""), nrows = 1)
+           if (length(DD) != lD + 1){
+             stop(paste("File D", extens, ".sim should contain ", lD+1, " columns, however it has ", length(DD), " columns", sep=""))
+           }             
+         }
+         else{
+           stop(paste("File D", extens, ".sim not found.", sep=""))
+         }         
+       }  
        
-       b.GsplI <- c(1, 0)
-       prior.b <- list(prior.D = "inv.wishart", df.D = des$nrandom+2,
-                       scale.D = diag(des$nrandom)[lower.tri(diag(des$nrandom), diag = TRUE)])
-       obj.b <- bayessurvreg2.priorb(prior.b = prior.b, init = list(beta=rep(0, des$nX)), design=des)            
+       b.GsplI <- c(1, 0)       
+       if (version == 32){
+         obj.b <- list()
+         obj.b$bparmI <- c(0, 1, des$ncluster, des$nwithin)
+         obj.b$bparmD <- rep(0, des$ncluster)
+       }
+       else{
+         prior.b <- list(prior.D = "inv.wishart", df.D = des$nrandom+2,
+                         scale.D = diag(des$nrandom)[lower.tri(diag(des$nrandom), diag = TRUE)])
+         obj.b <- bayessurvreg2.priorb(prior.b = prior.b, init = list(beta=rep(0, des$nX)), design=des)            
+       }         
      } 
-   }    ## end of if(design$nrandom)
+   }    ## end of if(des$nrandom)
    else{
      b.GsplI <- c(1, 0)     
      prior.b <- list()
      obj.b <- bayessurvreg2.priorb(prior.b = prior.b, init = list(beta=rep(0, des$nX)), design=des)
      M.b <- M
-   }    ## end of else(design$nrandom)
+   }    ## end of else(des$nrandom)
    names(b.GsplI) <- c("dim", "total.length")
    
 
@@ -321,6 +350,8 @@ predictive2 <- function(
                                skip             = as.integer(skip),
                                by               = as.integer(by),
                                nwrite           = as.integer(nwrite),
+                               version          = as.integer(version),
+                               Onset            = as.integer(Onset),
                                err              = integer(1),
               PACKAGE = thispackage)
 

@@ -34,6 +34,7 @@
 give.init.r <- function(init.r, init.y, dim, KK, gamma, sigma, c4delta, intcpt, scale)
 {
   thispackage <- "bayesSurv"
+  #thispackage <- NULL
 
   n <- length(init.y)/dim
   if (dim == 1) init.y <- matrix(init.y, ncol=1)

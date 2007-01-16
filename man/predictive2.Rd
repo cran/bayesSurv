@@ -178,7 +178,10 @@ predictive2.control(predict, only.aver, quantile, obs.dim,
   \describe{
     \item{bayesBisurvreg:}{\code{version = 0};}
     \item{bayessurvreg2:}{\code{version = 0};}
-    \item{bayessurvreg3:}{\code{version = 3}.}
+    \item{bayessurvreg3:}{with all distributions specified as G-splines:
+      \code{version = 3};}
+    \item{bayessurvreg3:}{with error distributions specified as
+      G-splines and bivariate normal random intercepts: \code{version = 32}.}    
   }
 }  %% end of item{version}
 \item{n}{number of covariate combinations for which the prediction will

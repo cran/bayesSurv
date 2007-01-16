@@ -31,6 +31,7 @@ bayesBisurvreg <- function
    dir = getwd())
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   store <- bayesBisurvreg.checkStore(store)
   
   transform = function(t){log(t)}

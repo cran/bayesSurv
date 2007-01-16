@@ -75,6 +75,7 @@ give.init.y <- function(init.y, dim, y.left, y.right, status)
 give.init.y2 <- function(init.y, init2.y, dim, design, design2, doubly)
 {
   thispackage <- "bayesSurv"
+  #thispackage <- NULL
   
   t1.left <- matrix(design$Y[, 1], nrow=dim)
   if (design$nY > 2) t1.right <- matrix(design$Y[, 2], nrow=dim)

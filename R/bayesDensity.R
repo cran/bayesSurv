@@ -25,6 +25,7 @@ bayesDensity <- function(dir = getwd(),
                          unstandard = TRUE)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   
   ## Check whether needed files are available
   ## * further,  whether at least first row has correct number of elements

@@ -1,6 +1,4 @@
-// ============================================================
-// ***** Header for ars.cpp: Adaptive rejection sampling *****
-// ============================================================
+/*** ARS2.h ***/
 #ifndef _ARS_H_
 #define _ARS_H_
 
@@ -16,6 +14,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+namespace ARS{
 
 void
 initial_(const int *ns, const int *m, const double *emax, const double *x, const double *hx, const double *hpx, 
@@ -59,6 +59,8 @@ expon_(const double *x, const double *emax)            /* exponential without un
 {
   return (*x < -(*emax)) ? 0.0 : exp(*x);
 } 
+
+}    /*** end of the namespace ARS ***/
 
 #ifdef __cplusplus
 }

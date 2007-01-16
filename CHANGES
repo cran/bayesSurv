@@ -1,0 +1,46 @@
+12/12/2006:
+  function 'bayessurvreg3' allows for bivariate normal random intercepts acting in the onset
+  and time-to-event part of the AFT model for doubly-interval-censored data
+
+07/12/2006:
+  function 'bayessurvreg3' allows for possible non-zero correlation between the random intercept
+  in the onset model and the random intercept in the time-to-event model when analyzing 
+  doubly-interval-censored data
+
+06/12/2006:
+  function 'rMVNorm' added
+
+30/10/2006:
+  FILE: Gspline_update_Scale.cpp, FUNCTION: Gspline::update_Scale
+  gx+j changed to gx+j_ in
+      full_sigma_logdens3(slice+j_, gx+j_, &dgx, &tmp, zeta_1, ipars, 3);
+      solver_newton_raphson(slice+j_, gx+j_, &dgx, &horiz, zeta_1, ipars, full_sigma_logdens3, 
+                            &iter_nr, &_maxiter_solver_nr, &_toler_solver_nr, &_epsilon, &err_nr);
+  
+  FILE: Gspline_update_sigma.cpp, FUNCTION: Gspline::update_sigma
+  gx+j changed to gx+j_ in
+      full_sigma_logdens3(slice+j_, gx+j_, &dgx, &tmp, zeta_1, ipars, 3);
+      solver_newton_raphson(slice+j_, gx+j_, &dgx, &horiz, zeta_1, ipars, full_sigma_logdens3, 
+                            &iter_nr, &_maxiter_solver_nr, &_toler_solver_nr, &_epsilon, &err_nr);
+
+27/11/2005: 
+  functions 'sampled.kendall.tau' and 'marginal.bayesGspline' added
+
+18/11/2005: 
+  function 'simult.pvalue' added
+
+09/12/2004: 
+  bug in in_output.cpp function 'writeToFiles' fixed.	If (!*storerP) 'writeAddToFile' function
+  was incorrectly called with its second argument equal to 'nstore' and not 1.
+
+08/12/2004: 
+  bug in bayessurvreg.design fixed. There was a problem in creating the design matrix
+  when random=~var and var was factor with two levels. I explicitely removed an intercept
+  term from the design matrix and in this case it caused creation of a two-column matrix
+  with one column=dummy for the first factor level and the second column=dummy for the 
+  second factor level. However I wanted just one-column matrix with a dummy for one of
+  the factor levels.
+
+
+
+

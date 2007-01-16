@@ -15,6 +15,7 @@
 ##
 ## 01/02/2005: start working on it
 ## 02/02/2005: finished
+## 07/12/2006: extension allowing inclulsion of the estimated correlation between the onset and time-to-event random intercepts
 ##
 bayessurvreg3 <- function
 (  formula,
@@ -36,12 +37,15 @@ bayessurvreg3 <- function
    prior.b2,
    init2,
    mcmc.par2 = list(type.update.a = "slice", k.overrelax.a = 1, k.overrelax.sigma = 1, k.overrelax.scale = 1,
-                   type.update.a.b = "slice", k.overrelax.a.b = 1, k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
+                    type.update.a.b = "slice", k.overrelax.a.b = 1, k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
+   priorinit.Nb,
+   rho = list(type.update = "fixed.zero", init=0, sigmaL=0.1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE, r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
                 a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
    dir = getwd())
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   store <- bayessurvreg3.checkStore(store)
 
   transform = function(t){log(t)}
@@ -106,19 +110,47 @@ bayessurvreg3 <- function
   init2$beta <- attr(betadi2, "init")
   prior.beta2 <- attr(betadi2, "prior.beta")
 
-  ## Priors and inits for random intercept
-  if (missing(prior.b)) prior.b <- list()  
-  reffdi <- bayessurvreg3.priorb(prior.b, init, des, mcmc.par)
-  prior.b  <- attr(reffdi, "prior.b")
-  init     <- attr(reffdi, "init")
-  mcmc.par <- attr(reffdi, "mcmc.par")
+  ## Priors and inits for rho (correlation coefficient between two random intercepts)
+  if (missing(priorinit.Nb)){
+    rho <- bayessurvreg3.checkrho(rho=rho, doubly=doubly)
+    if (rho$type.update == "fixed.zero") version <- 3
+    else                                 version <- 31
+  }
+  else{
+    rho <- list(type.update = "fixed.zero", init=0, sigmaL=0.1)
+    rho <- bayessurvreg3.checkrho(rho=rho, doubly=doubly)    
+    version <- 32
+  }  
   
   ## Priors and inits for random intercept
-  if (missing(prior.b2)) prior.b2 <- list()  
-  reffdi2 <- bayessurvreg3.priorb(prior.b2, init2, des2, mcmc.par2)
-  prior.b2  <- attr(reffdi2, "prior.b")
-  init2     <- attr(reffdi2, "init")
-  mcmc.par2 <- attr(reffdi2, "mcmc.par")
+  if (version %in% c(3, 31)){
+    if (missing(prior.b)) prior.b <- list()  
+    reffdi <- bayessurvreg3.priorb(prior.b=prior.b, init=init, design=des, mcmc.par=mcmc.par)
+    prior.b  <- attr(reffdi, "prior.b")
+    init     <- attr(reffdi, "init")
+    mcmc.par <- attr(reffdi, "mcmc.par")
+  
+    ## Priors and inits for random intercept
+    if (missing(prior.b2)) prior.b2 <- list()  
+    reffdi2 <- bayessurvreg3.priorb(prior.b=prior.b2, init=init2, design=des2, mcmc.par=mcmc.par2)
+    prior.b2  <- attr(reffdi2, "prior.b")
+    init2     <- attr(reffdi2, "init")
+    mcmc.par2 <- attr(reffdi2, "mcmc.par")
+  }
+  else{
+    if (version == 32){
+      Reff <- bayessurvreg3.priorinitNb(priorinit.Nb=priorinit.Nb, init=init, init2=init2, design=des, design2=des2, doubly=doubly)
+      reffdi  <- Reff$reffdi
+      reffdi2 <- Reff$reffdi2      
+      priorinit.Nb <- attr(Reff, "priorinit.Nb")
+      init         <- attr(Reff, "init")
+      init2        <- attr(Reff, "init2")
+      rm(list="Reff")
+    }
+    else{
+      stop("It is strange but I cannot determine the version to be used")
+    }  
+  }  
   
   ## Priors and inits for error G-spline, (censored) observations and observational allocations
   if (!doubly) prior2 <- list()
@@ -129,7 +161,7 @@ bayessurvreg3 <- function
   init2     <- attr(prinit, "init2")
   prior2    <- attr(prinit, "prior2")  
   mcmc.par2 <- attr(prinit, "mcmc.par2")
-
+    
   ## Compute quantities to determine the space needed to be allocated
   ##   and numbers of iterations in different phases
   if (nsimul$nburn >= nsimul$niter) nsimul$nburn <- nsimul$niter - 1
@@ -148,13 +180,16 @@ bayessurvreg3 <- function
 
   ## Write headers to files with stored values  
   bayessurvreg3.writeHeaders(dir=dir, doubly=doubly, prior.init=prinit,
-                             priorb.di=reffdi, priorb2.di=reffdi2, store=store, design=des, design2=des2)  
+                             priorb.di=reffdi, priorb2.di=reffdi2, store=store, design=des, design2=des2, version=version)  
 
   ## Combine similar parameters into one vector  
   dims <- c(nobs, as.numeric(doubly))
   storeV <- c(store$a, store$y, store$r, store$b, store$a2, store$y2, store$r2, store$b2, store$a.b, store$r.b, store$a.b2, store$r.b2)
   nsimul.run1 <- c(nrun[1], nsimul$nthin, nwrite.run[1])
   nsimul.run2 <- c(nrun[2], nsimul$nthin, nwrite.run[2])
+  names(nsimul.run1) <- names(nsimul.run2) <- c("niter", "nthin", "nwrite")
+  nsample1 <- nsimul.run1["niter"] %/% nsimul.run1["nthin"]
+  nsample2 <- nsimul.run2["niter"] %/% nsimul.run2["nthin"]  
 
   cat("Simulation started on                       ", date(), "\n", sep = "")
   fit <- .C("bayessurvreg2", as.character(dir),
@@ -191,10 +226,14 @@ bayessurvreg3 <- function
                              priorCovMatD1 = as.double(reffdi$GsplD),
                              priorCovMatI2 = as.integer(reffdi2$GsplI),
                              priorCovMatD2 = as.double(reffdi2$GsplD),
+                             rho             = as.double(rho$init),
+                             rho.accept      = integer(nsample1),
+                             rho.type.update = as.integer(rho$typeI),
+                             rho.sigmaL      = as.double(rho$sigmaL),           
                              iter = as.integer(prinit$iter),
                              nsimul = as.integer(nsimul.run1),
                              store = as.integer(storeV),
-                             version = as.integer(3),
+                             version = as.integer(version),
                              mainSimul = as.integer(0),            
                              err = integer(1),
            PACKAGE = thispackage)
@@ -204,8 +243,8 @@ bayessurvreg3 <- function
   
   ## Rewrite sampled values by new files
   bayessurvreg3.writeHeaders(dir=dir, doubly=doubly, prior.init=prinit,
-                             priorb.di=reffdi, priorb2.di=reffdi2, store=store, design=des, design2=des2)  
-
+                             priorb.di=reffdi, priorb2.di=reffdi2, store=store, design=des, design2=des2, version=version)  
+  
   ## Main simulation
   fit <- .C("bayessurvreg2", as.character(dir),
                              dims = as.integer(dims),
@@ -241,6 +280,10 @@ bayessurvreg3 <- function
                              priorCovMatD1 = as.double(fit$priorCovMatD1),
                              priorCovMatI2 = as.integer(fit$priorCovMatI2),
                              priorCovMatD2 = as.double(fit$priorCovMatD2),
+                             rho             = as.double(fit$rho),
+                             rho.accept      = integer(nsample2),
+                             rho.type.update = as.integer(fit$rho.type.update),
+                             rho.sigmaL      = as.double(fit$rho.sigmaL),                       
                              iter = as.integer(fit$iter),
                              nsimul = as.integer(nsimul.run2),
                              store = as.integer(fit$store),
@@ -251,23 +294,33 @@ bayessurvreg3 <- function
   
   if (fit$err != 0) stop ("Something went wrong during the simulation.")  
   cat("Simulation finished on                      ", date(), "   (iteration ", fit$iter, ")", "\n", sep = "")     
-
+  
   toreturn <- fit$iter
   attr(toreturn, "call") <- call
 
   attr(toreturn, "init") <- init
   attr(toreturn, "prior") <- prior
   attr(toreturn, "prior.beta") <- prior.beta
-  attr(toreturn, "prior.b") <- prior.b
   attr(toreturn, "mcmc.par") <- mcmc.par
 
   if (doubly){
     attr(toreturn, "init2") <- init2
     attr(toreturn, "prior2") <- prior2
     attr(toreturn, "prior.beta2") <- prior.beta2
-    attr(toreturn, "prior.b2") <- prior.b2
     attr(toreturn, "mcmc.par2") <- mcmc.par2
   }
+
+  if (version %in% c(3, 31)){
+    attr(toreturn, "prior.b") <- prior.b
+    if (doubly) attr(toreturn, "prior.b2") <- prior.b2
+  }  
+  if (version == 31){
+    attr(toreturn, "rho.accept") <- fit$rho.accept
+  }  
+
+  if (version == 32){
+    attr(toreturn, "priorinit.Nb") <- fit$priorinit.Nb
+  }  
     
   class(toreturn) <- "bayessurvreg3"
   return(toreturn)    

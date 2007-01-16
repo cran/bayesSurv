@@ -10,6 +10,8 @@
 // 02/02/2005: added possibility to adjust the G-spline intercept (version 30 and 31)
 //             * useful for evaluating fitted G-spline when there is G-spline random intercept in the model
 // 16/05/2005: computation of standardized G-splines allowed
+// 13/12/2006: version 32 implemented (fitted error density in the model with doubly censored data and bivariate normal
+//             random intercepts)
 //
 #include "bayesGspline.h"
 
@@ -53,16 +55,18 @@ using namespace std;
 //                   for error:         new intercept = sampled intercept + mean(random intcpt G-spline)
 //                   for random intcpt: new intercept = 0 - mean(random intcpt G-spline)
 //                                                      (0 = sampled (fixed) intercept)
+//                                32 if used after running 'bayessurvreg3' with bivariate random intercepts
+//
 // standard ..................... 0/1, 1 if I want to compute standardized (zero mean, unit variance) density
 //                                currently implemented only for version >= 30 (i.e. for univariate bayessurvreg3)
 // errP ......................... error flag
 //
 void
-bayesGspline(double* average,          double* value,   int* M_now,          const int* onlyAver,
-             char** dirP,              char** extensP,  char** extens_adjP,  
-             double* x1,               double* x2,   
-             const int* total_length,  const int* M,    const int* skip,     const int* by,         const int* nwrite,
-             const int* nx1,           int* nx2,        const int* version,  int* standard,
+bayesGspline(double *average,          double *value,   int *M_now,          const int *onlyAver,
+             char **dirP,              char **extensP,  char **extens_adjP,  
+             double *x1,               double *x2,   
+             const int *total_length,  const int *M,    const int *skip,     const int *by,         const int *nwrite,
+             const int *nx1,           int *nx2,        const int *version,  int *standard,
              int* errP)
 {
   try{
@@ -87,15 +91,15 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
 
     /* Open files with simulated G-splines and skip rows at the beginning of each file that are to be skipped */
     int k_effect;
-    double* w                 = (double*)  calloc(*total_length, sizeof(double));
-    int** ind_mu              = (int**)    calloc(dim, sizeof(int*));
-    double** mu               = (double**) calloc(dim, sizeof(double*));
-    double* sigma             = (double*)  calloc(dim, sizeof(double));
-    double* gamma             = (double*)  calloc(dim, sizeof(double));
-    double* delta             = (double*)  calloc(dim, sizeof(double));
-    double* intcpt            = (double*)  calloc(dim, sizeof(double));
-    double* scale             = (double*)  calloc(dim, sizeof(double));
-    double* min_half_inv_sig2 = (double*)  calloc(dim, sizeof(double));
+    double *w                 = (double*)  calloc(*total_length, sizeof(double));
+    int **ind_mu              = (int**)    calloc(dim, sizeof(int*));
+    double **mu               = (double**) calloc(dim, sizeof(double*));
+    double *sigma             = (double*)  calloc(dim, sizeof(double));
+    double *gamma             = (double*)  calloc(dim, sizeof(double));
+    double *delta             = (double*)  calloc(dim, sizeof(double));
+    double *intcpt            = (double*)  calloc(dim, sizeof(double));
+    double *scale             = (double*)  calloc(dim, sizeof(double));
+    double *min_half_inv_sig2 = (double*)  calloc(dim, sizeof(double));
     if (!w || !ind_mu || !mu || !sigma || !gamma || !delta || !min_half_inv_sig2 || !intcpt || !scale) 
       throw returnR("Not enough memory available in bayesGspline (w/ind_mu/mu/sigma/gamma/delta/intcpt/scale/min_half_inv_sigma2)", 1);
     for (j = 0; j < dim; j++){
@@ -113,7 +117,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
     /* Open file with adjustment intercept (for version 30 or 31) */
     std::string int_adjpath = dir + "/mixmoment" + extens_adj + ".sim";
     std::ifstream int_adjfile;
-    if (*version >= 30) open_File_toRead(int_adjfile, int_adjpath, *skip + 1);
+    if (*version == 30 || *version == 31) open_File_toRead(int_adjfile, int_adjpath, *skip + 1);
 
     /* Open file with mean and variance of the current g-spline (for version 30 or 31) */
     std::string mixmomentpath = dir + "/mixmoment" + extens + ".sim";
@@ -135,7 +139,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
     if (*standard){
       readMean_and_Scale(&E_gx, &sd_gx, 0, *skip, dim, mixmomentfile, mixmomentpath);
     }
-    if (*version >= 30){
+    if (*version == 30 || *version == 31){
       adjust_intercept(intcpt, version, &E_gx, 0, *skip, int_adjfile, int_adjpath);
     }
     evalGspline(average, pvalue, nx1, nx2, x, &dim, &k_effect, w, mu, intcpt, sigma, scale, min_half_inv_sig2, standard, &E_gx, &sd_gx);
@@ -153,7 +157,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
       if (*standard){
         readMean_and_Scale(&E_gx, &sd_gx, by_1, iter, dim, mixmomentfile, mixmomentpath);
       }
-      if (*version >= 30){
+      if (*version == 30 || *version == 31){
         adjust_intercept(intcpt, version, &E_gx, by_1, iter, int_adjfile, int_adjpath);
       }
       evalGspline(average, pvalue, nx1, nx2, x, &dim, &k_effect, w, mu, intcpt, sigma, scale, min_half_inv_sig2, standard, &E_gx, &sd_gx);
@@ -170,7 +174,7 @@ bayesGspline(double* average,          double* value,   int* M_now,          con
 
     /* Close files with simulated G-splines */
     closeGsplineFiles(kfile, wfile, mufile, sigmafile);
-    if (*version >= 30) int_adjfile.close();
+    if (*version == 30 || *version == 31) int_adjfile.close();
     if (*standard) mixmomentfile.close();
 
     /* McMC averages */

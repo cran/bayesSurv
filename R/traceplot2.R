@@ -40,7 +40,7 @@ traceplot2 <- function(x, chains, bty = "n", main, xlab, ...)
     if (is.null(attr(x, "dim"))) sample <- x
     else                         sample <- x[,chains[i]]
     
-    plot(iters, sample, type = "l", lty = 1, xlab = xlab, bty = bty)
+    plot(iters, sample, type = "l", lty = 1, xlab = xlab, bty = bty, ...)
     title(main = mmain)    
   }
 

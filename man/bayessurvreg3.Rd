@@ -2,11 +2,8 @@
 \alias{bayessurvreg3}
 \title{
   Cluster-specific accelerated failure time model for multivariate,
-  possibly doubly-interval-censored data. The random intercept can be
-  included in the model formula. Both the error distribution and the
-  distribution of the random intercept is expressed as a~penalized
-  univariate normal mixture with high number of components
-  (G-spline).
+  possibly doubly-interval-censored data with flexibly specified random effects
+  and/or error distribution.
 }
 \description{
   A function to estimate a regression model with possibly clustered
@@ -123,7 +120,42 @@
   \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006).
       
   If there are doubly-censored data the model of the same type as above
-  can be specified for both the onset time and the time-to-event.   
+  can be specified for both the onset time and the time-to-event.
+
+  In the case one wishes to link the random intercept of the onset model
+  and the random intercept of the time-to-event model, there are the
+  following possibilities.
+
+  \bold{Bivariate normal distribution} \cr
+  It is assumed that the pair of random intercepts from the onset and
+  time-to-event part of the model are normally distributed with zero
+  mean and an unknown covariance matrix \eqn{D}{D}.
+
+  A priori, the inverse covariance matrix \eqn{D^{-1}}{D^(-1)} is
+  addumed to follow a Wishart distribution.
+
+  
+  \bold{Unknown correlation between the basis G-splines} \cr
+  Each pair of basis G-splines describing the distribution of the random
+  intercept in the onset part and the time-to-event part of the model is
+  assumed to be correlated with an unknown correlation coefficient
+  \eqn{\varrho}{rho}. Note that this is just an experiment and is no
+  more further supported.
+
+  Prior distribution on \eqn{\varrho}{rho} is assumed to be
+  uniform. In the MCMC, the Fisher Z transform of the \eqn{\varrho}{rho}
+  given by
+  \deqn{Z =
+    -\frac{1}{2}\log\Bigl(\frac{1-\varrho}{1+\varrho}\Bigr)=\mbox{atanh}(\varrho)}{
+  Z = -0.5*log((1-rho)/(1+rho)) = atanh(rho)}
+  is sampled. Its prior is derived from the uniform prior
+  \eqn{\mbox{Unif}(-1,\;1)}{Unif(-1, 1)} put on \eqn{\varrho.}{rho.}
+
+  The Fisher Z transform is updated using the Metropolis-Hastings
+  alhorithm. The proposal distribution is given either by a normal
+  approximation obtained using the Taylor expansion of the full
+  conditional distribution or by a Langevin proposal (see Robert and
+  Casella, 2004, p. 318).  
 }
 \usage{
 bayessurvreg3(formula, random, formula2, random2,
@@ -140,6 +172,8 @@ bayessurvreg3(formula, random, formula2, random2,
                     k.overrelax.sigma = 1, k.overrelax.scale = 1,
                    type.update.a.b = "slice", k.overrelax.a.b = 1,
                    k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
+   priorinit.Nb,
+   rho = list(type.update = "fixed.zero", init=0, sigmaL=0.1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
                 r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
                 a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
@@ -223,6 +257,8 @@ bayessurvreg3(formula, random, formula2, random2,
     \code{prior} argument of \code{\link{bayesHistogram}} function for
     more detail. In this list
     also \sQuote{Specification} as described above is specified.
+
+    It is ignored if the argument \code{priorinit.Nb} is given.
 
     The item \code{prior.b$neighbor.system} can only be equal to
     \code{uniCAR} here.
@@ -346,12 +382,12 @@ bayessurvreg3(formula, random, formula2, random2,
 
       If \sQuote{Specification} is 1 this value is not changed by the MCMC
       and the initial value is always changed to one.}
-    \item{b}{a~vector of length \eqn{N}{N} of the initial values of random effects
+    \item{b}{a vector of length \eqn{N}{N} of the initial values of random effects
       \eqn{b_i,\;i=1,\dots,N}{b[i],\;i=1,..., N}
       for each cluster.}
-    \item{y}{a~vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
+    \item{y}{a vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
       with initial values of log-event-times.}
-    \item{r}{a~vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
+    \item{r}{a vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
       with initial
       component labels for each residual. All values must be between
       \eqn{-K}{-K} and \eqn{K.}{K.} See argument \code{init} of
@@ -363,7 +399,7 @@ bayessurvreg3(formula, random, formula2, random2,
       the function \code{\link{bayesHistogram}} for more details.}    
     } 
   }  %% end of item{init}  
-  \item{mcmc.par}{a~list specifying how some of the G-spline parameters
+  \item{mcmc.par}{a list specifying how some of the G-spline parameters
     related to the distribution of the error term and of the random
     intercept from \code{formula} and \code{random}
     are to be updated. See \code{\link{bayesBisurvreg}} for more
@@ -378,9 +414,14 @@ bayessurvreg3(formula, random, formula2, random2,
       \code{k.overrelax.a.b} \cr
       \code{k.overrelax.sigma.b} \cr
       \code{k.overrelax.scale.b}
-    }  
+    }
+
+    In contrast to \code{\link{bayesBisurvreg}} function arguments
+    \code{mcmc.par$type.update.a} and \code{mcmc.par$type.update.a.b} can also be equal to
+    \code{"block"} in which case all \eqn{a}{a} coefficients are updated
+    in 1 block using the Metropolis-Hastings algorithm. 
   }  %% end of item{mcmc.par}
-  \item{prior2}{a~list specifying the prior distribution of the G-spline
+  \item{prior2}{a list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model
     given by \code{formula2} and \code{random2}. See \code{prior} argument of
     \code{\link{bayesHistogram}} function for more detail.
@@ -388,21 +429,89 @@ bayessurvreg3(formula, random, formula2, random2,
   \item{prior.b2}{prior specification for the parameters related to the
     random effects from \code{formula2} and \code{random2}. This should
     be a~list with the same structure as \code{prior.b}.
+
+    It is ignored if the argument \code{priorinit.Nb} is given.    
   }  %% end of item{prior.b2}    
   \item{prior.beta2}{prior specification for the regression parameters
     of time-to-event in the case of doubly censored data (related to
     \code{formula2} and \code{random2}).
     This should be a~list with the same structure as \code{prior.beta}.
   }  %% end of item{prior.beta2}
-  \item{init2}{an~optional list with initial values for the MCMC related
+  \item{init2}{an optional list with initial values for the MCMC related
     to the model given by \code{formula2} and \code{random2}.
     The list has the same structure as \code{init}.
   }  %% end of item{init2}
-  \item{mcmc.par2}{a~list specifying how some of the G-spline parameters
+  \item{mcmc.par2}{a list specifying how some of the G-spline parameters
     related to \code{formula2} and \code{random2} are to be updated.
     The list has the same structure as \code{mcmc.par}.
   }  %% end of item{mcmc.par2}
-  \item{store}{a~list of logical values specifying which chains that are
+  \item{priorinit.Nb}{a list specifying the prior of the random intercepts
+    in the case of the AFT model with doubly-interval-censored data and
+    onset, time-to-event random intercepts following bivariate normal
+    distribution.
+
+    The list should have the following components.
+    \describe{
+      \item{init.D}{initial value for the covariance matrix of the onset
+	random intercept and time-to-event random intercept.
+
+	It can be specified either as a vector of length 3 giving the
+	lower triangle of the matrix or as a matrix 2 x 2.
+      }	
+      \item{df.Di}{degrees of freedom \eqn{\nu}{nu} for the Wishart prior of the
+	matrix \eqn{D^{-1}}{D^(-1)}.
+
+	Note that it must be higher than 1.
+      }
+      \item{scale.Di}{scale matrix \eqn{S}{S} for the Wishart prior of the
+	matrix \eqn{D^{-1}}{D^(-1)}.
+
+	It can be specified either as a vector of length 3 giving the
+	lower triangle of the matrix or as a matrix 2 x 2.
+
+	Note that a priori
+	\deqn{\mbox{E}(D^{-1}.) = \nu S}{E(D^{-1}) = nu*S.}
+      }      
+    }  
+  }    
+  \item{rho}{a list specifying possible correlation between the onset
+    random intercept and the time-to-event random intercept in the
+    experimental version of the model. If not given correlation is fixed
+    to \eqn{0}{0}.
+
+    It is ignored if the argument \code{priorinit.Nb} is given.
+    Ordinary users should not care about this argument.
+
+    The list can have the following components.
+    \describe{
+      \item{type.update}{character specifying how the Fisher Z transform
+	of the correlation coefficient is updated. Possible values are:
+	
+	\code{"fixed.zero"}:
+	correlation coefficient is fixed to \eqn{0}{0} and it is not updated.
+
+	\code{"normal.around.mode"}:
+        at each iteration of MCMC, 1 Newton-Raphson step from the
+	current point \eqn{Z}{Z} of the full conditional distribution is
+	performed, normal approximation is formed by Taylor expansion
+	and new point \eqn{Z}{Z} is sampled from that normal
+	approximation.
+
+	Note that this proposal does not work too well if the current
+	point \eqn{Z}{Z} lies in the area of low posterior mass. The
+	reason is that even 1 Newton-Raphson step usually leads to the
+	area of high posterior probability mass and the proposal is
+	``too ambisious''.
+	
+	\code{"langevin"}.
+	 at each iteration of MCMC, new point \eqn{Z}{Z} is sampled
+	 using the Langevin algorithm. A scale parameter (see below)
+	 must cerefully be chosen for this algorithm to ensure that the
+	 acceptance rate is about 50--60\% (Robert, Casella, 2004, p. 319).
+      }		
+    }  
+  }  
+  \item{store}{a list of logical values specifying which chains that are
     not stored by default are to be stored. The list can have the
     following components.
     \describe{
@@ -842,7 +951,11 @@ bayessurvreg3(formula, random, formula2, random2,
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
   \emph{Submitted.} \cr
-  See \code{Komarek_Lesaffre_2006.pdf}.  
+  See \code{Komarek_Lesaffre_2006.pdf}.
+
+  Robert C. P. and Casella, G. (2004).
+  \emph{Monte Carlo Statistical Methods, Second Edition.}
+  New York: Springer Science+Business Media.
 }
 \author{
   \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}

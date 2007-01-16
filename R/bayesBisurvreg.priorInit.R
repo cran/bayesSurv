@@ -23,6 +23,7 @@
 bayesBisurvreg.priorInit <- function(dim, prior, init, design, mcmc.par, prior2, init2, design2, mcmc.par2, doubly)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   
   if (dim < 1 | dim > 2) stop("dim parameter must be either 1 or 2")
 

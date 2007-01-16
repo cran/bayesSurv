@@ -39,6 +39,7 @@ bayessurvreg2 <- function
    dir = getwd())
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   store <- bayessurvreg2.checkStore(store)
 
   transform = function(t){log(t)}
@@ -172,6 +173,10 @@ bayessurvreg2 <- function
                              priorCovMatD1 = as.double(reffdi$DparmD),
                              priorCovMatI2 = as.integer(reffdi2$DparmI),
                              priorCovMatD2 = as.double(reffdi2$DparmD),
+                             rhob       = as.double(0),
+                             rho.accept = as.integer(0),
+                             rhobI      = as.integer(0),
+                             rhobD      = as.double(0),            
                              iter = as.integer(prinit$iter),
                              nsimul = as.integer(nsimul.run1),
                              store = as.integer(storeV),
@@ -221,6 +226,10 @@ bayessurvreg2 <- function
                              priorCovMatD1 = as.double(fit$priorCovMatD1),
                              priorCovMatI2 = as.integer(fit$priorCovMatI2),
                              priorCovMatD2 = as.double(fit$priorCovMatD2),
+                             rhob       = as.double(0),
+                             rho.accept = as.integer(0),
+                             rhobI      = as.integer(0),
+                             rhobD      = as.double(0),
                              iter = as.integer(fit$iter),
                              nsimul = as.integer(nsimul.run2),
                              store = as.integer(fit$store),

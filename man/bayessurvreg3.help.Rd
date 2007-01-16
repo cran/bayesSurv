@@ -5,6 +5,8 @@
 \alias{bayessurvreg3.priorBeta}
 \alias{bayessurvreg3.priorb}
 \alias{bayessurvreg3.writeHeaders}
+\alias{bayessurvreg3.priorinitNb}
+\alias{bayessurvreg3.checkrho}
 \title{
   Helping functions for Bayesian regression with an error distribution
   smoothed using G-splines
@@ -26,47 +28,64 @@ bayessurvreg3.priorBeta(prior.beta, init, design)
 bayessurvreg3.priorb(prior.b, init, design, mcmc.par)
 
 bayessurvreg3.writeHeaders(dir, doubly, prior.init,
-   priorb.di, priorb2.di, store, design, design2)
+   priorb.di, priorb2.di, store, design, design2,
+   version)
+
+bayessurvreg3.priorinitNb(priorinit.Nb, init, init2,
+   design, design2, doubly)
+
+bayessurvreg3.checkrho(rho, doubly)
 }
 \arguments{
-  \item{store}{a~list as required by the argument \code{store} of the
+  \item{store}{a list as required by the argument \code{store} of the
     function \code{\link{bayessurvreg2}}}
-  \item{prior}{a~list as required by the argument \code{prior} of the
+  \item{prior}{a list as required by the argument \code{prior} of the
     function \code{\link{bayessurvreg3}}}
-  \item{prior2}{a~list as required by the argument \code{prior2} of the
+  \item{prior2}{a list as required by the argument \code{prior2} of the
     function \code{\link{bayessurvreg3}}}
-  \item{init}{a~list as required by the argument \code{init} of the
+  \item{init}{a list as required by the argument \code{init} of the
     function \code{\link{bayessurvreg3}}}
-  \item{init2}{a~list as required by the argument \code{init2} of the
+  \item{init2}{a list as required by the argument \code{init2} of the
     function \code{\link{bayessurvreg3}}}
-  \item{mcmc.par}{a~list as required by the argument \code{mcmc.par} of the
+  \item{mcmc.par}{a list as required by the argument \code{mcmc.par} of the
     function \code{\link{bayessurvreg3}}}
-  \item{mcmc.par2}{a~list as required by the argument \code{mcmc.par2} of the
+  \item{mcmc.par2}{a list as required by the argument \code{mcmc.par2} of the
     function \code{\link{bayessurvreg3}}}
-  \item{design}{an~object as returned by the function
+  \item{design}{an object as returned by the function
     \code{\link{bayessurvreg.design}} related to either the onset time
     if doubly censored observations or to the event time. Remark:
     \code{design$Y} contains original times and NOT their logarithmic transformations.}
-  \item{design2}{an~object as returned by the function
+  \item{design2}{an object as returned by the function
     \code{\link{bayessurvreg.design}} related to time-to-event
     if doubly censored observations. Remark:
     \code{design2$Y} contains original times and NOT their logarithmic transformations.}    
   \item{doubly}{logical indicating whether the response is doubly
     censored or not}  
-  \item{prior.beta}{a~list as required by the argument \code{prior.beta} or
+  \item{prior.beta}{a list as required by the argument \code{prior.beta} or
     \code{prior.beta2} of the function \code{\link{bayessurvreg3}}}
-  \item{prior.b}{a~list as required by the argument \code{prior.b} or
+  \item{prior.b}{a list as required by the argument \code{prior.b} or
     \code{prior.b2} of the function \code{\link{bayessurvreg3}}}  
   \item{init}{a~list as required by the argument \code{init} or \code{init2}
     of the function \code{\link{bayessurvreg3}}}
   \item{dir}{path to the directory where the sampled values are to be
     stored}
-  \item{prior.init}{a~list as returned by the function
+  \item{prior.init}{a list as returned by the function
     \code{\link{bayessurvreg3.priorInit}}}
-  \item{priorb.di}{a~list as returned by the function
+  \item{priorb.di}{a list as returned by the function
     \code{\link{bayessurvreg3.priorb}}}
-  \item{priorb2.di}{a~list as returned by the function
-    \code{\link{bayessurvreg3.priorb}}}  
+  \item{priorb2.di}{a list as returned by the function
+    \code{\link{bayessurvreg3.priorb}}}
+  \item{priorinit.Nb}{a list as required by the argument
+    \code{priorinit.Nb} of the function \code{\link{bayessurvreg3}}}
+  \item{rho}{a list as required by the argument \code{rho}
+    of the function \code{\link{bayessurvreg3}}}
+  \item{version}{it is equal to 3 if either there is no correlation
+    coefficient between the onset and time-to-event random intercepts or
+    this correlation coefficient is fixed to 0
+
+    It is equal to 31 if we are estimating correlation coefficient
+    between the onset and time-to-event random intercepts.
+  }
 }
 \value{
 Some lists.

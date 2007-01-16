@@ -587,7 +587,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
-  Bayesian semi-parametric accelerated failurew time model for paired
+  Bayesian semi-parametric accelerated failure time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
   

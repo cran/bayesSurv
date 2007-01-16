@@ -1,6 +1,15 @@
-// Adaptive rejection sampling
-//  and some additional supporting functions
-
+/*** ARS2.cpp ***/
+//
+//     AUTHOR:  Arnost Komarek (my name in TeX: Arno\v{s}t Kom\'arek)
+//              akom@email.cz
+//
+//    CREATED:  15/01/2007
+//              as a copy of ars.cpp from the bayesSurv package
+//
+// PURPOSE: Adaptive rejection sampling and some additional supporting functions
+//
+/* ********************************************************************************* */
+//
 // Original ars.f written by P. Wild and W. R. Gilks
 
 // Rewritten from ars.c by Arnost Komarek 14/09/2004
@@ -15,13 +24,15 @@
 	-lf2c -lm   (in that order)
         -> this is not necessary with the C++ version of the code
 */
-#include "ars.h"
+
+#include "ARS2.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 //  #include "f2c.h"
 
+namespace ARS{
 
 // Subroutine initial_:
 // ====================
@@ -1014,6 +1025,7 @@ quantile_(const int* iwv, const double* rwv, const int* nprob, const double* pro
 
 } /* end of quantile_ */
 
+}    /*** end of the namespace ARS***/
 
 #ifdef __cplusplus
 	}

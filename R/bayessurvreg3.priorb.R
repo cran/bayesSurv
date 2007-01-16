@@ -15,8 +15,7 @@
 ##    \code{prior} parameter of this function or the function \code{\link{bayessurvreg2}}
 ## }
 bayessurvreg3.priorb <- function(prior.b, init, design, mcmc.par)
-{
-
+{  
   if (design$nrandom){
 
     if(length(init) == 0) ininit <- "arnost"

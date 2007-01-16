@@ -38,7 +38,7 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
     \item{bayesHistogram:}{
       always \code{extens = ""}
     }
-    \item{bayesBisurvreg:}{\eqn{\quad}{ }
+    \item{bayesBisurvreg:}{
 
       \itemize{
          \item to compute the bivariate distribution of the \emph{error} term for
@@ -49,7 +49,7 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
            \code{extens = "_2"};
       }	 
     }
-    \item{bayessurvreg2:}{\eqn{\quad}{ }
+    \item{bayessurvreg2:}{
 
       \itemize{
          \item to compute the distribution of the \emph{error} term for
@@ -60,7 +60,7 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
            \code{extens = "_2"};
       }	   
     }
-    \item{bayessurvreg3:}{\eqn{\quad}{ }
+    \item{bayessurvreg3:}{
 
       \itemize{
          \item to compute the distribution of the \emph{error} term for
@@ -82,13 +82,13 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
 }
 \item{extens.adjust}{this argument is applicable for the situation when
   the MCMC chains were created using the function
-  \code{\link{bayessurvreg3}}, i.e. when both the distribution of the
+  \code{\link{bayessurvreg3}}, and when both the distribution of the
   error term and the random intercept was specified as the G-spline.
   
   In that case the location of the error term and the random intercept
   are separately not identifiable. Only the location of the sum
   \eqn{\varepsilon + b}{epsilon + b} can be estimated. For this reason,
-  the function \code{bayesGspline} always centers the distribuytion of
+  the function \code{bayesGspline} always centers the distribution of
   the random intercept to have a zero mean and adds its original mean to
   the mean of the distribution of the error term.
 
@@ -148,10 +148,17 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
 
        Use
        \code{version = 30} if you want to compute the density of the
-       \emph{error} term;
+       \emph{error} term.
 
+       Use
        \code{version = 31} if you want to compute the density of the
        \emph{random intercept}.
+
+       Use
+       \code{version = 32} if you want to compute the density of the
+       \emph{error} term in the model with doubly-interval-censored data
+       and bivariate normal distribution for random intercepts in the
+       onset and time-to-event parts of the model.
     }
   }
 }

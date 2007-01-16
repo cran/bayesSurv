@@ -19,6 +19,7 @@
 bayessurvreg2.priorb <- function(prior.b, init, design)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
   
   if (design$nrandom){
 

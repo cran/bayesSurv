@@ -12,6 +12,8 @@
 // 31/01/2005: possibility for normal random effects added to 'predictive_GS'
 // 07/02/2005: possibility for G-spline random intercept added to 'predictive_GS'
 // 20/04/2005: bug in 'evalPredFuns' causing SegFault in some cases fixed
+// 13/12/2006: version 32 implemented (prediction in the model with doubly censored data and bivariate normal
+//             random intercepts)
 //
 
 #include "predictive_GS.h"
@@ -78,9 +80,10 @@ extern "C"{
 // objBetaD[ ] .................. double parameters for betaGamma constructor
 
 // objbI[ ] ..................... integer parameters for RandomEff constructor (needed only if there are some random effects)
+//                                if version = 32: integer argument for RandomEff32::RE initializer
 // objbD[ ] ..................... double parameters for RandomEff constructor (needed only if there are some random effects)
 //                                *only space is needed, it can be filled by whatever
-
+//                                *if version = 32: space of length nCluster 
 // b_GsplI[] .................... needed G-spline parameters for random intercept (if its distribution is a G-spline)
 //    b_GsplI[0]          = dim (here only 1 is allowed)
 //    b_GsplI[1]          = total_length
@@ -100,22 +103,28 @@ extern "C"{
 // skip ......................... how many rows are to be skipped at the beginning of the sample
 // by ........................... only every 'by' G-spline will be taken into account
 // nwrite ....................... frequency of informing the user about the progress
+// version ...................... arbitrary or 32
+//                                if = 32, then model for doubly-interval censored data is assumed with G-spline errors
+//                                and bivariate normal random intercepts in the onset and time-to-event parts of the model
+// Onset ........................ only used by version = 32
+//                                equal to 1 if we are predicting the onset 
+//                                equak to 0 if we are predicting the event
 // errP ......................... error flag (0 on output if everything OK)
 //
 void
-predictive_GS(double* averDens,         double* averS,           double* averHaz,      double* averCumHaz,
-              double* valDens,          double* valS,            double* valHaz,       double* valCumHaz,
-              double* quantDens,        double* quantS,          double* quantHaz,     double* quantCumHaz,
-              const int* dimsP,         const double* X,         const int* obsdims,
-              int* M_now,               char** dirP,             char** extensP,       char** extens_adjP,
-              const int* GsplI,         
-              const int* objBetaI,      const double* objBetaD,
-              const int* objbI,         const double* objbD,
-              const int* b_GsplI,
-              const double* gridA,      const double* loggridA,  const int* ngrid,
-              double* probsA,           const int* nquant,       int* onlyAver,        const int* predictP,
-              const int* M,             const int* skip,         const int* by,        const int* nwrite,
-              int* errP)
+predictive_GS(double *averDens,         double *averS,           double *averHaz,      double *averCumHaz,
+              double *valDens,          double *valS,            double *valHaz,       double *valCumHaz,
+              double *quantDens,        double *quantS,          double *quantHaz,     double *quantCumHaz,
+              const int *dimsP,         const double *X,         const int *obsdims,
+              int *M_now,               char **dirP,             char **extensP,       char **extens_adjP,
+              const int *GsplI,
+              const int *objBetaI,      const double *objBetaD,
+              const int *objbI,         const double *objbD,
+              const int *b_GsplI,
+              const double *gridA,      const double *loggridA,  const int *ngrid,
+              double *probsA,           const int *nquant,       int *onlyAver,        const int *predictP,
+              const int *M,             const int *skip,         const int *by,        const int *nwrite,
+              const int *version,       const int *Onset,        int *errP)
 {
   try{
     GetRNGstate();
@@ -131,25 +140,25 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
     string extens_adj = *extens_adjP;
 
     /*** Dimensionality parameters ***/
-    const int* nobs     = dimsP;
-    const int* ncluster = dimsP + 1;
-    const int* nwithin  = dimsP + 2;
+    const int *nobs     = dimsP;
+    const int *ncluster = dimsP + 1;
+    const int *nwithin  = dimsP + 2;
     const int M_now_max = *M_now;
 
     /*** What to predict? ***/
-    const int* predDens   = predictP + 0;
-    const int* predS      = predictP + 1;
-    const int* predHaz    = predictP + 2;
-    const int* predCumHaz = predictP + 3;
+    const int *predDens   = predictP + 0;
+    const int *predS      = predictP + 1;
+    const int *predHaz    = predictP + 2;
+    const int *predCumHaz = predictP + 3;
 
     /*** Quantiles ***/
     if (*nquant <= 0) *onlyAver = 1;
 
     /*** Needed G-spline parameters      ***/
-    const int* dim          = GsplI + 0;
-    const int* total_length = GsplI + 1;
-    const int* GsplK        = GsplI + 2;          /* K1 (and K2) */
-    int* Glength            = (int*) calloc(*dim, sizeof(int));
+    const int *dim          = GsplI + 0;
+    const int *total_length = GsplI + 1;
+    const int *GsplK        = GsplI + 2;          /* K1 (and K2) */
+    int *Glength            = (int*) calloc(*dim, sizeof(int));
     if (!Glength) throw returnR("Not enough memory available in predictive_GS (Glength)", 1);
     for (j = 0; j < *dim; j++) Glength[j] = 2*GsplK[j] + 1;
 
@@ -168,75 +177,91 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
     *beta = BetaGamma(objBetaI, objBetaD);
 
     /*** Object for random effects      ***/
-    RandomEff* bb = new RandomEff;
-    bool reff_NORMAL = true;
+    RandomEff *bb        = new RandomEff;
+    RandomEff32::RE *db  = new RandomEff32::RE;
+    bool reff_NORMAL = true;                      /** BUT NOT version = 32 !**/
 
-    if (beta->nRandom()){
-      *bb = RandomEff(objbI, objbD);
-      if (bb->type_prior() == Gspline_) reff_NORMAL = false;
+    /*** Objects for bivariate normal random effects in version = 32 ***/
+    double *dval, *bval, *dbval;
+    double D32[7] = {1, 0, 1,  2,  1, 0, 1};                /** parD argument for RandomEff32::RE initializer  (filled arbitrary) **/
+    if (*version == 32){
+      reff_NORMAL = false;
+      dval = (double*) calloc(objbI[2], sizeof(double));        // objbI[2] = nCluster
+      bval = (double*) calloc(objbI[2], sizeof(double));        // objbI[2] = nCluster
+      RandomEff32::init(db, dval, bval, D32, objbI, objbI);
+      if (*Onset) dbval = dval;
+      else        dbval = bval;
+    }
+    else{
+      if (beta->nRandom()){
+        *bb = RandomEff(objbI, objbD);
+        if (bb->type_prior() == Gspline_) reff_NORMAL = false;
+      }
     }
 
     
     /*** Object for covariance matrix of random effects                              ***/
     /*** or arrays for G-spline parameters definig distribution of random effects    ***/
-    CovMatrix* DD = new CovMatrix;
+    CovMatrix *DD = new CovMatrix;
     const int nD = (beta->nRandom() * (beta->nRandom() + 1)) / 2;
 
-    const int* dim_b          = b_GsplI + 0;
-    const int* total_length_b = b_GsplI + 1;
+    const int *dim_b          = b_GsplI + 0;
+    const int *total_length_b = b_GsplI + 1;
     int k_effect_b;
-    int* rM_b = &itemp;
+    int *rM_b = &itemp;
     double *cum_w_b = &dtemp;
     double *sig_scale_b = &dtemp;
     double *prop_mu_b = &dtemp;
 
-    if (beta->nRandom()){
-      if (reff_NORMAL){
-        int DDparmI[2];
-        DDparmI[0] = beta->nRandom();
-        DDparmI[1] = InvWishart;                                       /** it does not matter what is filled here **/
-        double* DDparmD = (double*) calloc(2*nD + 1, sizeof(double));
-        if (!DDparmD) throw returnR("Not enough memory available in predictive_GS (DDparmD)", 1);
-        for (j = 0; j < beta->nRandom(); j++){                         /** initial cov matrix and scale matrix equal to identity  **/
-          ix = (j * (2*beta->nRandom() - j + 1))/2;                    /** again, it does not matter what is filled here          **/
-          DDparmD[ix] = DDparmD[nD + 1 + ix] = 1.0;                    /** initial matrix must only be positive definite          **/
-          for (i = j+1; i < beta->nRandom(); i++){                     /** to pass the CovMatrix constructor                      **/
-            DDparmD[ix + i - j] = DDparmD[nD + 1 + ix + i - j] = 0.0;
+    if (*version != 32){
+      if (beta->nRandom()){
+        if (reff_NORMAL){
+          int DDparmI[2];
+          DDparmI[0] = beta->nRandom();
+          DDparmI[1] = InvWishart;                                       /** it does not matter what is filled here **/
+          double *DDparmD = (double*) calloc(2*nD + 1, sizeof(double));
+          if (!DDparmD) throw returnR("Not enough memory available in predictive_GS (DDparmD)", 1);
+          for (j = 0; j < beta->nRandom(); j++){                         /** initial cov matrix and scale matrix equal to identity  **/
+            ix = (j * (2*beta->nRandom() - j + 1))/2;                    /** again, it does not matter what is filled here          **/
+            DDparmD[ix] = DDparmD[nD + 1 + ix] = 1.0;                    /** initial matrix must only be positive definite          **/
+            for (i = j+1; i < beta->nRandom(); i++){                     /** to pass the CovMatrix constructor                      **/
+              DDparmD[ix + i - j] = DDparmD[nD + 1 + ix + i - j] = 0.0;
+            }
           }
+          DDparmD[nD] = beta->nRandom() + 2;                              /** 'prior degrees of freedom', it does not matter what   **/
+          *DD = CovMatrix(DDparmI, DDparmD);
+          free(DDparmD);
         }
-        DDparmD[nD] = beta->nRandom() + 2;                              /** 'prior degrees of freedom', it does not matter what   **/
-        *DD = CovMatrix(DDparmI, DDparmD);
-        free(DDparmD);
+        else{                          /** G-spline random effects **/
+          cum_w_b     = (double*) calloc(*total_length_b, sizeof(double));
+          prop_mu_b   = (double*) calloc(*total_length_b, sizeof(double));
+          sig_scale_b = (double*)  calloc(*dim_b, sizeof(double));
+          rM_b        = (int*) calloc(*ncluster, sizeof(int));
+          if (!cum_w_b || !prop_mu_b || !sig_scale_b) throw returnR("Not enough memory available in predictive_GS (cum_w_b/sig_scale_b)", 1);
+          if (!rM_b) throw returnR("Not enough memory available in predictive_GS (rM_b)", 1);
+        }
       }
-      else{                          /** G-spline random effects **/
-        cum_w_b     = (double*) calloc(*total_length_b, sizeof(double));
-        prop_mu_b   = (double*) calloc(*total_length_b, sizeof(double));
-        sig_scale_b = (double*)  calloc(*dim_b, sizeof(double));
-        rM_b        = (int*) calloc(*ncluster, sizeof(int));
-        if (!cum_w_b || !prop_mu_b || !sig_scale_b) throw returnR("Not enough memory available in predictive_GS (cum_w_b/sig_scale_b)", 1);
-        if (!rM_b) throw returnR("Not enough memory available in predictive_GS (rM_b)", 1);
-      }
-    }
+    }  /** end of if (*version != 32) **/
 
     /*** Space for linear predictors    ***/
-    double* linPred = (double*) calloc(*nobs, sizeof(double));
+    double *linPred = (double*) calloc(*nobs, sizeof(double));
     if (!linPred) throw returnR("Not enough memory available in predictive_GS (linPred)", 1);
     for (i = 0; i < *nobs; i++) linPred[i] = 0.0;
 
     /*** Allocate memory for needed quantities from simulated G-splines ***/
     int k_effect;
-    double* sigma         = (double*)  calloc(*dim, sizeof(double));
-    double* gamma         = (double*)  calloc(*dim, sizeof(double));
-    double* delta         = (double*)  calloc(*dim, sizeof(double));
-    double* intcpt        = (double*)  calloc(*dim, sizeof(double));
-    double* scale         = (double*)  calloc(*dim, sizeof(double));
-    double* delta_sig     = (double*)  calloc(*dim, sizeof(double));
-    double* inv_sig_scale = (double*)  calloc(*dim, sizeof(double));
+    double *sigma         = (double*)  calloc(*dim, sizeof(double));
+    double *gamma         = (double*)  calloc(*dim, sizeof(double));
+    double *delta         = (double*)  calloc(*dim, sizeof(double));
+    double *intcpt        = (double*)  calloc(*dim, sizeof(double));
+    double *scale         = (double*)  calloc(*dim, sizeof(double));
+    double *delta_sig     = (double*)  calloc(*dim, sizeof(double));
+    double *inv_sig_scale = (double*)  calloc(*dim, sizeof(double));
     if (!sigma || !gamma || !delta || !inv_sig_scale || !intcpt || !scale || !delta_sig) 
       throw returnR("Not enough memory available in predictive_GS (sigma/gamma/delta/intcpt/scale/delta_sig/inv_sig_scale)", 1);
 
-    double** w_marg           = (double**) calloc(*dim, sizeof(double*));
-    double** mu_sig_marg      = (double**) calloc(*dim, sizeof(double*));
+    double **w_marg           = (double**) calloc(*dim, sizeof(double*));
+    double **mu_sig_marg      = (double**) calloc(*dim, sizeof(double*));
     if (!w_marg || !mu_sig_marg)
       throw returnR("Not enough memory available in predictive_GS (w_marg/sc_mu_marg)", 1);
     for (j = 0; j < *dim; j++){
@@ -246,27 +271,37 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
     }
 
     /*** Open files with simulated G-splines ***/
-    std::string kpath = dir + "/mixmoment" + extens + ".sim";    
-    std::string wpath = dir + "/mweight" + extens + ".sim";
-    std::string mupath = dir + "/mmean" + extens + ".sim";       
+    std::string kpath     = dir + "/mixmoment" + extens + ".sim";    
+    std::string wpath     = dir + "/mweight" + extens + ".sim";
+    std::string mupath    = dir + "/mmean" + extens + ".sim";       
     std::string sigmapath = dir + "/gspline" + extens + ".sim";
     std::ifstream kfile, wfile, mufile, sigmafile;
     openGsplineFiles(kfile, wfile, mufile, sigmafile, kpath, wpath, mupath, sigmapath, *skip + 1);   /* skip also header */
 
     /*** Open files with simulated remaining quantities ***/
     std::string betapath = dir + "/beta" + extens + ".sim";
-    std::string Dpath    = dir + "/D" + extens + ".sim";
-    std::ifstream betafile, Dfile;
+    std::ifstream betafile;
 
-    std::string kpath_b = dir + "/mixmoment" + extens_adj + ".sim";    
-    std::string wpath_b = dir + "/mweight" + extens_adj + ".sim";
-    std::string mupath_b = dir + "/mmean" + extens_adj + ".sim";       
+    std::string Dpath    = dir + "/D" + extens + ".sim";
+    std::ifstream Dfile;
+
+    std::string D32path  = dir + "/D" + ".sim";
+    std::ifstream D32file;
+
+    std::string kpath_b     = dir + "/mixmoment" + extens_adj + ".sim";    
+    std::string wpath_b     = dir + "/mweight" + extens_adj + ".sim";
+    std::string mupath_b    = dir + "/mmean" + extens_adj + ".sim";       
     std::string sigmapath_b = dir + "/gspline" + extens_adj + ".sim";
     std::ifstream kfile_b, wfile_b, mufile_b, sigmafile_b;
 
     openRegresFiles(betafile, Dfile, betapath, Dpath, *skip + 1, beta->nbeta(), beta->nRandom(), reff_NORMAL);    /* skip also header */
-    if (beta->nRandom() && !reff_NORMAL){
-      openGsplineFiles(kfile_b, wfile_b, mufile_b, sigmafile_b, kpath_b, wpath_b, mupath_b, sigmapath_b, *skip + 1);
+    if (*version == 32){     
+      openD32File(D32file, D32path, *skip + 1);     /* skip also header */
+    }
+    else{    
+      if (beta->nRandom() && !reff_NORMAL){
+        openGsplineFiles(kfile_b, wfile_b, mufile_b, sigmafile_b, kpath_b, wpath_b, mupath_b, sigmapath_b, *skip + 1);
+      }
     }
 
     /*** Reset averages ***/
@@ -276,28 +311,35 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
     resetAverage(averCumHaz, nobs, ngrid, predCumHaz);
 
     /*** Loop over McMC iterations ***/
-    double* vvDens   = valDens;
-    double* vvS      = valS;
-    double* vvHaz    = valHaz;
-    double* vvCumHaz = valCumHaz;
-    const int* shift_pointer_inEval = (*onlyAver ? &ONE_INT : &M_now_max);
+    double *vvDens   = valDens;
+    double *vvS      = valS;
+    double *vvHaz    = valHaz;
+    double *vvCumHaz = valCumHaz;
+    const int *shift_pointer_inEval = (*onlyAver ? &ONE_INT : &M_now_max);
     
     if (*skip >= *M) throw returnR("More McMC iterations should be skipped than available", 1);    
     readGsplineFromFiles2(&k_effect, w_marg, mu_sig_marg, gamma, sigma, delta, intcpt, scale, delta_sig, 0, *skip, 
                           *dim, *total_length, GsplK,
                           kfile, wfile, mufile, sigmafile, kpath, wpath, mupath, sigmapath);
     readRegresFromFiles(beta, DD, 0, *skip, betafile, Dfile, betapath, Dpath, reff_NORMAL);
-    if (beta->nRandom()){
-      if (reff_NORMAL){
-        bb->predictNormalRE(beta, DD);
-      }
-      else{
-        readGsplineFromFiles3(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, 0, *skip, *dim_b, *total_length_b,
-                              kfile_b, wfile_b, mufile_b, sigmafile_b, kpath_b, wpath_b, mupath_b, sigmapath_b);
-        bb->predictGspl_intcpt(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, rM_b);
-      }
+    if (*version == 32){
+      readDfromFile(db, 0, *skip, D32file, D32path);
+      predict_db(db);
+      linPred_GS(linPred, beta, dbval, X, nwithin, nobs, ncluster);
     }
-    linPred_GS(linPred, beta, bb->bMP(), X, nwithin, nobs, ncluster);
+    else{
+      if (beta->nRandom()){
+        if (reff_NORMAL){
+          bb->predictNormalRE(beta, DD);
+        }
+        else{
+          readGsplineFromFiles3(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, 0, *skip, *dim_b, *total_length_b,
+                                kfile_b, wfile_b, mufile_b, sigmafile_b, kpath_b, wpath_b, mupath_b, sigmapath_b);
+          bb->predictGspl_intcpt(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, rM_b);
+        }
+      }
+      linPred_GS(linPred, beta, bb->bMP(), X, nwithin, nobs, ncluster);
+    }
     evalPredFuns(averDens, averS, averHaz, averCumHaz, vvDens, vvS, vvHaz, vvCumHaz, obsdims, nobs, ngrid, gridA, loggridA,
                  linPred, dim, Glength, w_marg, mu_sig_marg, intcpt, sigma, scale, inv_sig_scale, predictP, &_zero_weight,
                  shift_pointer_inEval);
@@ -318,17 +360,24 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
                             *dim, *total_length, GsplK,
                             kfile, wfile, mufile, sigmafile, kpath, wpath, mupath, sigmapath);
       readRegresFromFiles(beta, DD, by_1, iter, betafile, Dfile, betapath, Dpath, reff_NORMAL);
-      if (beta->nRandom()){
-        if (reff_NORMAL){
-          bb->predictNormalRE(beta, DD);
-        }
-        else{
-          readGsplineFromFiles3(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, by_1, iter, *dim_b, *total_length_b,
-                                kfile_b, wfile_b, mufile_b, sigmafile_b, kpath_b, wpath_b, mupath_b, sigmapath_b);
-          bb->predictGspl_intcpt(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, rM_b);
-        }
+      if (*version == 32){
+        readDfromFile(db, by_1, iter, D32file, D32path);
+        predict_db(db);
+        linPred_GS(linPred, beta, dbval, X, nwithin, nobs, ncluster);
       }
-      linPred_GS(linPred, beta, bb->bMP(), X, nwithin, nobs, ncluster);
+      else{
+        if (beta->nRandom()){
+          if (reff_NORMAL){
+            bb->predictNormalRE(beta, DD);
+          }
+          else{
+            readGsplineFromFiles3(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, by_1, iter, *dim_b, *total_length_b,
+                                  kfile_b, wfile_b, mufile_b, sigmafile_b, kpath_b, wpath_b, mupath_b, sigmapath_b);
+            bb->predictGspl_intcpt(&k_effect_b, cum_w_b, prop_mu_b, sig_scale_b, rM_b);
+          }
+        }
+        linPred_GS(linPred, beta, bb->bMP(), X, nwithin, nobs, ncluster);
+      }
       evalPredFuns(averDens, averS, averHaz, averCumHaz, 
                    vvDens, vvS, vvHaz, vvCumHaz, 
                    obsdims, nobs, ngrid, gridA, loggridA,
@@ -347,7 +396,12 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
     /*** Close files with simulated G-splines and regression quantities ***/
     closeGsplineFiles(kfile, wfile, mufile, sigmafile);
     closeRegresFiles(betafile, Dfile, beta->nbeta(), beta->nRandom(), reff_NORMAL);
-    if (beta->nRandom() && !reff_NORMAL) closeGsplineFiles(kfile_b, wfile_b, mufile_b, sigmafile_b);
+    if (*version == 32){
+      D32file.close();
+    }
+    else{
+      if (beta->nRandom() && !reff_NORMAL) closeGsplineFiles(kfile_b, wfile_b, mufile_b, sigmafile_b);
+    }
 
     /*** McMC averages ***/
     cumsum2average(averDens, M_now, nobs, ngrid, predDens);
@@ -414,17 +468,25 @@ predictive_GS(double* averDens,         double* averS,           double* averHaz
     free(linPred);
 
     delete DD;
-    if (beta->nRandom()){
-      if (reff_NORMAL){
-	//        delete DD;
-      }
-      else{
-        free(sig_scale_b);
-        free(prop_mu_b);
-        free(cum_w_b);
-        free(rM_b);
+   
+    if (*version == 32){
+      free(bval);
+      free(dval);
+    }
+    else{
+      if (beta->nRandom()){
+        if (reff_NORMAL){
+	  //        delete DD;
+        }
+        else{
+          free(sig_scale_b);
+          free(prop_mu_b);
+          free(cum_w_b);
+          free(rM_b);
+        }
       }
     }
+    delete db;
     delete bb;
     delete beta;
 

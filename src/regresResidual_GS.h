@@ -18,6 +18,10 @@ regresRes_GS(double* regResid,  const double* YsA,      const BetaGamma* bg,  co
              const double* XA,  const int* nincluster,  const int* nobs,      const int* ncluster);
 
 void
+regresRes_GS2006(double* regResid,  const double* YsA,      const BetaGamma* bg,  const double* bA,  
+                 const double* XA,  const int* nincluster,  const int* nobs,      const int* ncluster);
+
+void
 linPred_GS(double* linPred,   const BetaGamma* bg,    const double* bA,  
            const double* XA,  const int* nincluster,  const int* nobs,      const int* ncluster);
 

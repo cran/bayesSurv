@@ -38,6 +38,7 @@ bayessurvreg1 <- function(
      ...)
 {  
    thispackage = "bayesSurv"
+   #thispackage = NULL
   
    transform = function(t){log(t)}
    dtransform = function(t){1/t}

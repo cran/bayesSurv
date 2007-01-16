@@ -16,6 +16,8 @@
 sampled.kendall.tau <- function(dir = getwd(), extens = "", K, skip = 0, by = 1, last.iter, nwrite)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
+  
   dim <- 2                      ## only for bivariate G-splines
   n.in.mixmoment <- 1 + 2 + 3   ## number of columns in mixmoment.sim file
   if (length(K) != dim) stop(paste("K must be of length ", dim, sep=""))

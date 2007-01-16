@@ -28,6 +28,7 @@ bayesGspline <- function(dir = getwd(),
                          version = 0)
 {
   thispackage = "bayesSurv"
+  #thispackage = NULL
 
   if (version < 30) standard <- FALSE
   
@@ -96,13 +97,15 @@ bayesGspline <- function(dir = getwd(),
   }
 
   if (version >= 30){
-    if (!sum(!is.na(match(filesindir, paste("mixmoment", extens.adjust, ".sim", sep=""))))){
-      stop("File mixmoment_b.sim not found.")      
+    if (version != 30 & version != 31 & version != 32){
+      stop("version argument must be either 30 or 31 or 32")
     }
-    if (version != 30 & version != 31){
-      stop("version argument must be either 30 or 31")
+    if (version == 30 | version == 31){
+      if (!sum(!is.na(match(filesindir, paste("mixmoment", extens.adjust, ".sim", sep=""))))){
+        stop(paste("File mixmoment", extens.adjust, ".sim not found.", sep=""))      
+      }
     }
-  }  
+  }
     
   if (missing(skip)) skip <- 0
   else{

@@ -20,6 +20,7 @@
 #include "classBetaGamma.h"
 #include "classCovMatrix.h"
 #include "classRandomEff.h"
+#include "structRandomEff32.h"
 
 void
 openFiles_bayesHistogram(
@@ -53,7 +54,8 @@ writeToFiles_bayesHistogram(
     std::ofstream& mixmomentfile,      std::ofstream& mweightfile,      std::ofstream& mlogweightfile,
     std::ofstream& mmeanfile,          std::ofstream& Yfile,            std::ofstream& rfile,              
     std::ofstream& logposterfile,
-    const double& null_weight,         const int& prec,                 const int& width);
+    const double& null_weight,         const int& prec,                 const int& width,
+    const int& check_k_effect=1);
 
 void
 storeInArrays_bayesHistogram(
@@ -152,6 +154,12 @@ openRegresFiles(std::ifstream& betafile,      std::ifstream& Dfile,
 		const int& skip,              const int& nbeta,          const int& nRandom,   const bool& reff_NORMAL);
 
 void
+openD32File(std::ifstream& D32file,  const std::string& D32path,  const int& skip);
+
+void
+readDfromFile(RandomEff32::RE *data,  const int &skip,  const int &row,  std::ifstream &Dfile,   const std::string &Dpath);
+
+void
 readRegresFromFiles(BetaGamma* bg,                CovMatrix* DD,
                     const int& skip,              const int& row,
                     std::ifstream& betafile,      std::ifstream& Dfile,
@@ -174,5 +182,12 @@ writeToFiles_Gspl_intcpt(
     const int* storebP,      const int* writeAll,
     std::ofstream& bbfile,
     const int& prec,         const int& width);
+
+void
+writeToFiles_RandomEff32(
+    const RandomEff32::RE *db,
+    const int *storedP,         const int *storebP,      const int *writeAll,
+    std::ofstream &Dfile,       std::ofstream &ddfile,   std::ofstream &bbfile,
+    const int &prec,            const int &width);
 
 #endif
