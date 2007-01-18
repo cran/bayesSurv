@@ -56,7 +56,7 @@ simult.pvalue <- function(sample, precision=0.001, prob=0.95)
 
 print.simult.pvalue <- function(x, ...)
 {
-  level <- paste(x$prob*100, "\%", sep="")
+  level <- paste(x$prob*100, "%", sep="")
   cat("Simultaneous ", level, " rectangular credible region:\n")
   print(x$CR)
   cat("\n")
