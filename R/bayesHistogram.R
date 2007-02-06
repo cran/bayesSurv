@@ -25,7 +25,8 @@ bayesHistogram <- function(
   thispackage = "bayesSurv"
   #thispackage = NULL
   store <- bayesHistogram.checkStore(store)
-
+  nsimul <- bayessurvreg.checknsimul(nsimul)
+  
   ## Give a function call to be recorded in a resulting object.
   call <- match.call(expand.dots = TRUE)
 

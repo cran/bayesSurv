@@ -112,7 +112,7 @@ update(int *accept,               double *a,                    double *lambda,
   static const double A[1] = {0};            /** Left-hand side of the identifiability constraint (not used here)                           **/
   static const double e[1] = {0};            /** Right-hand side of the identifiability constraint (not used here)                          **/
   static const int e_nonZERO[1] = {0};       /** Indicator whether the RHS of the identifiability constraint is zero or not (not used here) **/
-  static const int mu_nonZERO0[1] = {0};     /** Indicator whether the prior mean of the GMRG is zero or not                                **/
+  //static const int mu_nonZERO0[1] = {0};     /** Indicator whether the prior mean of the GMRG is zero or not                                **/
   static const int mu_nonZERO1[1] = {1};     /** Indicator whether the prior mean of the GMRG is zero or not                                **/
 
 
@@ -121,7 +121,7 @@ update(int *accept,               double *a,                    double *lambda,
   static double lshape, lscale, log_A;
 
   const int na_order = (*na) - (*order);
-  const int LTna     = (*na)*(*na+1)/2;
+  //const int LTna     = (*na)*(*na+1)/2;
   const int na_1     = *na - 1;
   const int LTna_1   = na_1*(*na)/2;
 
@@ -400,11 +400,11 @@ ML_est(double *ll,             double *dll,           double *ddll,
 {
   *err = 0;
 
-  static const double HALF=0.5;
+  //static const double HALF=0.5;
 
-  static int j, na_1, info[1], Attempt[1], halfstep;
+  static int na_1, info[1], Attempt[1], halfstep;
   static double old_ll, relat_diff;
-  static double *aP;  
+  //static double *aP;  
   na_1 = *na - 1;
 
 
@@ -597,7 +597,7 @@ ll1(double *ll,             double *dll,
 {
   static int j;
   static double *dllP;
-  static const double *wP, *wP2, *QaP, *wRef, *QaRef;
+  static const double *wP, *QaP, *wRef, *QaRef;
   static const int *NP, *NRef;
 
   /*** Value of the log-likelihood ***/
@@ -677,7 +677,7 @@ ll2(double *ll,             double *dll,                 double *ddll,          
 {
   static int j, i, iband;
   static double *ddllP;
-  static const double *QP, *wP, *wP2, *wRef;
+  static const double *QP, *wP, *wP2;
   static double *m0, *M;
 
   /*** Set-up pointers for working arrays ***/
@@ -918,7 +918,7 @@ extern "C"{
 
 
       /*** Cleaning ***/
-    CLEANING:
+      //CLEANING:
       Rprintf("\n");
       free(Qa);
       free(Da);

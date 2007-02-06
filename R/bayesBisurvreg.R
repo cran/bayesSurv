@@ -33,6 +33,7 @@ bayesBisurvreg <- function
   thispackage = "bayesSurv"
   #thispackage = NULL
   store <- bayesBisurvreg.checkStore(store)
+  nsimul <- bayessurvreg.checknsimul(nsimul)
   
   transform = function(t){log(t)}
   dtransform = function(t){1/t}

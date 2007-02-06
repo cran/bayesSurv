@@ -1,6 +1,7 @@
 \name{bayessurvreg.help}
 \alias{bayessurvreg.help}
 \alias{bayessurvreg.design}
+\alias{bayessurvreg.checknsimul}
 \title{
    Helping function for Bayesian survival regression models.
 }
@@ -12,9 +13,12 @@
 }
 \usage{
 bayessurvreg.design(m, formula, random, data, transform, dtransform)
+
+bayessurvreg.checknsimul(nsimul)
 }
 \arguments{
   \item{m, formula, random, data, transform, dtransform}{}
+  \item{nsimul}{a list}
 }
 \value{
   Some lists.

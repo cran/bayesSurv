@@ -10,10 +10,12 @@
 //    rwishartEye3:  11/12/2006 from rwishartEye2 (21/09/2006)
 //       rwishart3:  11/12/2006 from rwishart2    (21/09/2006)
 //
-//     rmvnorm2006:  06/12/2006
-//    rmvnormQ2006:  06/12/2006
-//    rmvnormC2006:  06/12/2006
-//    rmvnormR2006:  06/12/2006
+//             rmvnorm2006:  06/12/2006
+//         rmvnormZero2006:  30/01/2007
+//            rmvnormQ2006:  06/12/2006
+//        rmvnormQZero2006:  30/01/2007
+//            rmvnormC2006:  06/12/2006
+//            rmvnormR2006:  06/12/2006
 //
 // PURPOSE: Utilities for several multivariate distributions
 //          
@@ -230,7 +232,7 @@ extern "C"{
 /** ================================================================================= **/
 //
 // x[nx]:      OUTPUT: sampled value
-// b[nx]:      mean of the normal distribution
+// mu[nx]:     mean of the normal distribution
 // L[LT(nx)]:  lower triangle of the Cholesky decomposition of matrix Sigma,
 //             that is, Sigma = L*t(L)
 // nx:         dimension of the normal distribution
@@ -260,6 +262,37 @@ rmvnorm2006(double *x,  const double *mu,  const double *L,  const int *nx)
     xP++;
     muP++;
   }
+
+  return;
+}
+ 
+
+/***** rmvnormZero2006:  Sample from N(0, Sigma)                                   *****/
+/**                                                                                   **/
+/** Algorithm 2.3 on page 34 of Rue and Held (2005) is used                           **/
+/**                                                                                   **/
+/** ================================================================================= **/
+//
+// x[nx]:      OUTPUT: sampled value
+// L[LT(nx)]:  lower triangle of the Cholesky decomposition of matrix Sigma,
+//             that is, Sigma = L*t(L)
+// nx:         dimension of the normal distribution
+//
+void
+rmvnormZero2006(double *x,  const double *L,  const int *nx)
+{
+  static int i;
+  static double *xP;
+
+  /** Sample z ~ N(0, I) **/
+  xP = x;
+  for (i = 0; i < *nx; i++){
+    *xP = norm_rand();
+    xP++;
+  }
+
+  /** Compute v = L*z **/
+  AK_BLAS_LAPACK::a_La(x, L, nx);
 
   return;
 }
@@ -302,6 +335,37 @@ rmvnormQ2006(double *x,  const double *mu,  const double *L,  const int *nx)
     xP++;
     muP++;
   }
+
+  return;
+}
+
+
+/***** rmvnormQZero2006:  Sample from N(0, Q^{-1})                                 *****/
+/**                                                                                   **/
+/** Algorithm 2.4 on page 34 of Rue and Held (2005) is used                           **/
+/**                                                                                   **/
+/** ================================================================================= **/
+//
+// x[nx]:      OUTPUT: sampled value
+// L[LT(nx)]:  lower triangle of the Cholesky decomposition of matrix Q,
+//             that is, Q = L*t(L)
+// nx:         dimension of the normal distribution
+//
+void
+rmvnormQZero2006(double *x,  const double *L,  const int *nx)
+{
+  static int i;
+  static double *xP;
+
+  /** Sample z ~ N(0, I) **/
+  xP = x;
+  for (i = 0; i < *nx; i++){
+    *xP = norm_rand();
+    xP++;
+  }
+
+  /** Solve t(L)*v = z **/
+  AK_BLAS_LAPACK::chol_solve_backward(x, L, nx);
 
   return;
 }
@@ -382,35 +446,35 @@ extern "C"{
       /** Cholesky decomposition of QS **/
       AK_BLAS_LAPACK::chol_dpptrf(QS, nx, err);
       if (*err){
-        throw returnR("Error in rhoNorm.cpp: rmvnormR2006. Supplied covariance/precision matrix is not positive definite", 1);
+        throw returnR("Error in Mvtdist3.cpp: rmvnormR2006. Supplied covariance/precision matrix is not positive definite", 1);
       }
 
       switch (*version){
       case 0:
         for (int i = 0; i < *nrandom; i++){
-          rmvnorm2006(xP, mub, QS, nx);
+	  Mvtdist3::rmvnorm2006(xP, mub, QS, nx);
           xP += *nx;
         }
         break;
 
       case 1:
         for (int i = 0; i < *nrandom; i++){
-          rmvnormQ2006(xP, mub, QS, nx);
+          Mvtdist3::rmvnormQ2006(xP, mub, QS, nx);
           xP += *nx;
         }
         break;
 
       case 2:
-        rmvnormC2006(xP, mub, QS, nx);
+        Mvtdist3::rmvnormC2006(xP, mub, QS, nx);
         xP += *nx;
         for (int i = 1; i < *nrandom; i++){
-          rmvnormQ2006(xP, mub, QS, nx);
+          Mvtdist3::rmvnormQ2006(xP, mub, QS, nx);
           xP += *nx;
         }
         break;        
 
       default:
-        throw returnR("Error in rhoNorm.cpp: rmvnormR2006. Unknown value of the argument version", 1);
+        throw returnR("Error in Mvtdist3.cpp: rmvnormR2006. Unknown value of the argument version", 1);
       }
 
       PutRNGstate();

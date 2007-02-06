@@ -497,10 +497,8 @@ update4_ll12(double *expa,     double *sumexpa,   double *Da,           double *
              double *Qa,       double *w,         double *minw,
              const double *a,  const int *order,  const int *diffOper,  const int *na)
 {
-  static int j, i, end;
-  static double *wP, *expaP, *QaP;
-  static const double *DaP, *DaStartP;
-  static const int *diffOperP, *diffOperEndP;  
+  static int j;
+  static double *wP, *expaP;
 
   /*** expa, sumexpa, Da, min_half_aQa ***/
   update4_ll0(expa, sumexpa, Da, min_half_aQa, a, order, na);
@@ -536,7 +534,6 @@ update4_ll12(double *expa,     double *sumexpa,   double *Da,           double *
 void
 rltruncGamma(double *x,  const double *shape,  const double *scale,   const double *minx)
 {
-  int i;
   double u;  
 
   /* Rprintf("minx = %e, shape = %e, scale = %e\n", *minx, *shape, *scale);  */

@@ -47,7 +47,8 @@ bayessurvreg3 <- function
   thispackage = "bayesSurv"
   #thispackage = NULL
   store <- bayessurvreg3.checkStore(store)
-
+  nsimul <- bayessurvreg.checknsimul(nsimul)
+  
   transform = function(t){log(t)}
   dtransform = function(t){1/t}
   transform2 = function(t){t}
@@ -59,8 +60,8 @@ bayessurvreg3 <- function
   ## Extract all the design information from the function call
   ## Do not transform the response at this moment
   doubly <- ifelse(missing(formula2), FALSE, TRUE)
-  m <- match.call(expand.dots = FALSE)   
-  des <- bayessurvreg.design(m=m, formula=formula, random=random, data=data, transform=transform2, dtransform=transform2)  
+  m <- match.call(expand.dots = FALSE)
+  des <- bayessurvreg.design(m=m, formula=formula, random=random, data=data, transform=transform2, dtransform=transform2)
   if (doubly) des2 <- bayessurvreg.design(m=m, formula=formula2, random=random2, data=data, transform=transform2, dtransform=transform2)
   else        des2 <- list(nX = 0, n = des$n, nrandom = 0, randomInt = FALSE)
   

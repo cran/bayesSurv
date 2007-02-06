@@ -46,6 +46,7 @@ bayessurvreg1 <- function(
    sim.to.R <- FALSE                  ## this is here for a compatibility with an older code
                                       ## If you try to change sim.to.R into TRUE, you also need to redefine 'row.need' variable below 
    store <- bayessurvreg1.checkStore(store)
+   nsimul <- bayessurvreg.checknsimul(nsimul)
    
    ## Give a function call to be recorded in a resulting object.
    call <- match.call(expand.dots = TRUE)

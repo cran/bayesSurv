@@ -41,7 +41,8 @@ bayessurvreg2 <- function
   thispackage = "bayesSurv"
   #thispackage = NULL
   store <- bayessurvreg2.checkStore(store)
-
+  nsimul <- bayessurvreg.checknsimul(nsimul)
+  
   transform = function(t){log(t)}
   dtransform = function(t){1/t}
   transform2 = function(t){t}

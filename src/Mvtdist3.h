@@ -28,7 +28,13 @@ void
 rmvnorm2006(double *x,  const double *mu,  const double *L,  const int *nx);
 
 void
+rmvnormZero2006(double *x,  const double *L,  const int *nx);
+
+void
 rmvnormQ2006(double *x,  const double *mu,  const double *L,  const int *nx);
+
+void
+rmvnormQZero2006(double *x,  const double *L,  const int *nx);
 
 void
 rmvnormC2006(double *x,  double *b,  const double *L,  const int *nx);

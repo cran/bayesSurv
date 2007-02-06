@@ -792,7 +792,7 @@ dGMRF_inputArgs(double *log_dets,       double *LW,        double *V,
     *log_detsP -= log_AK(*LP);
     LP += j;
   }
-  log_detsP;
+  log_detsP++;
 
   /*** Compute (A*mu - e) ***/
   if (*e_nonZERO) AK_BLAS_LAPACK::a_aMinusb(Amu_e, e, *nc);
@@ -1200,7 +1200,7 @@ rscale(double *x,  const double *parD)
   static const double toler_rscale = 1e-3;      /** tolerance to detect convergence of the solver_newton_raphson                      **/
   static const double zero_rscale = 1e-10;      /** tolerance to detect zero first derivatives, not needed here since g'(x) = 1 + 1/x **/
 
-  static int iter, err;
+  static int iter;
   static double u, gx, dgx, ddgx, _diff, NRstep;
   static const double *parP;
 

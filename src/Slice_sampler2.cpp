@@ -1,4 +1,4 @@
-/*** AK_Optim.cpp ***/
+/*** Slice_sampler2.cpp ***/
 //
 //     AUTHOR:  Arnost Komarek (my name in TeX: Arno\v{s}t Kom\'arek)
 //              akom@email.cz

@@ -61,7 +61,7 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
    ## Design matrix for both fixed and random effects X
    ## (finally, always without the intercept)
      ## Temporarily, include always at least the intercept
-     ##  (to get nice rownames and initial estimates)
+     ##  (to get nice rownames and initial estimates)  
    attr(newTermsF, "intercept") <- 1
    Xinit <- model.matrix(newTermsF, mF)
    rnamesX <- row.names(Xinit)
@@ -81,8 +81,7 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
    }     
    indb <- if (nX) rep(-1, nX)                          ## initially, all effects are only fixed
            else    0
-
-   
+      
    ## Design matrix for random effects 
    randomInt <- FALSE
    nrandom <- 0
@@ -133,7 +132,7 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
    }     
    if (randomInt) names.random <- c("(Intercept)", names.random)
    nfixed <- nX - (nrandom - 1*randomInt)
-
+   
    ## Give indeces of factors in the design matrix, it was used to define MH blocks in the earlier version of this program
    n.factors <- 0
    n.in.factors <- NULL
@@ -186,10 +185,15 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
      nwithin <- apply(matrix(1:ncluster, ncol = 1), 1, "helpf")
    }
    else{
-     if (nX) X <-  as.matrix(X[,])
-     cluster <- 1:n
-     ncluster <- n
-     nwithin <- rep(1, n)
+     if (nX){
+       namesX <- cnamesX
+       if (nX == 1) X <- matrix(X, ncol=1)
+       else         X <-  as.matrix(X[,])
+       colnames(X) <- namesX
+       cluster <- 1:n
+       ncluster <- n
+       nwithin <- rep(1, n)
+     }  
    }     
    
    ## Transform the response
