@@ -49,7 +49,7 @@ Gspline::update_lambda()
     for (k = 0; k <= (_dim-1)*(!_equal_lambda); k++){
       switch (_prior_for_lambda[k]){
       case GMRF_Gspline_Util::_Fixed_:
-        return;
+        break;
 
       case GMRF_Gspline_Util::_Gamma_:
         shape = _prior_lambda[2*k] + 0.5*(_total_length - 1);
@@ -57,13 +57,13 @@ Gspline::update_lambda()
         if (rate <= 0) throw returnR("Gspline::update_lambda: Trap in update of lambda (non-positive rate parameter)", 1);
         scale = 1/rate;
         _lambda[k] = rgamma(shape, scale);
-        return;
+        break;
 
       case GMRF_Gspline_Util::_SDUnif_:
         shape = 0.5*(_total_length - 2);
         rate = -_penalty[k];
         rltruncGamma(_lambda + k, &shape, &rate, _prior_lambda + 2*k + 1, &ONE_INT, &ZERO_INT);           
-        return;
+        break;
 
       default:     
         throw returnR("C++ Error: Unimplemented prior for lambda appeared in Gspline::update_lambda", 1);

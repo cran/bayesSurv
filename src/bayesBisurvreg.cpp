@@ -231,7 +231,6 @@ bayesBisurvreg(char** dirP,             const int* dimsP,         const double* 
       _null_weight2 = _null_mass/g_y2->total_length();        
     }
 
-
     /** Arrays to store numbers of observations belonging to each mixture component  **/
     /** Subtract 1 from each rM (R -> C++ indeces) and check for consistency         **/
     int* mixtureN1 = (int*) calloc(g_y1->total_length(), sizeof(int));
