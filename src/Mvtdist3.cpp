@@ -15,7 +15,13 @@
 //            rmvnormQ2006:  06/12/2006
 //        rmvnormQZero2006:  30/01/2007
 //            rmvnormC2006:  06/12/2006
+//           rmvnormC2006b:  13/02/2007
 //            rmvnormR2006:  06/12/2006
+//
+//           ldmvnorm2007a:  13/02/2007
+//           ldmvnorm2007b:  13/02/2007
+//           ldmvnorm2006b:  13/02/2007
+//           ldmvnormC2006:  13/02/2007
 //
 // PURPOSE: Utilities for several multivariate distributions
 //          
@@ -420,6 +426,57 @@ rmvnormC2006(double *x,  double *b,  const double *L,  const int *nx)
 }
 
 
+/***** rmvnormC2006b:  Sample from N_C(b, Q) = N(Q^{-1}*b, Q^{-1})                  *****/
+/**                                                                                   **/
+/** Algorithm 2.5 on page 35 of Rue and Held (2005) is used                           **/
+/**                                                                                   **/
+/** ================================================================================= **/
+//
+// x[nx]:         OUTPUT: sampled value
+// tL_x_mu[nx]:   OUTPUT: t(L) * (sampled value minus mean)
+// b[nx]:         INPUT:  canonical mean of the normal distribution
+//                OUTPUT: mean of the normal distribution
+// L[LT(nx)]:     lower triangle of the Cholesky decomposition of matrix Q,
+//                that is, Q = L*t(L)
+// nx:            dimension of the normal distribution
+//
+void
+rmvnormC2006b(double *x,  double *tL_x_mu,  double *b,  const double *L,  const int *nx)
+{
+  static int i;
+  static double *xP, *tL_x_muP;
+  static const double *bP;
+
+  /** Solve L*w = b  **/
+  AK_BLAS_LAPACK::chol_solve_forward(b, L, nx);
+
+  /** Solve t(L)*mu = w **/
+  AK_BLAS_LAPACK::chol_solve_backward(b, L, nx);
+
+  /** Sample z ~ N(0, I) **/
+  tL_x_muP = tL_x_mu;
+  for (i = 0; i < *nx; i++){
+    *tL_x_muP = norm_rand();
+    tL_x_muP++;
+  }
+
+  /** Solve t(L)*v = z **/
+  AK_BLAS_LAPACK::copyArray(x, tL_x_mu, *nx);
+  AK_BLAS_LAPACK::chol_solve_backward(x, L, nx);
+
+  /** Compute x = mu + v **/
+  xP    = x;
+  bP    = b;
+  for (i = 0; i < *nx; i++){
+    *xP += *bP;
+    xP++;
+    bP++;
+  }
+
+  return;
+}
+
+
 /***** R wrapper to rmvnorm2006, rmvnormQ2006, rmvnormC2006                             *****/
 /**                                                                                        **/
 /** ====================================================================================== **/
@@ -484,6 +541,209 @@ extern "C"{
       return;
     }    
   } 
+}
+
+
+/***** ldmvnorm2006b:  Log-density of the normal distribution                       *****/
+/**                    N(mu, Q^{-1})                                                   **/
+/**                                                                                    **/
+/** ================================================================================== **/
+//
+// val[1]:       computed value
+// tL_x_mu[nx]:  t(L)*(x - mean)
+// L[LT(nx)]:    lower triangle of the Cholesky decomposition of matrix Q,
+//               that is, Q = L*t(L)
+// nx:           dimension of the normal distribution
+//
+void
+ldmvnorm2006b(double *val,  const double *tL_x_mu,  const double *L,  const int *nx)
+{
+  static int j;
+  static const double *LP;
+
+  AK_BLAS_LAPACK::ddot2(val, tL_x_mu, *nx);
+  *val *= -0.5;
+
+  LP = L;
+  for (j = *nx; j > 0; j--){
+    if (*LP < _AK_ZERO){
+      *val = R_NegInf;
+      return;
+    }
+    *val += log(*LP);
+    LP += j;
+  }
+  
+  *val -= (*nx)*_AK_LOG_SQRT_2PI;
+
+  return;
+}
+
+
+/* *************************************************************************************** */
+/***** ldmvnormC2006:  Log-density of N_C(b, Q) = N(Q^{-1}*b, Q^{-1})                  *****/
+/*                                                                                         */
+/* OUTPUT:                                                                                 */
+/*   val:  value of the log-density                                                        */
+/*     b:  t(L)*(x - mu), where mu = mean of the normal distribution                       */
+/*                                                                                         */
+/* INPUT:                                                                                  */
+/*   x:   vector hodling x                                                                 */
+/*   b:   canonical mean                                                                   */
+/*   L:   lower triangle of the Cholesky decomposition of Q, that is Q = L*t(L)            */
+/*  nx:   dimension of the normal distribution                                             */
+/*                                                                                         */
+/* --------------------------------------------------------------------------------------- */
+void
+ldmvnormC2006(double *val,  double *b,  const double *x,  const double *L,  const int *nx)
+{
+  static int i, j;
+  static double *bP, *resultP;
+  static const double *xP, *LP;
+  static double xtx;
+
+  /*** Compute mu = Q^{-1}*b   ***/
+  AK_BLAS_LAPACK::chol_solve_forward(b, L, nx);
+  AK_BLAS_LAPACK::chol_solve_backward(b, L, nx);
+
+  /*** Compute x - mu ***/
+  bP = b;
+  xP   = x;
+  for (i = 0; i < *nx; i++){
+    *bP = (*xP) - (*bP);
+    bP++;
+    xP++;
+  }
+
+  /*** Compute t(x - mu)*L and det(Q)^{1/2}  ***/
+  *val    = 0.0;
+  resultP = b;
+  LP      = L;
+  for (i = 0; i < *nx; i++){
+    *resultP *= *LP;
+    if (*LP < _AK_ZERO){
+      *val = R_NegInf;
+      return;
+    }
+    *val += log(*LP);
+    LP++;
+
+    bP = resultP + 1;
+    for (j = i+1; j < *nx; j++){
+      *resultP += (*bP)*(*LP);
+      bP++;
+      LP++;
+    }
+    resultP++;
+  }
+
+  /*** Compute -0.5*t(x-mu)*L*t(L)*(x-mu) ***/
+  AK_BLAS_LAPACK::ddot2(&xtx, b, *nx);
+  *val -= 0.5*xtx;
+  *val -= (*nx)*_AK_LOG_SQRT_2PI;
+  
+  return;
+}
+
+
+
+/* ********************************************************************************* */
+/* ldmvnorm2007a: Log-density of the normal distribution                             */
+/*             Neither (2*pi)^(-q/2), nor |Sigma|^(-1/2) factor are computed.        */
+/*             That is -0.5*(x-mu)'Sigma^(-1)*(x-mu) is returned                     */
+/*                                                                                   */
+/* INPUT:                                                                            */
+/*        x_m:  working vector of length nx                                          */
+/*          x:  vector holding x                                                     */
+/*         mu:  vector holding mean                                                  */
+/*         Li:  Cholesky decomposition of the inverse variance matrix                */
+/*              that is Sigma^{-1} = Li*t(Li)                                        */
+/*              (lower triangle only)                                                */
+/*                                                                                   */
+/* OUTPUT:                                                                           */
+/*        x_m:  x_m(OUT) = t(x-mu)*L                                                 */
+/*                                                                                   */
+/* --------------------------------------------------------------------------------- */
+void
+ldmvnorm2007a(double *val,  double *x_m,  const double *x,  const double *mu,  const double *Li,  const int *nx)
+{
+  static int i, j;
+  double *resultP, *x_mP;
+  const double *xP, *muP, *LiP;
+
+  /*** x - mean ***/
+  x_mP = x_m;
+  xP   = x;
+  muP  = mu;
+  for (i = 0; i < *nx; i++){
+    *x_mP = (*xP) - (*muP);
+    x_mP++;
+    xP++;
+    muP++;
+  }
+
+  /*** (x - mean)'*Li             ***/
+  resultP = x_m;
+  LiP     = Li;
+  for (i = 0; i < *nx; i++){
+    *resultP *= *LiP;
+    LiP++;
+
+    x_mP = resultP + 1;
+    for (j = i+1; j < *nx; j++){
+      *resultP += (*x_mP)*(*LiP);
+      x_mP++;
+      LiP++;
+    }
+    resultP++;
+  }
+
+  /*** -(1/2)*(x - mean)'Sigma^{-1}(x - mean) ***/
+  AK_BLAS_LAPACK::ddot2(val, x_m, *nx);
+  *val *= (-0.5);
+
+  return;
+}
+
+
+/* ********************************************************************************* */
+/* ldmvnorm2007b: Log-density of the normal distribution                             */
+/*             Neither (2*pi)^(-q/2), nor |Sigma|^(-1/2) factor are computed.        */
+/*             That is -0.5*(x-mu)'Sigma^(-1)*(x-mu) is returned                     */
+/*                                                                                   */
+/*    It is assumed that Sigma^(-1) is diagonal                                      */
+/*                                                                                   */
+/* INPUT:                                                                            */
+/*          x:  vector holding x                                                     */
+/*         mu:  vector holding mean                                                  */
+/*     invVar:  diagonal elements of the inverse of the covariance matrix            */
+/*        nx:   dimension of the normal distribution                                 */      
+/*                                                                                   */
+/* --------------------------------------------------------------------------------- */
+void
+ldmvnorm2007b(double *val,  const double *x,  const double *mu,  const double *invVar,  const int *nx)
+{
+  static double x_mu;
+  static int i;
+  const double *xP, *muP, *iSigmaP;  
+  
+  xP      = x;
+  muP     = mu;
+  iSigmaP = invVar;
+  x_mu    = (*xP) - (*muP);
+  *val    = x_mu * (*iSigmaP) * x_mu;
+
+  for (i = 1; i < *nx; i++){
+    xP++;
+    muP++;
+    iSigmaP++;
+    x_mu = (*xP) - (*muP);   
+    *val += x_mu * (*iSigmaP) * x_mu;
+  }
+
+  *val *= (-0.5);
+
+  return;
 }
 
 }  /*** end of namespace Mvtdist3 ***/

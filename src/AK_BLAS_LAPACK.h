@@ -46,6 +46,9 @@ void
 a_aPlusb(double *a,  const double *b,  const int &length);
 
 void
+c_aPlusb(double *c,  const double *a,  const double *b,  const int &length);
+
+void
 a_aMinusb(double *a,  const double *b,  const int &length);
 
 void
@@ -87,6 +90,11 @@ extern "C"{
 
 extern "C"{
   void
+  c_ALTb(double *c,  const double *A,  const double *b,  const int *nb);
+}
+
+extern "C"{
+  void
   c_Ab(double *c,  const double *A,  const double *b,  const int *nrA,  const int *ncA);
 }
 
@@ -117,6 +125,9 @@ extern "C"{
 
 void
 ALT_ALTminusB(double *A,  const double *B,  const int &nrow);
+
+void
+ALT_addb2diag(double *A,  const double *b,  const int &nrow);
 
 void
 ALT_BLTremoveRowCol(double *A,  double *a,  const double *B,  const int &nrow,  const int &iremove);

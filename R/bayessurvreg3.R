@@ -56,7 +56,7 @@ bayessurvreg3 <- function
   
   ## Give a function call to be recorded in a resulting object.
   call <- match.call(expand.dots = TRUE)
-
+  
   ## Extract all the design information from the function call
   ## Do not transform the response at this moment
   doubly <- ifelse(missing(formula2), FALSE, TRUE)
@@ -93,7 +93,7 @@ bayessurvreg3 <- function
     nobs2 <- des2$n
     if (nobs != nobs2) stop("Inconsistent formula and formula2 (different number of observations indicated)")
   }
-
+  
   ## Priors and inits for beta parameters
   if (missing(init))        init <- list()
   if (missing(init2))       init2 <- list()
@@ -162,7 +162,7 @@ bayessurvreg3 <- function
   init2     <- attr(prinit, "init2")
   prior2    <- attr(prinit, "prior2")  
   mcmc.par2 <- attr(prinit, "mcmc.par2")
-    
+  
   ## Compute quantities to determine the space needed to be allocated
   ##   and numbers of iterations in different phases
   if (nsimul$nburn >= nsimul$niter) nsimul$nburn <- nsimul$niter - 1

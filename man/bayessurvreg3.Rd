@@ -950,7 +950,7 @@ bayessurvreg3(formula, random, formula2, random2,
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Submitted.} \cr
+  \emph{Journal of the American Statistical Association.} Accepted.\cr
   See \code{Komarek_Lesaffre_2006.pdf}.
 
   Robert C. P. and Casella, G. (2004).

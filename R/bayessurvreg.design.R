@@ -36,7 +36,7 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
    if (type == 'counting') stop ("Invalid survival type ('counting' is not implemented). ")
    n <- nrow(Y)
    nY <- ncol(Y)
-
+   
    ## Cluster indicators   
    cluster <- attr(TermsF, "specials")$cluster
    dropx <- NULL

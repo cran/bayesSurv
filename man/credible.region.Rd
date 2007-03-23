@@ -4,7 +4,7 @@
   Compute a simultaneous credible region (rectangle) from a sample for a vector valued parameter.
 }
 \description{
-  See the two references for more detail.
+  See references below for more details.
 }
 \usage{
 credible.region(sample, probs=c(0.90, 0.975))
@@ -37,12 +37,17 @@ parameters giving the confidence region.
 \references{
   Besag, J., Green, P., Higdon, D. and Mengersen, K. (1995).
   Bayesian computation and stochastic systems (with Discussion).
-  \emph{Statistical Science,} \bold{10}, 3 - 66. page 30
+  \emph{Statistical Science,} \bold{10}, 3 - 66, page 30
 
-  Held, L. (2004).
+  Held, L. (2004).  
   Simultaneous inference in risk assessment; a Bayesian perspective
   \emph{In: COMPSTAT 2004, Proceedings in Computational Statistics (J. Antoch, Ed.),}
   213 - 222, page 214
+  
+  Held, L. (2004b).
+  Simultaneous posterior probability statements from Monte Carlo output.
+  \emph{Journal of Computational and Graphical Statistics,} \bold{13},
+  20 - 35.
 }  
 \author{
   \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}

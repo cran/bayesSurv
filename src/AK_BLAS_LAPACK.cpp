@@ -20,6 +20,7 @@
 //                      add2diag:  10/11/2006
 //
 //                      a_aPlusb:  10/11/2006
+//                      c_aPlusb:  14/02/2007
 //                     a_aMinusb:  13/11/2006
 //                     c_aMinusb:  13/11/2006
 //                 a_alphaaPlusb:  14/11/2006
@@ -32,6 +33,7 @@
 //
 //                         a_tLa:  13/11/2006  (wrapper to BLAS 'dtpmv')
 //                          a_La:  13/11/2006  (wrapper to BLAS 'dtpmv')
+//                        c_ALTb:  14/02/2007  (wrapper to BLAS 'dspmv')
 //                          c_Ab:  14/11/2006  (wrapper to BLAS 'dgemv')
 //                         c_tAb:  14/11/2006  (wrapper to BLAS 'dgemv')
 //                    a_MinustAb:  16/11/2006  (wrapper to BLAS 'dgemv')
@@ -40,6 +42,7 @@
 //                         C_tAB:  14/11/2006  (wrapper to BLAS 'dgemm')
 //                         C_AtB:  17/11/2006  (wrapper to BLAS 'dgemm')
 //                 ALT_ALTminusB:  14/11/2006
+//                 ALT_addb2diag:  13/02/2007
 //           ALT_BLTremoveRowCol:  21/11/2006
 //        ALT_pp_BLTremoveRowCol:  21/11/2006
 //     ALT_BLT_min1b_minb1_plusb:  21/11/2006
@@ -340,6 +343,31 @@ a_aPlusb(double *a,  const double *b,  const int &length)
 
 
 /* ******************************************************************************** */
+/* c_aPlusb:  c = a + b                                                             */
+/*                                                                                  */
+/* ******************************************************************************** */
+void
+c_aPlusb(double *c,  const double *a,  const double *b,  const int &length)
+{
+  static int j;
+  static double *cP;
+  static const double *aP, *bP;
+
+  aP = a;
+  bP = b;
+  cP = c;
+  for (j = 0; j < length; j++){
+    *cP = (*aP) + (*bP);
+    aP++;
+    bP++;
+    cP++;
+  }
+
+  return;
+}
+
+
+/* ******************************************************************************** */
 /* a_aMinusb:  a = a - b                                                            */
 /*                                                                                  */
 /* ******************************************************************************** */
@@ -619,6 +647,32 @@ extern "C"{
   }
 }
 
+/* ******************************************************************************************************** */
+/* c_ALTb:  Compute c = A*b,                                                                                */
+/*        where A is a symmetric matrix from which only a lower triangular is stored in column major order  */
+/*        wrapper to BLAS 'dspmv'                                                                           */
+/*                                                                                                          */
+/* ******************************************************************************************************** */
+//
+// c[nb]:
+// A[LT(nb)]:
+// b[nb]:
+//
+extern "C"{
+  void
+  c_ALTb(double *c,  const double *A,  const double *b,  const int *nb)
+  {
+    static const char   *UPLO = "L";
+    static const double ALPHA = 1;
+    static const int    INCX  = 1;
+    static const double BETA  = 0;
+    static const int    INCY  = 1;
+    F77_CALL(dspmv)(UPLO, nb, &ALPHA, A, b, &INCX, &BETA, c, &INCY);
+
+    return;
+  }
+}
+
 
 /* ******************************************************************************** */
 /* c_Ab:   Compute c = A * b                                                        */
@@ -811,6 +865,35 @@ ALT_ALTminusB(double *A,  const double *B,  const int &nrow)
       AP++;
       BP++;
     }
+  }
+
+  return;
+}
+
+
+/* ******************************************************************************** */
+/* add2diag:   Add a vector b to the diagonal of the symmetric matrix whose         */
+/*             lower triangle is stored in A                                        */
+/*                                                                                  */
+/* ******************************************************************************** */
+//
+// A[LT(nrow)]:
+// b[nrow]:
+// nrow
+//
+void
+ALT_addb2diag(double *A,  const double *b,  const int &nrow)
+{
+  static int j;
+  static double *AP;  
+  static const double *bP;
+
+  AP = A;
+  bP = b;
+  for (j = nrow; j > 0; j--){
+    *AP += *bP;
+    AP += j;
+    bP++;
   }
 
   return;

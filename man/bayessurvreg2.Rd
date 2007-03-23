@@ -662,9 +662,12 @@ bayessurvreg2(formula, random, formula2, random2,
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. Lesaffre, E., and Legrand, C. (2006).
-  EORTC data article.
-  \emph{To be written.}    
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. Lesaffre, E., and Legrand, C. (2007).
+  Assessing baseline and treatment effect heterogeneity for survival
+  times between centers using a random effects accelerated failure time
+  model with flexible error distribution.
+  \emph{Submitted.} \cr
+  See \code{Komarek_Lesaffre_Legrand2007.pdf}.  
 }
 \author{
   \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
@@ -672,7 +675,7 @@ bayessurvreg2(formula, random, formula2, random2,
 \examples{
 ## See the description of R commands for
 ## the model with EORTC data,
-## analysis described in Komarek, Lesaffre and Legrand (2006),
+## analysis described in Komarek, Lesaffre and Legrand (2007),
 ## R commands will be soon available in the documentation
 ## directory of this package.
 }

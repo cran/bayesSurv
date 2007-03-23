@@ -26,7 +26,7 @@ bayesBisurvreg.priorInit <- function(dim, prior, init, design, mcmc.par, prior2,
   #thispackage = NULL
   
   if (dim < 1 | dim > 2) stop("dim parameter must be either 1 or 2")
-
+  
   ### Onset and times-to-event
   ### ========================
   if(length(init) == 0) ininit <- "arnost"
@@ -40,9 +40,8 @@ bayesBisurvreg.priorInit <- function(dim, prior, init, design, mcmc.par, prior2,
   tmp <- match("y", ininit2, nomatch=NA)
   if(is.na(tmp)) init2.y <- numeric(0)
   else           init2.y <- init2$y
-
-  yy <- give.init.y2(init.y, init2.y, dim, design, design2, doubly)    
   
+  yy <- give.init.y2(init.y, init2.y, dim, design, design2, doubly)    
   
   ### Prior/inits for the onset time/event time related quantities
   ### ============================================================
@@ -102,7 +101,7 @@ bayesBisurvreg.priorInit <- function(dim, prior, init, design, mcmc.par, prior2,
     else{
       tmp <- match("beta", ininit2, nomatch=NA)
       if (is.na(tmp)) stop("init2$beta should already be known...")
-      resid2 <- matrix(as.vector(t(yy$init2.y)) - design2$X %*% init2$beta, ncol=dim, byrow=TRUE)    
+      resid2 <- matrix(as.vector(t(yy$init2.y)) - design2$X %*% init2$beta, ncol=dim, byrow=TRUE)
     }
 
       ## Initial allocations:
