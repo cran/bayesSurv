@@ -83,7 +83,7 @@ give.init.y2 <- function(init.y, init2.y, dim, design, design2, doubly)
   status1 <- matrix(design$Y[, design$nY], nrow=dim)
   nP <- length(t1.left)
   n <- nP/dim
-
+  
   ### DOUBLY censored observations
   ### ----------------------------
   if (doubly){

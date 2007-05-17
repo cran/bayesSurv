@@ -16,7 +16,7 @@
   and Green (1997) and random effect \eqn{b_i}{b[i]} is normally distributed.
 
   See \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006) or
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2005)
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2007)
   for more detailed description of prior assumptions.
   
   Sampled values are stored on a disk to be further worked out by e.g.
@@ -608,11 +608,10 @@ bayessurvreg1(formula, random,
   Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
   
-\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
+\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2007).
 Bayesian accelerated failure time model for correlated interval-censored data
 with a normal mixture as an error distribution.
-\emph{Statistica Sinica.} Accepted.\cr
-See \code{Komarek_Lesaffre_2005.pdf}.
+\emph{Statistica Sinica}, \bold{17}, 549--569.
   
 Brooks, S. P., Giudici, P., and Roberts, G. O. (2003).
 Efficient construction of reversible jump Markov chain Monte Carlo
@@ -635,7 +634,7 @@ Discussion).
 ## See the description of R commands for
 ## the models described in
 ## Komarek (2006),
-## Komarek and Lesaffre (2005).
+## Komarek and Lesaffre (2007).
 ## 
 ## R commands available
 ## in the documentation

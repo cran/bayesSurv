@@ -216,22 +216,20 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
-  Bayesian accelerated failure time model with multivariate doubly-interval-censored data
-  and flexible distributional assumptions.
-  \emph{Journal of the American Statistical Association}. Accepted.\cr
-  See \code{Komarek_Lesaffre_2006.pdf}.
-
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
+  
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2007).
+  Bayesian accelerated failure time model with multivariate doubly-interval-censored data
+  and flexible distributional assumptions.
+  \emph{To appear in Journal of the American Statistical Association}.
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. Lesaffre, E., and Legrand, C. (2007).
-  Assessing baseline and treatment effect heterogeneity for survival
-  times between centers using a random effects accelerated failure time
+  Baseline and treatment effect heterogeneity for survival
+  times between centers in a random effects accelerated failure time
   model with flexible error distribution.
   \emph{Submitted.}
-  See \code{Komarek_Lesaffre_Legrand2007.pdf}.  
 }  
 \author{
   \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
@@ -241,14 +239,15 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
 ## the models described in
 ## Komarek (2006),
 ## Komarek and Lesaffre (2006),
-## Komarek and Lesaffre (2006b),
+## Komarek and Lesaffre (2007),
 ## Komarek, Lesaffre, and Legrand (2007).
 ## 
-## R commands available (or soon available)
+## R commands available
 ## in the documentation
 ## directory of this package
-## as tandmobCS.pdf, tandmobCS.R
-##    tandmobPA.pdf, tandmobPA.R.
+## as tandmobPA.pdf, tandmobPA.R,
+##    tandmobCS.pdf, tandmobCS.R,
+##    eortc.pdf.
 ##
 }
 \keyword{smooth}

@@ -26,7 +26,7 @@
   (see Leroy et al., 2005).
   
   This data set was then used in the analyses presented in
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006, 2006b).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006, 2007).
 
   \bold{IMPORTANT NOTICE:} It is possible to use these data for your
   research work under the condition that each manuscript is first
@@ -163,13 +163,12 @@
   K. Hoppenbrouwers (Youth Health Department, Catholic University Leuven; Flemish Association for Youth Health Care).
 }
 \references{
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2007).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Submitted}.  \cr
-  See \code{Komarek_Lesaffre_2006.pdf}.
+  \emph{To appear in Journal of the American Statistical Association}.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.

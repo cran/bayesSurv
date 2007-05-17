@@ -1484,7 +1484,7 @@ Gspline::update_k_effect()
   return;
 }
 
-/***** update_a_max_center_and_k_effect() *****/
+/***** update_a_max *****/
 void
 Gspline::update_a_max()
 {

@@ -105,7 +105,7 @@ marginal.bayesGspline(dir = getwd(), extens = "", K, grid1, grid2,
     Interval-Censored Data with Flexible Distributional Assumptions}.
     PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
@@ -117,7 +117,7 @@ marginal.bayesGspline(dir = getwd(), extens = "", K, grid1, grid2,
 ## See the description of R commands for
 ## the models described in
 ## Komarek (2006),
-## Komarek and Lesaffre (2006b),
+## Komarek and Lesaffre (2006),
 ## 
 ## R commands available
 ## in the documentation

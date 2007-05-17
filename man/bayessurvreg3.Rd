@@ -21,7 +21,7 @@
   posterior distribution of unknown quantities.
 
   For details, see \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006)
-  and \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006).
+  and \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2007).
 
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
@@ -99,7 +99,7 @@
     }  
   }
   Personally, I found Specification 2 performing better. In the paper
-  \eqn{\mbox{Kom{\'a}rek}}{Komarek} and Lesaffre (2006) only
+  \eqn{\mbox{Kom{\'a}rek}}{Komarek} and Lesaffre (2007) only
   Specification 2 is described.
 
   The mixture weights
@@ -115,9 +115,7 @@
 
   A~Bayesian model is set up for all unknown parameters. For more
   details I refer to \eqn{\mbox{Kom\'{a}rek and Lesaffre
-      (2006)}}{Komarek and Lesaffre (2006)} (manuscript can be
-  found in the documentation of this package) and to
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006).
+      (2007)}}{Komarek and Lesaffre (2007)}.
       
   If there are doubly-censored data the model of the same type as above
   can be specified for both the onset time and the time-to-event.
@@ -947,11 +945,10 @@ bayessurvreg3(formula, random, formula2, random2,
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
   
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2007).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Journal of the American Statistical Association.} Accepted.\cr
-  See \code{Komarek_Lesaffre_2006.pdf}.
+  \emph{To appear in Journal of the American Statistical Association.}
 
   Robert C. P. and Casella, G. (2004).
   \emph{Monte Carlo Statistical Methods, Second Edition.}
@@ -964,8 +961,8 @@ bayessurvreg3(formula, random, formula2, random2,
 ## See the description of R commands for
 ## the cluster specific AFT model
 ## with the Signal Tandmobiel data,
-## analysis described in Komarek and Lesaffre (2006),
-
+## analysis described in Komarek and Lesaffre (2007).
+##
 ## R commands available in the documentation
 ## directory of this package
 ## as tandmobCS.pdf, tandmobCS.R.

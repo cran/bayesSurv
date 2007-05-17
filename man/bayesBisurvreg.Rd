@@ -15,7 +15,7 @@
   MCMC sampling from the posterior distribution of unknown quantities.
 
   For details, see \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006) and
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006b).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006).
   
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1, 2}{T[i,l], i=1,..., N, l=1, 2}
@@ -87,7 +87,7 @@
     }  
   }
   Personally, I found Specification 2 performing better. In the paper
-  \eqn{\mbox{Kom{\'a}rek}}{Komarek} and Lesaffre (2006b) only
+  \eqn{\mbox{Kom{\'a}rek}}{Komarek} and Lesaffre (2006) only
   Specification 2 is described.
 
   The mixture weights
@@ -107,7 +107,7 @@
 
   A~Bayesian model is set up for all unknown parameters. For more
   details I refer to \eqn{\mbox{Kom\'{a}rek and Lesaffre
-      (2006b)}}{Komarek and Lesaffre (2006b)} 
+      (2006)}}{Komarek and Lesaffre (2006)} 
   and to \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006).
 
   If there are doubly-censored data the model of the same type as above
@@ -586,7 +586,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failure time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
@@ -602,7 +602,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 ## See the description of R commands for
 ## the population averaged AFT model
 ## with the Signal Tandmobiel data,
-## analysis described in Komarek and Lesaffre (2006b),
+## analysis described in Komarek and Lesaffre (2006),
 ##
 ## R commands available in the documentation
 ## directory of this package as

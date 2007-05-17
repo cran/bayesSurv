@@ -116,7 +116,7 @@ bayesHistogram(y1, y2,
   }    
   \item{prior}{a list that identifies prior hyperparameters and prior
     choices. See the paper \eqn{\mbox{Kom{\'a}rek}}{Komarek} and
-    Lesaffre (2006) and the PhD. thesis
+    Lesaffre (2007) and the PhD. thesis
     \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006) for more details.
     
     Some prior parameters can be guessed by the function itself. If you
@@ -792,11 +792,10 @@ bayesHistogram(y1, y2,
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2007).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Submitted.} \cr
-  See \code{Komarek_Lesaffre_2006.pdf}.
+  \emph{To appear in Journal of the American Statistical Association.}
 
   \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006b).
   Bayesian semi-parametric accelerated failurew time model for paired

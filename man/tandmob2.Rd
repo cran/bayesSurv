@@ -21,7 +21,7 @@
   This data set was used in the analyses presented in
   \eqn{\mbox{Kom\'{a}rek}}{Komarek} et al. (2005), in
   Lesaffre, \eqn{\mbox{Kom\'{a}rek}}{Komarek}, and Declerck (2005) and in
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2005).
+  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2007).
 
   \bold{IMPORTANT NOTICE:} It is possible to use these data for your
   research work under the condition that each manuscript is first
@@ -147,21 +147,18 @@
 \eqn{\mbox{Kom\'{a}rek,}}{Komarek,} A., Lesaffre, E.,
 \eqn{\mbox{H\"{a}rk\"{a}nen,}}{Harkanen,} T., Declerck, D., and
 Virtanen, J. I. (2005).
-A Bayesian analysis of multivariate doubly-interval-censored dental
-data.
+A Bayesian analysis of multivariate doubly-interval-censored dental data.
 \emph{Biostatistics,} \bold{6}, 145--155.
 
-\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
+\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2007).
 Bayesian accelerated failure time model for correlated interval-censored data
 with a normal mixture as an error distribution.
-\emph{Statistica Sinica.} Accepted. \cr
-See \code{Komarek_Lesaffre_2005.pdf}.
+\emph{Statistica Sinica,} \bold{17}, 549--569. 
 
-Lesaffre, E., \eqn{\mbox{Kom\'{a}rek},}{Komarek,} and Declerck,
-D. (2005).
+Lesaffre, E., \eqn{\mbox{Kom\'{a}rek},}{Komarek,} and Declerck, D. (2005).
 An overview of methods for interval-censored data with an emphasis on
 applications in dentistry.
-\emph{To appear in Statistical Methods in Medical Research.}
+\emph{Statistical Methods in Medical Research}, \bold{14}, 539--552.
 
 Vanobbergen, J., Martens, L., Lesaffre, E., and Declerck, D. (2000).
 The Signal-Tandmobiel project -- a longitudinal intervention health promotion

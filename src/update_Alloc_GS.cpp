@@ -21,7 +21,7 @@ using namespace std;
 //                              i.e. y_i[j] = regresResM[i*d + j]
 //                            * in the case of regression, these are y_i - beta'x_i - b_i'z_i
 //                              (where beta does not contain the intercept term)
-//                              - these residuals are not devided by the scale!!!
+//                              - these residuals are not divided by the scale!!!
 // nP ....................... number of observational vectors                
 // iwork .................... working array                                                                   [gg.total_length()]
 // dwork .................... working array                                                                   [gg.total_length()]

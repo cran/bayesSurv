@@ -80,11 +80,10 @@ bayesDensity(dir = getwd(), stgrid, centgrid, grid, n.grid = 100,
   Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2005).
+\eqn{\mbox{Kom\'arek}}{Komarek}, A., Lesaffre, E. (2007).
   Bayesian accelerated failure time model for correlated interval-censored data
   with a normal mixture as an error distribution.
-  \emph{Statistica Sinica.} Accepted.\cr
-  See \code{Komarek_Lesaffre_2005.pdf}.
+  \emph{Statistica Sinica}, \bold{17}, 549--569.
 }  
 \author{
   \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
@@ -93,7 +92,7 @@ bayesDensity(dir = getwd(), stgrid, centgrid, grid, n.grid = 100,
 ## See the description of R commands for
 ## the models described in
 ## Komarek (2006),
-## Komarek and Lesaffre (2005),
+## Komarek and Lesaffre (2007),
 ## 
 ## R commands available
 ## in the documentation

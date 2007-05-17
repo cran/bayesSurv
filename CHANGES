@@ -1,3 +1,7 @@
+27/03/2007:
+  FILE: Gspline_update_a.cpp, FUNCTION: full_a_pars_uniCAR
+  bug for order=3 when ia=1 or ija[0]=1 or ija[1]=1 fixed
+
 06/02/2007:
   bug in bayessurvreg.design fixed. There was a problem when there was only 1 covariate in the model.
 

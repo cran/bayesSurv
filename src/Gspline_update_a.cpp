@@ -326,7 +326,7 @@ Gspline::full_a_pars_uniCAR(const int* ija, double* mean, double* invvar) const
         }
         else
           if (ia == 1 || ia == _length[0] - 2){
-            if (ia == 1) *mean = (3*_a[0] + 12*_a[2] - 6*_a[3] + _a[5])/10; 
+            if (ia == 1) *mean = (3*_a[0] + 12*_a[2] - 6*_a[3] + _a[4])/10; 
             else         *mean = (_a[_length[0]-5] - 6*_a[_length[0]-4] + 12*_a[_length[0]-3] + 3*_a[_length[0]-1])/10;
             *invvar = 10*_lambda[0];
           }
@@ -423,7 +423,7 @@ Gspline::full_a_pars_uniCAR(const int* ija, double* mean, double* invvar) const
         }
         else
           if (ija[0] == 1 || ija[0] == nr - 2){
-            if (ija[0] == 1) mean1_2 = (3*_a[ija[1]*nr+0] + 12*_a[ija[1]*nr+2] - 6*_a[ija[1]*nr+3] + _a[ija[1]*nr+5])/10; 
+            if (ija[0] == 1) mean1_2 = (3*_a[ija[1]*nr+0] + 12*_a[ija[1]*nr+2] - 6*_a[ija[1]*nr+3] + _a[ija[1]*nr+4])/10; 
             else             mean1_2 = (_a[ija[1]*nr+nr-5] - 6*_a[ija[1]*nr+nr-4] + 12*_a[ija[1]*nr+nr-3] + 3*_a[ija[1]*nr+nr-1])/10;
             invvar1_2 = 10*_lambda[0];
           }
@@ -447,7 +447,7 @@ Gspline::full_a_pars_uniCAR(const int* ija, double* mean, double* invvar) const
         }
         else
           if (ija[1] == 1 || ija[1] == nc - 2){
-            if (ija[1] == 1) mean2_1 = (3*_a[0*nr+ija[0]] + 12*_a[2*nr+ija[0]] - 6*_a[3*nr+ija[0]] + _a[5*nr+ija[0]])/10; 
+            if (ija[1] == 1) mean2_1 = (3*_a[0*nr+ija[0]] + 12*_a[2*nr+ija[0]] - 6*_a[3*nr+ija[0]] + _a[4*nr+ija[0]])/10; 
             else             mean2_1 = (_a[(nc-5)*nr+ija[0]] - 6*_a[(nc-4)*nr+ija[0]] + 12*_a[(nc-3)*nr+ija[0]] + 3*_a[(nc-1)*nr+ija[0]])/10;
             invvar2_1 = 10*_lambda[1];
           }
