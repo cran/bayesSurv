@@ -581,12 +581,12 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   Adaptive rejection sampling for Gibbs sampling.
   \emph{Applied Statistics,} \bold{41}, 337 - 348.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Komarek, A.} (2006).
+  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2006).
+  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failure time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
@@ -596,7 +596,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   \emph{The Annals of Statistics,} \bold{31}, 705 - 767.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
 }
 \examples{
 ## See the description of R commands for

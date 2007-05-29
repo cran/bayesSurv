@@ -20,6 +20,6 @@ traceplot2(x, chains, bty = "n", main, xlab, ...)
     \code{\link{plot.default}} function.}
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
 }
 \keyword{hplot}

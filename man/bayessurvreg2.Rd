@@ -5,7 +5,7 @@
   possibly doubly-interval-censored data. The error distribution is
   expressed as a~penalized univariate normal mixture with high number of
   components (G-spline). The distribution of the vector of random
-  effects is multivariate normal.
+  effects is multivariate normal.  
 }
 \description{
   A function to estimate a regression model with possibly clustered
@@ -22,8 +22,8 @@
   constant variances). This function performs an MCMC sampling from the
   posterior distribution of unknown quantities.
 
-  For details, see \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006),
-  and \eqn{\mbox{Kom\'{a}rek},}{Komarek,} Lesaffre and Legrand (2007).
+  For details, see \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} (2006),
+  and \eqn{\mbox{Kom\'{a}rek},}{Kom&#225rek,} Lesaffre and Legrand (2007).
 
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
@@ -656,19 +656,19 @@ bayessurvreg2(formula, random, formula2, random2,
   Efficient parametrisations for normal linear mixed models.
   \emph{Biometrika,} \bold{82,} 479-488.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Komarek, A.} (2006).
+  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. Lesaffre, E., and Legrand, C. (2007).
+  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.}, Lesaffre, E., and Legrand, C. (2007).
   Baseline and treatment effect heterogeneity for survival
   times between centers in a random effects accelerated failure time
   model with flexible error distribution.
   \emph{Submitted.}
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
 }
 \examples{
 ## See the description of R commands for

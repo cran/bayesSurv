@@ -46,48 +46,55 @@ Gspline::update_lambda()
     }
   }
   else{                             /** Correction for the order of the penalty is not verified! **/
-    switch (_prior_for_lambda[k]){
-    case GMRF_Gspline_Util::_Fixed_:
-      return;;
+    if (_equal_lambda){
+      switch (_prior_for_lambda[0]){
+      case GMRF_Gspline_Util::_Fixed_:
+        return;
 
-    case GMRF_Gspline_Util::_Gamma_:
-      if (_equal_lambda){
+      case GMRF_Gspline_Util::_Gamma_:
         shape = _prior_lambda[0] + 0.5*(_total_length - _order + 1);
         rate  = _prior_lambda[1] - _penalty[0];
         if (rate <= 0) throw returnR("Gspline::update_lambda: Trap in update of lambda (non-positive rate parameter)", 1);
         scale = 1/rate;
         _lambda[0] = rgamma(shape, scale);
         for (k = 1; k < _dim; k++) _lambda[k] = _lambda[0];
+        return;
+
+      case GMRF_Gspline_Util::_SDUnif_:
+        shape = 0.5*(_total_length - _order);
+        rate = -_penalty[0];
+        rltruncGamma(_lambda, &shape, &rate, _prior_lambda + 1, &ONE_INT, &ZERO_INT);           
+        for (k = 1; k < _dim; k++) _lambda[k] = _lambda[0];
+        return;
+
+      default:     
+        throw returnR("C++ Error: Unimplemented prior for lambda appeared in Gspline::update_lambda", 1);
       }
-      else{
-        for (k = 0; k < _dim; k++){
+    }
+    else{
+      for (k = 0; k < _dim; k++){
+        switch (_prior_for_lambda[k]){
+        case GMRF_Gspline_Util::_Fixed_:
+          break;
+
+        case GMRF_Gspline_Util::_Gamma_:
           shape = _prior_lambda[2*k] + 0.5*(_total_length/_dim - _order + 1);
           rate = _prior_lambda[2*k+1] - _penalty[k];
           if (rate <= 0) throw returnR("Gspline::update_lambda: Trap in update of lambda (non-positive rate parameter)", 1);
           scale = 1/rate;
           _lambda[k] = rgamma(shape, scale);
-        }
-      }
-      return;
+          break;
 
-    case GMRF_Gspline_Util::_SDUnif_:
-      if (_equal_lambda){
-        shape = 0.5*(_total_length - _order);
-        rate = -_penalty[0];
-        rltruncGamma(_lambda, &shape, &rate, _prior_lambda + 1, &ONE_INT, &ZERO_INT);           
-        for (k = 1; k < _dim; k++) _lambda[k] = _lambda[0];
-      }
-      else{
-        for (k = 0; k < _dim; k++){
+        case GMRF_Gspline_Util::_SDUnif_:
           shape = 0.5*(_total_length/_dim - _order);
           rate = -_penalty[k];
           rltruncGamma(_lambda + k, &shape, &rate, _prior_lambda + 2*k + 1, &ONE_INT, &ZERO_INT);           
+          break;
+
+        default:     
+          throw returnR("C++ Error: Unimplemented prior for lambda appeared in Gspline::update_lambda", 1);
         }
       }
-      return;
-
-    default:     
-      throw returnR("C++ Error: Unimplemented prior for lambda appeared in Gspline::update_lambda", 1);
     }
   }
 }

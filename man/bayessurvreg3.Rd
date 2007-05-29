@@ -20,8 +20,8 @@
   constant variances). This function performs an MCMC sampling from the
   posterior distribution of unknown quantities.
 
-  For details, see \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006)
-  and \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2007).
+  For details, see \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} (2006)
+  and \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} and Lesaffre (2007).
 
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
@@ -940,12 +940,12 @@ bayessurvreg3(formula, random, formula2, random2,
   }
 }
 \references{
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Komarek, A.} (2006).
+  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
   
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek}, A. and Lesaffre, E. (2007).
+  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2007).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
   \emph{To appear in Journal of the American Statistical Association.}
@@ -955,7 +955,7 @@ bayessurvreg3(formula, random, formula2, random2,
   New York: Springer Science+Business Media.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
 }
 \examples{
 ## See the description of R commands for

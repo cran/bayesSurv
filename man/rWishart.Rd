@@ -41,7 +41,7 @@ rWishart(n, df, S)
   New York: John Wiley and Sons.  
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arnost Komarek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
 }  
 \examples{
 ### The same as rgamma(n, shape=df/2, rate=1/(2*S))

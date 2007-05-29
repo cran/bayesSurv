@@ -51,6 +51,9 @@ scanFN(file, quiet=FALSE)
 \seealso{
   \code{\link{scan}}
 }
+\author{
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
+}
 \examples{
 cat("x y z", "1 2 3", "1 4 6", "10 20 30", file="ex.data", sep="\n")
 pp <- scanFN("ex.data", quiet=FALSE)
