@@ -18,8 +18,8 @@ Gspline::Gspline()
     _gamma(NULL), _invsigma2(NULL), _sigma(NULL), _c4delta(NULL), _delta(NULL),
     _intcpt(NULL), _invscale2(NULL), _scale(NULL),
     _w(NULL), _minw(0.0), _Q(NULL), _Da(NULL), _Qa(NULL), _diffOper(NULL), _constraint(0), 
-    _workML(NULL), _worka(NULL), _workGMRF(NULL),
-    _LTna(0), _LTna_1(0), _nworkML(0), _nworka(0), _nworkGMRF(0)
+    _LTna(0), _LTna_1(0), _nworkML(0), _nworka(0), _nworkGMRF(0),
+    _workML(NULL), _worka(NULL), _workGMRF(NULL)
 {
   int j;
   for (j = 0; j < _max_dim; j++){

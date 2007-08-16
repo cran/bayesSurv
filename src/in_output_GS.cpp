@@ -1153,7 +1153,7 @@ readDfromFile(RandomEff32::RE *data,  const int &skip,  const int &row,  std::if
   static double tmp, *DP;
   static int j, ihelp;
   static char ch;
-  const int lD = 3;
+  //const int lD = 3;
 
   for (j = 0; j < skip; j++){
     Dfile.get(ch);        

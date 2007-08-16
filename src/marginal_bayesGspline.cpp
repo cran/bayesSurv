@@ -50,7 +50,7 @@ marginal_bayesGspline
     const int length0 = 2*KK[0] + 1;
     const int length1 = 2*KK[1] + 1;
     const int total_length = length0 * length1;
-    const int standard = 0;
+    //const int standard = 0;
     double* pvalue1;
     double* pvalue2;
     int i, j, ix;
@@ -60,7 +60,7 @@ marginal_bayesGspline
     string extens     = *extensP;
 
     /* Open files with simulated G-splines and skip rows at the beginning of each file that are to be skipped */
-    int k_effect;
+    //int k_effect;
     double* w_temp            = (double*)  calloc(total_length, sizeof(double));
     double** w                = (double**) calloc(dim, sizeof(double*));
     double** mu               = (double**) calloc(dim, sizeof(double*));

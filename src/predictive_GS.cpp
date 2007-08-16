@@ -193,6 +193,9 @@ predictive_GS(double *averDens,         double *averS,           double *averHaz
       else        dbval = bval;
     }
     else{
+      dval = NULL;
+      bval = NULL;
+      dbval = NULL;
       if (beta->nRandom()){
         *bb = RandomEff(objbI, objbD);
         if (bb->type_prior() == Gspline_) reff_NORMAL = false;

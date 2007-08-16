@@ -108,7 +108,7 @@ update_pUnif(int *accept,           double *z,             double *rho,         
   static double temp_log_poster, temp_dlog_poster, temp_ddlog_poster;
   static double prop_mean[1], prop_rho[1], temp_rho[1], prop_z[1];
   static int err[1], niter[1];
-  static bool do_arms;
+  //static bool do_arms;
 
   ll   = work;
   dll  = ll  + 1;
@@ -490,7 +490,7 @@ extern "C"{
       }
 
       /*** Cleaning ***/
-    CLEANING:
+    //CLEANING:
       Rprintf("\n");
 
       PutRNGstate();
