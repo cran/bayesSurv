@@ -29,6 +29,6 @@ densplot2(x, plot = TRUE, show.obs = FALSE, bwf, bty = "n", main = "", xlim, yli
     \code{\link{plot.default}} function.}
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
 }
 \keyword{hplot}

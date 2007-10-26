@@ -258,12 +258,12 @@ on the value of the arguments \code{predict} and \code{only.aver}):
   
   \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.},  Lesaffre, E., and Legrand, C. (2007).
   Baseline and treatment effect heterogeneity for survival
-  times between centers in a random effects accelerated failure time
+  times between centers using a random effects accelerated failure time
   model with flexible error distribution.
-  \emph{Submitted.}
+  To appear in \emph{Statistics in Medicine.}
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for

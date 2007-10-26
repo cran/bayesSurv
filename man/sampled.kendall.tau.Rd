@@ -93,7 +93,7 @@ sampled.kendall.tau(dir = getwd(), extens = "", K,
   \emph{Statistical Modelling}, \bold{6}, 3--22.
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for

@@ -51,7 +51,7 @@ files2coda(files, data.frames, variant = 1, dir = getwd(),
   A list with \code{mcmc} objects. One object per file or data.frame.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek@med.kuleuven.be}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
 }
 \examples{
 ## *** illustration of usage of parameters 'data.frames' and 'chain' ***
