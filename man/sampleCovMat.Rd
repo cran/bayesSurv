@@ -29,7 +29,7 @@ sampleCovMat(sample)
   When \eqn{n=1}{n=1} the function returns just sum of squares.      
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
   ## Sample some values

@@ -23,7 +23,7 @@ give.summary(sample, probs=c(0.5, 0.025, 0.975))
   A matrix or a vector with the sample mean, quantiles and a Bayesian \eqn{p}{p}-value.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## Example with a sample stored in a vector:

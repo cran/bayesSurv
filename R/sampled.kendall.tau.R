@@ -82,7 +82,7 @@ sampled.kendall.tau <- function(dir = getwd(), extens = "", K, skip = 0, by = 1,
 
   if (sum(!is.na(match(filesindir, paste("mixmoment", extens, ".sim", sep=""))))){
     name.mix <- scan(paste(dir, "/mixmoment", extens, ".sim", sep = ""), nlines=1, what=character(0), quiet=TRUE)
-    if (length(name.mix) != n.in.mixmoment) stop(sep("File mixmoment.sim should have ", n.in.mixmoment, " columns", sep=""))
+    if (length(name.mix) != n.in.mixmoment) stop(paste("File mixmoment.sim should have ", n.in.mixmoment, " columns", sep=""))
     mix <- as.data.frame(matrix(scan(paste(dir, "/mixmoment", extens, ".sim", sep = ""), skip=1, quiet=TRUE), byrow=TRUE, ncol=n.in.mixmoment))
     colnames(mix) <- name.mix
     if (missing(last.iter)) M <- dim(mix)[1]

@@ -160,8 +160,9 @@ give.init.r(init.r, init.y, dim, KK,
   }    
 }  
 \section{Value for give.init.r}{
+  To be added somewhen...
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \keyword{internal}

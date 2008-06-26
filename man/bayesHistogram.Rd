@@ -807,7 +807,7 @@ bayesHistogram(y1, y2,
   \emph{The Annals of Statistics,} \bold{31}, 705 - 767.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{komarek@karlin.mff.cuni.cz}
+  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
 }
 %\examples{}
 \keyword{smooth}
