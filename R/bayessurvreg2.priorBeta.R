@@ -5,6 +5,9 @@
 #### FILE:       bayessurvreg2.priorBeta.R  ####
 ####                                        ####
 #### FUNCTIONS:  bayessurvreg2.priorBeta    ####
+####
+#### 24/11/2008: bug appearing when design$nX == 0 & design$randomInt == TRUE fixed
+####
 ################################################
 
 ### ======================================
@@ -58,14 +61,24 @@ bayessurvreg2.priorBeta <- function(prior.beta, init, design)
     names(parmD) <- c(paste("beta", 1:design$nX, sep=""), paste("mean.beta", 1:design$nX, sep=""), paste("var.beta", 1:design$nX, sep=""))
   }
   else{
-    init.beta <- numeric(0)    
-    mean.prior <- numeric(0)
-    var.prior <- numeric(0)
-
-    parmI <- c(0, 0, 0, 0, 0)
-    parmD <- c(0, 0, 0)
-    names(parmI) <- c("nbeta", "nFixed", "ngamma", "randomIntcpt", "indbA")
-    names(parmD) <- c("beta", "mean.beta", "var.beta")    
+    if (!is.null(design$randomInt)){
+      init.beta <- numeric(0)    
+      mean.prior <- numeric(0)
+      var.prior <- numeric(0)
+      parmI <- c(0, 0, 0, 1*design$randomInt, design$indb)
+      parmD <- c(0, 0, 0)
+      names(parmI) <- c("nbeta", "nFixed", "ngamma", "randomIntcpt", "indbA")
+      names(parmD) <- c("beta", "mean.beta", "var.beta")    
+    }
+    else{
+      init.beta <- numeric(0)    
+      mean.prior <- numeric(0)
+      var.prior <- numeric(0)
+      parmI <- c(0, 0, 0, 0, 0)
+      parmD <- c(0, 0, 0)
+      names(parmI) <- c("nbeta", "nFixed", "ngamma", "randomIntcpt", "indbA")
+      names(parmD) <- c("beta", "mean.beta", "var.beta")    
+    }      
   }    
 
   toreturn <- list(parmI=parmI, parmD=parmD)

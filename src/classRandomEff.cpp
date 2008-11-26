@@ -306,8 +306,9 @@ RandomEff::RandomEff2initArray(int* parmI,  double* parmD) const
 // Update all random effects using a Gibbs move
 // Update also regression residuals
 //
-// nP[1] ...... number of observations
-// XA ........... [nobs*_nbeta] full design matrix for all observations
+// nP[1] .......... number of observations
+// RandomIntcpt ... is there a random intercept in the model?
+// XA ............. [nobs*_nbeta] full design matrix for all observations
 //                CHANGE COMPARED TO bayessurvreg1:
 //                * stored in row-major order, i.e. XA[0,     ...,_nbeta-1]   = covariates for the first observation
 //                                                  XA[_nbeta,...,2*_nbeta-1] = covariates for the second observation etc.
@@ -323,7 +324,7 @@ RandomEff::RandomEff2initArray(int* parmI,  double* parmD) const
 void
 RandomEff::GIBBSupdate(double* regresResM,    const int* nP,
                        const double* XA,      const double* ZZtb,
-                       const Gspline* gg,     double** const mu,         const int* rM,
+                       const Gspline* gg,     double** const mu,    const int* rM,
                        const BetaGamma* bbg,  const CovMatrix* Dcm)
 {
   if (!_nRandom) return;

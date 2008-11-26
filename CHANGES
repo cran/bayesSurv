@@ -1,3 +1,8 @@
+26/11/2008:
+  bug in bayessurvreg2.cpp fixed which caused SEGFAULT in models with random intercept only (and no other covariates)
+  bayessurvreg.design adjusted such that cluster(1:n) is no more needed in model formula
+    when there are no random effects in the model included
+
 27/03/2007:
   FILE: Gspline_update_a.cpp, FUNCTION: full_a_pars_uniCAR
   bug for order=3 when ia=1 or ija[0]=1 or ija[1]=1 fixed

@@ -20,8 +20,7 @@ BetaGamma::BetaGamma()
     _lcovgamma(0), _meangamma(NULL), _meangammaTemp(NULL), _covgamma(NULL), _ichicovgamma(NULL), _diagIgamma(NULL),
     _sumbM(NULL), _sumgammab(NULL), 
     _indRandomUpdate(NULL), _indRandomKeep(NULL)
-{  
-}
+{}
 
 /***** Parametric constructor  *****/
 BetaGamma::BetaGamma(const int* parmI,  const double* parmD)

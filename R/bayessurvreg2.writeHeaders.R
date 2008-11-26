@@ -20,6 +20,8 @@ bayessurvreg2.writeHeaders <- function(dir, doubly, prior.init, store, design, d
   bayesBisurvreg.writeHeaders(dir=dir, dim=1, nP=design$n, doubly=doubly,
                               prior.init=prior.init, store=store, design=design, design2=design2)
 
+  FILES <- dir(dir)
+  
   ## Files with sampled covariance matrices of random effects
   if (design$nrandom){
     sink(paste(dir, "/D.sim", sep = ""), append = FALSE)
@@ -30,7 +32,7 @@ bayessurvreg2.writeHeaders <- function(dir, doubly, prior.init, store, design, d
     sink() 
   }
   else{
-    file.remove(paste(dir, "/D.sim", sep = ""))
+    if ("D.sim" %in% FILES) file.remove(paste(dir, "/D.sim", sep = ""))
   }
 
   if (doubly){
@@ -43,11 +45,11 @@ bayessurvreg2.writeHeaders <- function(dir, doubly, prior.init, store, design, d
       sink() 
     }
     else{
-      file.remove(paste(dir, "/D_2.sim", sep = ""))
+      if ("D_2.sim" %in% FILES) file.remove(paste(dir, "/D_2.sim", sep = ""))
     }
   }
   else{
-    file.remove(paste(dir, "/D_2.sim", sep = ""))
+    if ("D_2.sim" %in% FILES) file.remove(paste(dir, "/D_2.sim", sep = ""))
   }    
   
   ## Files with sampled values of random effects
@@ -58,7 +60,7 @@ bayessurvreg2.writeHeaders <- function(dir, doubly, prior.init, store, design, d
     sink()
   }
   else{
-    file.remove(paste(dir, "/b.sim", sep = ""))
+    if ("b.sim" %in% FILES) file.remove(paste(dir, "/b.sim", sep = ""))
   }
 
   if (doubly){
@@ -69,10 +71,10 @@ bayessurvreg2.writeHeaders <- function(dir, doubly, prior.init, store, design, d
       sink()
     }
     else{
-      file.remove(paste(dir, "/b_2.sim", sep = ""))
+      if ("b_2.sim" %in% FILES) file.remove(paste(dir, "/b_2.sim", sep = ""))
     }    
   }
   else{
-    file.remove(paste(dir, "/b_2.sim", sep = ""))
+    if ("b_2.sim" %in% FILES) file.remove(paste(dir, "/b_2.sim", sep = ""))
   }
 }

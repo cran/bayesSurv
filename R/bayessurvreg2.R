@@ -77,7 +77,7 @@ bayessurvreg2 <- function
   ## Priors and inits for beta parameters
   if (missing(init))        init <- list()
   if (missing(init2))       init2 <- list()
-  
+
   if (missing(prior.beta)) prior.beta <- list()
   betadi <- bayessurvreg2.priorBeta(prior.beta, init, des)
   init$beta <- attr(betadi, "init")

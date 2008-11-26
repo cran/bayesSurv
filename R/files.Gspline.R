@@ -15,21 +15,25 @@
 ### clean.Gspline
 ### ======================================
 clean.Gspline <- function(dir, label, care.of.y=TRUE){
-  file.remove(paste(dir, "/mixmoment", label, ".sim", sep = ""))
-  file.remove(paste(dir, "/mweight", label, ".sim", sep = ""))
-  file.remove(paste(dir, "/mlogweight", label, ".sim", sep = ""))
-  file.remove(paste(dir, "/mmean", label, ".sim", sep = ""))
-  file.remove(paste(dir, "/gspline", label, ".sim", sep = ""))
-  file.remove(paste(dir, "/lambda", label, ".sim", sep = ""))
-  if (care.of.y) file.remove(paste(dir, "/Y", label, ".sim", sep = ""))
-  file.remove(paste(dir, "/logposter", label, ".sim", sep = ""))    
-  file.remove(paste(dir, "/r", label, ".sim", sep = ""))
+  FILES <- dir(dir)
+  
+  if (paste("mixmoment", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/mixmoment", label, ".sim", sep = ""))
+  if (paste("mweight", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/mweight", label, ".sim", sep = ""))
+  if (paste("mlogweight", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/mlogweight", label, ".sim", sep = ""))
+  if (paste("mmean", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/mmean", label, ".sim", sep = ""))
+  if (paste("gspline", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/gspline", label, ".sim", sep = ""))
+  if (paste("lambda", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/lambda", label, ".sim", sep = ""))
+  if ((paste("Y", label, ".sim", sep="") %in% FILES) & care.of.y) file.remove(paste(dir, "/Y", label, ".sim", sep = ""))
+  if (paste("logposter", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/logposter", label, ".sim", sep = ""))    
+  if (paste("r", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/r", label, ".sim", sep = ""))
 }
 
 ### ======================================
 ### write.headers.Gspline
 ### ======================================
 write.headers.Gspline <- function(dir, dim, nP, label, gparmi, store.a, store.y, store.r, care.of.y=TRUE){
+  FILES <- dir(dir)
+  
   sink(paste(dir, "/mixmoment", label, ".sim", sep = ""), append = FALSE)
   mname <- paste("Mean.", 1:dim, "   ", sep="")
   D <- diag(dim)
@@ -64,7 +68,7 @@ write.headers.Gspline <- function(dir, dim, nP, label, gparmi, store.a, store.y,
     sink()
   }
   else
-    file.remove(paste(dir, "/mlogweight", label, ".sim", sep = ""))
+    if (paste("mlogweight", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/mlogweight", label, ".sim", sep = ""))
    
   ind1 <- rep(1:total.length, rep(dim, total.length))
   ind2 <- rep(1:dim, total.length)
@@ -92,7 +96,7 @@ write.headers.Gspline <- function(dir, dim, nP, label, gparmi, store.a, store.y,
       sink()
     }
     else{
-      file.remove(paste(dir, "/Y", label, ".sim", sep = ""))
+      if (paste("Y", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/Y", label, ".sim", sep = ""))
     }
   }
 
@@ -102,7 +106,7 @@ write.headers.Gspline <- function(dir, dim, nP, label, gparmi, store.a, store.y,
     sink()
   }
   else{
-    file.remove(paste(dir, "/r", label, ".sim", sep = ""))
+    if (paste("r", label, ".sim", sep="") %in% FILES) file.remove(paste(dir, "/r", label, ".sim", sep = ""))
   }
     
   pname <- if (gparmi["equal.lambda"]) "penalty" else paste("penalty", 1:dim, sep = "")

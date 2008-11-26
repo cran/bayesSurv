@@ -17,7 +17,9 @@
 ##
 bayessurvreg1.writeHeaders <- function(dir, prior, store, nX, X, names.random, ncluster, nrandom,
                                        rnamesX, unique.cluster, nBetaBlocks, nbBlocks)
-{   
+{
+   FILES <- dir(dir)
+  
    sink(paste(dir, "/iteration.sim", sep = ""), append = FALSE)
    cat("iteration", "\n"); sink()
 
@@ -39,14 +41,14 @@ bayessurvreg1.writeHeaders <- function(dir, prior, store, nX, X, names.random, n
    if (nX){ sink(paste(dir, "/beta.sim", sep = ""), append = FALSE)
             cat(colnames(X), "\n", sep = "      "); sink() }
    else
-     file.remove(paste(dir, "/beta.sim", sep = ""))
+     if ("beta.sim" %in% FILES) file.remove(paste(dir, "/beta.sim", sep = ""))
    
 
    if (store$b){ sink(paste(dir, "/b.sim", sep = ""), append = FALSE)
                  cat(paste(rep(names.random, ncluster), ".", rep(unique.cluster, rep(nrandom, ncluster)), sep = ""),
                      "\n", sep = "    "); sink() }
    else
-     file.remove(paste(dir, "/b.sim", sep = ""))
+     if ("b.sim" %in% FILES) file.remove(paste(dir, "/b.sim", sep = ""))
 
    if (nrandom){ sink(paste(dir, "/D.sim", sep = ""), append = FALSE)
                  D <- diag(nrandom)
@@ -54,17 +56,17 @@ bayessurvreg1.writeHeaders <- function(dir, prior, store, nX, X, names.random, n
                  cols <- col(D)[lower.tri(col(D), diag = TRUE)]            
                  cat("det", paste("D.", rows, ".", cols, sep = ""), "\n", sep = "      "); sink() }
    else
-     file.remove(paste(dir, "/D.sim", sep = ""))
+     if ("D.sim" %in% FILES) file.remove(paste(dir, "/D.sim", sep = ""))
 
    if (store$y){sink(paste(dir, "/Y.sim", sep = ""), append = FALSE)
                 cat(paste("Y", rnamesX, sep = ""), "\n", sep = "      "); sink() }
    else
-     file.remove(paste(dir, "/Y.sim", sep = ""))   
+     if ("Y.sim" %in% FILES) file.remove(paste(dir, "/Y.sim", sep = ""))   
 
    if (store$r){sink(paste(dir, "/r.sim", sep = ""), append = FALSE)
                 cat(paste("r", rnamesX, sep = ""), "\n", sep = "      "); sink() }
    else
-     file.remove(paste(dir, "/r.sim", sep = ""))   
+     if ("r.sim" %in% FILES) file.remove(paste(dir, "/r.sim", sep = ""))   
 
    sink(paste(dir, "/otherp.sim", sep = ""), append = FALSE)
    cat("eta", "\n", sep = "      "); sink()
@@ -82,7 +84,7 @@ bayessurvreg1.writeHeaders <- function(dir, prior, store, nX, X, names.random, n
      sink()
    }
    else
-     file.remove(paste(dir, "/MHbinfo.sim", sep = ""))     
+     if ("MHbinfo.sim" %in% FILES) file.remove(paste(dir, "/MHbinfo.sim", sep = ""))     
 
    
    if (store$u){ sink(paste(dir, "/u.sim", sep = ""), append = FALSE)
@@ -92,11 +94,11 @@ bayessurvreg1.writeHeaders <- function(dir, prior, store, nX, X, names.random, n
                  sink()
                }
    else
-     file.remove(paste(dir, "/u.sim", sep = ""))
+     if ("u.sim" %in% FILES) file.remove(paste(dir, "/u.sim", sep = ""))
 
    if (store$regresres){sink(paste(dir, "/regresres.sim", sep = ""), append = FALSE)
                         cat(paste("res", rnamesX, sep = ""), "\n", sep = "      "); sink() }
    else
-     file.remove(paste(dir, "/regresres.sim", sep = ""))      
+     if ("regresres.sim" %in% FILES) file.remove(paste(dir, "/regresres.sim", sep = ""))      
    
 }

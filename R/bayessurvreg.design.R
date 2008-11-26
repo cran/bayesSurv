@@ -190,10 +190,10 @@ bayessurvreg.design <- function(m, formula, random, data, transform, dtransform)
        if (nX == 1) X <- matrix(X, ncol=1)
        else         X <-  as.matrix(X[,])
        colnames(X) <- namesX
-       cluster <- 1:n
-       ncluster <- n
-       nwithin <- rep(1, n)
-     }  
+     }
+     cluster <- 1:n
+     ncluster <- n
+     nwithin <- rep(1, n)
    }     
    
    ## Transform the response

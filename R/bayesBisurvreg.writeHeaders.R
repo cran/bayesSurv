@@ -16,7 +16,9 @@
 ## Write headers to files where simulated values will be stored
 ##
 bayesBisurvreg.writeHeaders <- function(dir, dim, nP, doubly, prior.init, store, design, design2)
-{  
+{
+  FILES <- dir(dir)
+  
   ## Common files
   sink(paste(dir, "/iteration.sim", sep = ""), append = FALSE)
   cat("iteration", "\n"); sink()
@@ -31,17 +33,17 @@ bayesBisurvreg.writeHeaders <- function(dir, dim, nP, doubly, prior.init, store,
   if (design$nX){ sink(paste(dir, "/beta.sim", sep = ""), append = FALSE)
                   cat(colnames(design$X), "\n", sep = "      "); sink() }
   else{
-    file.remove(paste(dir, "/beta.sim", sep = ""))
+    if ("beta.sim" %in% FILES) file.remove(paste(dir, "/beta.sim", sep = ""))
   }
 
   if (doubly){
     if (design2$nX){ sink(paste(dir, "/beta_2.sim", sep = ""), append = FALSE)
                      cat(colnames(design2$X), "\n", sep = "      "); sink() }
     else{
-      file.remove(paste(dir, "/beta_2.sim", sep = ""))
+      if ("beta_2.sim" %in% FILES) file.remove(paste(dir, "/beta_2.sim", sep = ""))
     }
   }
   else{
-    file.remove(paste(dir, "/beta_2.sim", sep = ""))
+    if ("beta_2.sim" %in% FILES) file.remove(paste(dir, "/beta_2.sim", sep = ""))
   }  
 }  

@@ -93,7 +93,7 @@ class RandomEff
     void
     GIBBSupdate(double* regresResM,    const int* nP,
                 const double* XA,      const double* ZZtb,
-                const Gspline* gg,     double** const mu,         const int* rM,
+                const Gspline* gg,     double** const mu,    const int* rM,
                 const BetaGamma* bbg,  const CovMatrix* Dcm);
 
     void

@@ -20,6 +20,8 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
   bayesBisurvreg.writeHeaders(dir=dir, dim=1, nP=design$n, doubly=doubly,
                               prior.init=prior.init, store=store, design=design, design2=design2)
 
+  FILES <- dir(dir)
+  
   ## Files with sampled values of random effects
   if (store$b){
     sink(paste(dir, "/b.sim", sep = ""), append = FALSE)
@@ -28,7 +30,7 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
     sink()
   }
   else{
-    file.remove(paste(dir, "/b.sim", sep = ""))
+    if ("b.sim" %in% FILES) file.remove(paste(dir, "/b.sim", sep = ""))
   }
 
   if (doubly){
@@ -39,11 +41,11 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
       sink()
     }
     else{
-      file.remove(paste(dir, "/b_2.sim", sep = ""))
+      if ("b_2.sim" %in% FILES) file.remove(paste(dir, "/b_2.sim", sep = ""))
     }    
   }
   else{
-    file.remove(paste(dir, "/b_2.sim", sep = ""))
+    if ("b_2.sim" %in% FILES) file.remove(paste(dir, "/b_2.sim", sep = ""))
   }
 
   ## Files with sampled G-splines - distribution of the random intercept
@@ -59,7 +61,7 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
     sink()         
   }
   else{
-    file.remove(paste(dir, "/D.sim", sep = ""))
+    if ("D.sim" %in% FILES) file.remove(paste(dir, "/D.sim", sep = ""))
     
     if (design$nrandom){
       write.headers.Gspline(dir=dir, dim=1, nP=design$ncluster, label="_b", gparmi=priorb.di$GsplI,
@@ -90,7 +92,7 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
     sink()
   }
   else{
-    file.remove(paste(dir, "/rho_b.sim", sep = ""))
+    if ("rho_b.sim" %in% FILES) file.remove(paste(dir, "/rho_b.sim", sep = ""))
   }  
 
   

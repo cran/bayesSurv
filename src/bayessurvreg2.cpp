@@ -14,6 +14,10 @@
 // 28/11/2006:  implementing simultaneous update of all 'a' coefficients
 // 06/12/2006:  implementing version 31 (see below)
 // 11/12/2006:  implementing version 32 (see below)
+// 26/11/2008:  * adjustments to allow for a model with (random) intercept only
+//              * previous versions took take this info in beta1->randomIntcpt() and beta2->randomIntcpt()
+//                which was always set to 0 if there are no covariates in the model  
+//              * this caused SEGFAULT in RandomEff::GIBBSupdate
 //
 #include "bayessurvreg2.h"
 
@@ -236,13 +240,17 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
 
 
     /** Objects for beta1 and beta2          **/
+    const int *RandomIntcpt1 = priorBeta1I + 3;       /** indication of random intercept in model   **/
+    const int *RandomIntcpt2 = priorBeta2I + 3;       /** introduced on 26/11/2008                  **/
+
     BetaGammaExtend *beta1 = new BetaGammaExtend;
     BetaGammaExtend *beta2 = new BetaGammaExtend;
     if (!beta1) throw returnR("Not enough memory available in bayessurvreg2 (beta1)", 1);
     if (!beta2) throw returnR("Not enough memory available in bayessurvreg2 (beta2)", 1);
-    if (priorBeta1I[0])             *beta1 = BetaGammaExtend(priorBeta1I, priorBeta1D);
-    if (*doubly && priorBeta2I[0])  *beta2 = BetaGammaExtend(priorBeta2I, priorBeta2D);
-
+    //if (priorBeta1I[0])             *beta1 = BetaGammaExtend(priorBeta1I, priorBeta1D);   // commented on 26/11/2008
+    //if (*doubly && priorBeta2I[0])  *beta2 = BetaGammaExtend(priorBeta2I, priorBeta2D);   // commented on 26/11/2008
+    *beta1 = BetaGammaExtend(priorBeta1I, priorBeta1D);                                     // added on 26/11/2008
+    if (*doubly) *beta2 = BetaGammaExtend(priorBeta2I, priorBeta2D);                        // added on 26/11/2008
 
     /** Object for b1 & D1/random intcpt G-spline  and b2 & D2/random intcpt G-spline   **/
     RandomEff *bb1       = new RandomEff;
@@ -297,7 +305,6 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
       rho_zb[0] = *rhob;
       rhoNorm::rho2zError(rho_zb+1, rho_zb);      /* this will also check whether rho is not too close to +-1 */      
     }
-
 
     /** Regression residuals       **/
     double *regresRes1 = (double*) calloc(nobs, sizeof(double));
@@ -807,7 +814,6 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
           for (j = 0; j < g_y1->dim(); j++) g_y1->muP(j, mu1[j]);
 
           beta1->GIBBSfixed(regresRes1, nP, X1, XXtb1, g_y1, mu1, r1);
-
           bb1->GIBBSupdate(regresRes1, nP, X1, ZZtb1, g_y1, mu1, r1, beta1, DD1);
           DD1->GIBBSnormalRE(bb1, beta1);
           beta1->GIBBSmeanRandom(bb1, DD1);
