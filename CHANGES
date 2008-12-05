@@ -1,3 +1,6 @@
+05/12/2008:
+  bug in bayessurvreg2.priorBeta fixed which caused problems in bayessurvreg3 with fixed intercept as the only covariate
+
 26/11/2008:
   bug in bayessurvreg2.cpp fixed which caused SEGFAULT in models with random intercept only (and no other covariates)
   bayessurvreg.design adjusted such that cluster(1:n) is no more needed in model formula

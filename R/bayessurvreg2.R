@@ -57,7 +57,7 @@ bayessurvreg2 <- function
   m <- match.call(expand.dots = FALSE)   
   des <- bayessurvreg.design(m=m, formula=formula, random=random, data=data, transform=transform2, dtransform=transform2)  
   if (doubly) des2 <- bayessurvreg.design(m=m, formula=formula2, random=random2, data=data, transform=transform2, dtransform=transform2)
-  else        des2 <- list(nX = 0, n = des$n, nrandom = 0)
+  else        des2 <- list(nX = 0, n = des$n, nrandom = 0, randomInt = FALSE)
   
   if (onlyX){
     if (doubly) return(list(X=des$X, X2=des2$X))
