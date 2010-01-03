@@ -553,7 +553,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 	\code{lambda2};
 
       \bold{penalty:} If \code{prior$neighbor.system} is different from \code{"uniCAR"}:
-        the penalty term not multiplied by \code{\lambda};
+        the penalty term not multiplied by \code{lambda};
 
       \bold{logprw} \eqn{=}{=}
       \eqn{-2\,N\,\log\bigl\{\sum_{k_1}\sum_{k_2}a_{k_1,\,k_2}\bigr\} +
