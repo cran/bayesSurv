@@ -22,8 +22,8 @@
   constant variances). This function performs an MCMC sampling from the
   posterior distribution of unknown quantities.
 
-  For details, see \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} (2006),
-  and \eqn{\mbox{Kom\'{a}rek},}{Kom&#225rek,} Lesaffre and Legrand (2007).
+  For details, see Komárek (2006),
+  and Komárek, Lesaffre and Legrand (2007).
 
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
@@ -104,7 +104,7 @@
     }  
   }
   Personally, I found Specification 2 performing better. In the paper
-  \eqn{\mbox{Kom{\'a}rek}}{Komarek}, Lesaffre and Legrand (2007) only
+  Komárek, Lesaffre and Legrand (2007) only
   Specification 2 is described.
 
   The mixture weights
@@ -119,8 +119,8 @@
   are estimated instead.
 
   A~Bayesian model is set up for all unknown parameters. For more
-  details I refer to \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006)
-  and to \eqn{\mbox{Kom\'{a}rek},}{Komarek,} Lesafre, and Legrand (2007).
+  details I refer to Komárek (2006)
+  and to Komárek, Lesafre, and Legrand (2007).
       
   If there are doubly-censored data the model of the same type as above
   can be specified for both the onset time and the time-to-event. 
@@ -656,19 +656,19 @@ bayessurvreg2(formula, random, formula2, random2,
   Efficient parametrisations for normal linear mixed models.
   \emph{Biometrika,} \bold{82,} 479-488.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+  Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.}, Lesaffre, E., and Legrand, C. (2007).
+  Komárek, A., Lesaffre, E., and Legrand, C. (2007).
   Baseline and treatment effect heterogeneity for survival
   times between centers using a random effects accelerated failure time
   model with flexible error distribution.
-  To appear in \emph{Statistics in Medicine.}
+  \emph{Statistics in Medicine,} \bold{26}, 5457-5472.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -677,7 +677,8 @@ bayessurvreg2(formula, random, formula2, random2,
 ##
 ## R commands available in the documentation
 ## directory of this package
-## as eortc.pdf.
+## as ex-eortc.R and
+## http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
 ##
 }
 \keyword{survival}

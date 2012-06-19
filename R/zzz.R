@@ -10,12 +10,17 @@
 ### =============================================
 ### .First.lib
 ### =============================================
-.First.lib <- function(lib, pkg)
+.onAttach <- function(libname, pkgname)
+#.First.lib <- function(lib, pkg)
 {
-   require(survival)
-   require(coda)
-   require(smoothSurv)
-   library.dynam("bayesSurv", pkg, lib)
+   library.dynam("bayesSurv", pkgname, libname)
+
+   packageStartupMessage(paste(
+       "\n",
+       "### Bayesian Survival Regression with Flexible Error and Random Effects Distributions \n",
+       "### Arnost Komarek\n\n",
+       "### See citation(\"bayesSurv\") or toBibtex(citation(\"bayesSurv\")) for the best way to cite\n",
+       "### the package if you find it useful.\n\n", sep=""))   
 
    invisible()
 }

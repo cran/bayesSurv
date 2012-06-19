@@ -1,0 +1,12 @@
+# Load dynamic library
+useDynLib(bayesSurv)
+
+# Export all names
+exportPattern(".")
+
+# Import all packages listed as Imports or Depends
+import(
+  survival,
+  coda,
+  smoothSurv
+)

@@ -20,8 +20,8 @@
   constant variances). This function performs an MCMC sampling from the
   posterior distribution of unknown quantities.
 
-  For details, see \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} (2006)
-  and \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} and Lesaffre (2007).
+  For details, see Komárek (2006)
+  and Komárek and Lesaffre (2008).
 
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
@@ -99,7 +99,7 @@
     }  
   }
   Personally, I found Specification 2 performing better. In the paper
-  \eqn{\mbox{Kom{\'a}rek}}{Komarek} and Lesaffre (2007) only
+  Komárek and Lesaffre (2008) only
   Specification 2 is described.
 
   The mixture weights
@@ -114,8 +114,7 @@
   are estimated instead.
 
   A~Bayesian model is set up for all unknown parameters. For more
-  details I refer to \eqn{\mbox{Kom\'{a}rek and Lesaffre
-      (2007)}}{Komarek and Lesaffre (2007)}.
+  details I refer to Komárek and Lesaffre (2008).
       
   If there are doubly-censored data the model of the same type as above
   can be specified for both the onset time and the time-to-event.
@@ -940,22 +939,22 @@ bayessurvreg3(formula, random, formula2, random2,
   }
 }
 \references{
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+  Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
   
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2007).
+  Komárek, A. and Lesaffre, E. (2008).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{To appear in Journal of the American Statistical Association.}
+  \emph{Journal of the American Statistical Association}, \bold{103}, 523--533.
 
   Robert C. P. and Casella, G. (2004).
   \emph{Monte Carlo Statistical Methods, Second Edition.}
   New York: Springer Science+Business Media.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -965,7 +964,9 @@ bayessurvreg3(formula, random, formula2, random2,
 ##
 ## R commands available in the documentation
 ## directory of this package
-## as tandmobCS.pdf, tandmobCS.R.
+## - see ex-tandmobCS.R and
+##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
+##
 }
 \keyword{survival}
 \keyword{regression}

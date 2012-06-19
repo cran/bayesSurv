@@ -210,44 +210,47 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
   }    
 }
 \references{
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+  Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2006).
+  Komárek, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
   
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2007).
+  Komárek, A. and Lesaffre, E. (2008).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{To appear in Journal of the American Statistical Association}.
+  \emph{Journal of the American Statistical Association}, \bold{103}, 523--533.
 
-  \eqn{\mbox{Kom\'{a}rek, A.,}}{Kom&#225rek, A.,} Lesaffre, E., and Legrand, C. (2007).
+  Komárek, A., Lesaffre, E., and Legrand, C. (2007).
   Baseline and treatment effect heterogeneity for survival
   times between centers using a random effects accelerated failure time
   model with flexible error distribution.
-  To appear in \emph{Statistics in Medicine.}
+  \emph{Statistics in Medicine,} \bold{26}, 5457--5472.
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
 ## the models described in
 ## Komarek (2006),
 ## Komarek and Lesaffre (2006),
-## Komarek and Lesaffre (2007),
+## Komarek and Lesaffre (2008),
 ## Komarek, Lesaffre, and Legrand (2007).
 ## 
 ## R commands available
 ## in the documentation
 ## directory of this package
-## as tandmobPA.pdf, tandmobPA.R,
-##    tandmobCS.pdf, tandmobCS.R,
-##    eortc.pdf.
+##  - ex-tandmobPA.R and
+##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##  - ex-tandmobCS.R and
+##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
+##  - ex-eortc.R and
+##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
 ##
 }
 \keyword{smooth}

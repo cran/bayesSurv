@@ -319,54 +319,81 @@ bblocks::print() const
 {
   int i, dimi;
 
-  cout << "nBlocks = " << _nBlocks;
-  cout << ",   nRandom = " << _nRandom;
-  cout << ",   nCluster = " << _nCluster;
+  //cout << "nBlocks = " << _nBlocks;
+  //cout << ",   nRandom = " << _nRandom;
+  //cout << ",   nCluster = " << _nCluster;
+  Rprintf("nBlocks = %d,   nRandom = %d,   nCluster = %d", _nBlocks, _nRandom, _nCluster);
 
   if (_nRandom > 0){
     switch (*priorD){
     case InvWishart:
-      cout << ",   priorD = Inverse-Wishart";
+      //cout << ",   priorD = Inverse-Wishart";
+      Rprintf(",   priorD = Inverse-Wishart");
       break;
     case SDUniform:
-      cout << ",   priorD = SD-Uniform";
+      //cout << ",   priorD = SD-Uniform";
+      Rprintf(",   priorD = SD-Uniform");
       break;
     default:
-      cout << ",   priorD = ERROR";
+      //cout << ",   priorD = ERROR";
+      Rprintf(",   priorD = ERROR");
     }
 
     switch (*typeUpd){
     case RandomWalk:
-      cout << ",   typeUpd = Random Walk" << endl;
+      //cout << ",   typeUpd = Random Walk" << endl;
+      Rprintf(",   typeUpd = Random Walk\n");
       break;
     case AdaptiveM:
-      cout << ",   typeUpd = Adaptive Metropolis" << endl;
+      //cout << ",   typeUpd = Adaptive Metropolis" << endl;
+      Rprintf(",   typeUpd = Adaptive Metropolis\n");
       break;
     case Gibbs:
-      cout << ",   typeUpd = Gibbs" << endl;      
+      //cout << ",   typeUpd = Gibbs" << endl;      
+      Rprintf(",   typeUpd = Gibbs\n");
       break;
     default:
-      cout << ",   priorD = ERROR" << endl;
+      //cout << ",   priorD = ERROR" << endl;
+      Rprintf(",   priorD = ERROR\n");
     }
 
     i = _nRandom * _nCluster;
-    cout << "bM = "; printArray(bM, &i);
-    cout << "halfRangeUnif = "; printArray(halfRangeUnif, &_nRandom);
+    //cout << "bM = "; 
+    Rprintf("bM = ");
+    printArray(bM, &i);
+    //cout << "halfRangeUnif = "; 
+    Rprintf("halfRangeUnif = ");
+    printArray(halfRangeUnif, &_nRandom);
 
-    cout << "nInBlock = "; printArray(nInBlock, &_nBlocks);
+    //cout << "nInBlock = "; 
+    Rprintf("nInBlock = ");
+    printArray(nInBlock, &_nBlocks);
     for (i = 0; i < _nBlocks; i++){
       dimi = (nInBlock[i] * (nInBlock[i] + 1))/2;
-      cout << "Block " << i << ":";
-      cout << "  indBlock = "; printArray(indBlock[i], nInBlock + i);
-      cout << "          diagI = "; printArray(diagI[i], nInBlock + i);    
-      cout << "          covpar = "; printArray(covpar[i], &dimi);    
-      cout << "          chcovpar = "; printArray(chcovpar[i], &dimi);        
+      //cout << "Block " << i << ":";
+      //cout << "  indBlock = "; 
+      Rprintf("Block %d:  indBlock = ", i);
+      printArray(indBlock[i], nInBlock + i);
+      //cout << "          diagI = "; 
+      Rprintf("          diagI = ");
+      printArray(diagI[i], nInBlock + i);    
+      //cout << "          covpar = "; 
+      Rprintf("          covpar = ");
+      printArray(covpar[i], &dimi);    
+      //cout << "          chcovpar = "; 
+      Rprintf("          chcovpar = ");
+      printArray(chcovpar[i], &dimi);        
     }
 
-    cout << "weightUnif = "; printArray(weightUnif, &_nBlocks);
+    //cout << "weightUnif = "; 
+    Rprintf("weightUnif = ");
+    printArray(weightUnif, &_nBlocks);
     i = _nBlocks * _nCluster;
-    cout << "sumAccept = "; printArray(sumAccept, &i);
-    cout << endl;
+    //cout << "sumAccept = "; 
+    Rprintf("sumAccept = ");
+    printArray(sumAccept, &i);
+    //cout << endl;
+    Rprintf("\n");
   }
 
   return;

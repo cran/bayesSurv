@@ -81,7 +81,7 @@ files2coda <- function(files,
     for (i in 1:length(files)){
       if (sum(!is.na(match(filesindir, files[i])))){
         if (files[i] == "mixture.sim"){
-          help <- read.table(file = paste(dir, "/", files[i], sep = ""), header = header, nrow = 1)
+          help <- read.table(file = paste(dir, "/", files[i], sep = ""), header = header, nrows = 1)
           if (!dim(help)[1]) stop("Incorrect 'header' parameter.")
           kncol <- dim(help)[2]
           help <- scan(file = paste(dir, "/", files[i], sep = ""), skip = 1*header)

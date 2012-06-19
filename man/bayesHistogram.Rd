@@ -115,9 +115,8 @@ bayesHistogram(y1, y2,
     }    
   }    
   \item{prior}{a list that identifies prior hyperparameters and prior
-    choices. See the paper \eqn{\mbox{Kom{\'a}rek}}{Kom&#225rek} and
-    Lesaffre (2007) and the PhD. thesis
-    \eqn{\mbox{Kom\'{a}rek}}{Kom&#225rek} (2006) for more details.
+    choices. See the paper Komárek and Lesaffre (2008) and the PhD. thesis
+    Komárek (2006) for more details.
     
     Some prior parameters can be guessed by the function itself. If you
     want to do so, set such parameters to \code{NULL}. Set to
@@ -787,17 +786,17 @@ bayesHistogram(y1, y2,
   Adaptive rejection sampling for Gibbs sampling.
   \emph{Applied Statistics,} \bold{41}, 337 - 348.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+  Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2007).
+  Komárek, A. and Lesaffre, E. (2008).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{To appear in Journal of the American Statistical Association.}
+  \emph{Journal of the American Statistical Association}, \bold{103}, 523--533.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2006b).
+  Komárek, A. and Lesaffre, E. (2006b).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
@@ -807,7 +806,7 @@ bayesHistogram(y1, y2,
   \emph{The Annals of Statistics,} \bold{31}, 705 - 767.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 %\examples{}
 \keyword{smooth}

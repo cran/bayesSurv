@@ -82,18 +82,18 @@ sampled.kendall.tau(dir = getwd(), extens = "", K,
   A vector with sampled values of the Kendall's tau.
 } 
 \references{
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+  Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
   Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2006).
+  Komárek, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -104,7 +104,8 @@ sampled.kendall.tau(dir = getwd(), extens = "", K,
 ## R commands available
 ## in the documentation
 ## directory of this package
-##    tandmobPA.pdf, tandmobPA.R.
+## - see ex-tandmobPA.R and
+##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
 ##
 }
 \keyword{smooth}

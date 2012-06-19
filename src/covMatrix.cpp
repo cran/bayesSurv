@@ -180,17 +180,29 @@ covMatrix::covMatrix(double* covmA, const int* nr, const double* tolChol, const 
 void
 covMatrix::print() const
 {
-  cout << "nrow = " << _nrow;
-  cout << ",  larray = " << _larray;
-  cout << ",  rank = " << _rank;
-  cout << ",  det = " << det << endl;;
-  cout << "covm = "; printArray(covm, &_larray);
-  cout << "ichicovm = "; printArray(ichicovm, &_larray);
-  cout << "diagI = "; printArray(diagI, &_nrow);
+  //cout << "nrow = " << _nrow;
+  //cout << ",  larray = " << _larray;
+  //cout << ",  rank = " << _rank;
+  //cout << ",  det = " << det << endl;;
+  //cout << "covm = "; 
+  Rprintf("nrow = %d,  larray = %d,  rank = %d,  det = %g\ncovm = ", _nrow, _larray, _rank, det);
+  printArray(covm, &_larray);
+  //cout << "ichicovm = "; 
+  Rprintf("ichicovm = ");
+  printArray(ichicovm, &_larray);
+  //cout << "diagI = "; 
+  Rprintf("diagI = ");
+  printArray(diagI, &_nrow);
   int r_r = _nrow*_nrow;
-  cout << "qr = "; printArray(qr, &r_r);
-  cout << "qraux = "; printArray(qraux, &_nrow);
-  cout << "jpvt = "; printArray(jpvt, &_nrow);
+  //cout << "qr = "; 
+  Rprintf("qr = ");
+  printArray(qr, &r_r);
+  //cout << "qraux = "; 
+  Rprintf("qraux = ");
+  printArray(qraux, &_nrow);
+  //cout << "jpvt = ";
+  Rprintf("jpvt = "); 
+  printArray(jpvt, &_nrow);
 
   return;
 }

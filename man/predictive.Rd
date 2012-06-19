@@ -111,18 +111,18 @@ predictive.control(predict, store, only.aver, quantile)
   An integer which should be equal to zero if everything ran fine.
 }
 \references{
-\eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+Komárek, A. (2006).
 \emph{Accelerated Failure Time Models for Multivariate
   Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-\eqn{\mbox{Kom\'arek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2007).
+  Komárek, A. and Lesaffre, E. (2007).
   Bayesian accelerated failure time model for correlated interval-censored data
   with a normal mixture as an error distribution.
   \emph{Statistica Sinica}, \bold{17}, 549--569.
 }  
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -133,8 +133,12 @@ predictive.control(predict, store, only.aver, quantile)
 ## R commands available
 ## in the documentation
 ## directory of this package as
-## cgd.pdf, cgd.R
-## tandmobMixture.pdf, tandmobMixture.R
+## - ex-cgd.R and
+##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
+##
+## - ex-tandmobMixture.R and
+##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
+##
 }
 \keyword{survival}
 \keyword{regression}

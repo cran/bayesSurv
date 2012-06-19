@@ -180,7 +180,7 @@ bayessurvreg1(char** dirP,
     // ===============================================================
     // * this is actually not necessary, I do not add log(Jacobian) to log-likelihood
     double (*logdtrans) (const double);
-    logdtrans = logdidenttrans;              
+    logdtrans = logdidenttrans;          
 
 
     // Dimensionality parameters

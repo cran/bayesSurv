@@ -9,6 +9,7 @@
 //             'writeRaggedToFile'
 //             'readFromFile'
 // 08/03/2004: 'cumsum'
+// 19/06/2012: std::cout replaced by Rprintf
 //
 #ifndef TEMPLATE_FUN_CPP
 #define TEMPLATE_FUN_CPP
@@ -46,8 +47,10 @@ cumsum(dd* csum,   const dd* vals,   const int* kP)
 void
 printArray(const pp* array, const int* length)
 {
-  for (int i = 0; i < *length; i++) std::cout << array[i] << ",  ";
-  std::cout << std::endl;
+  //for (int i = 0; i < *length; i++) std::cout << array[i] << ",  ";
+  //std::cout << std::endl;
+  for (int i = 0; i < *length; i++) Rprintf("%g,  ", array[i]);
+  Rprintf("\n");
   return;
 }
 

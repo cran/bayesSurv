@@ -14,8 +14,8 @@
   (normal densities with equidistant means and constant variance matrices). This function performs an
   MCMC sampling from the posterior distribution of unknown quantities.
 
-  For details, see \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006) and
-  \eqn{\mbox{Kom\'{a}rek}}{Komarek} and Lesaffre (2006).
+  For details, see Komárek (2006) and
+  Komárek and Lesaffre (2006).
   
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1, 2}{T[i,l], i=1,..., N, l=1, 2}
@@ -87,7 +87,7 @@
     }  
   }
   Personally, I found Specification 2 performing better. In the paper
-  \eqn{\mbox{Kom{\'a}rek}}{Komarek} and Lesaffre (2006) only
+  Komárek and Lesaffre (2006) only
   Specification 2 is described.
 
   The mixture weights
@@ -106,9 +106,8 @@
   are estimated instead.
 
   A~Bayesian model is set up for all unknown parameters. For more
-  details I refer to \eqn{\mbox{Kom\'{a}rek and Lesaffre
-      (2006)}}{Komarek and Lesaffre (2006)} 
-  and to \eqn{\mbox{Kom\'{a}rek}}{Komarek} (2006).
+  details I refer to Komárek and Lesaffre (2006)
+  and to Komárek (2006).
 
   If there are doubly-censored data the model of the same type as above
   can be specified for both the onset time and the time-to-event. 
@@ -581,12 +580,12 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   Adaptive rejection sampling for Gibbs sampling.
   \emph{Applied Statistics,} \bold{41}, 337 - 348.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} (2006).
+  Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.
   PhD. Thesis, Katholieke Universiteit Leuven, Faculteit Wetenschappen.
 
-  \eqn{\mbox{Kom\'{a}rek, A.}}{Kom&#225rek, A.} and Lesaffre, E. (2006).
+  Komárek, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failure time model for paired
   doubly interval-censored data.
   \emph{Statistical Modelling}, \bold{6}, 3--22.
@@ -596,7 +595,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   \emph{The Annals of Statistics,} \bold{31}, 705 - 767.
 }
 \author{
-  \eqn{\mbox{Arno\v{s}t Kom\'arek}}{Arno&#353t Kom&#225rek} \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -606,7 +605,9 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 ##
 ## R commands available in the documentation
 ## directory of this package as
-## tandmobPA.pdf, tandmobPA.R.
+## - see ex-tandmobPA.R and
+##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##
 }
 \keyword{survival}
 \keyword{regression}
