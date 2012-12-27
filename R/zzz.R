@@ -13,7 +13,7 @@
 .onAttach <- function(libname, pkgname)
 #.First.lib <- function(lib, pkg)
 {
-   library.dynam("bayesSurv", pkgname, libname)
+   ###library.dynam("bayesSurv", pkgname, libname)    ## no more needed, load is provided by useDynLib in NAMESPACE
 
    packageStartupMessage(paste(
        "\n",

@@ -1,5 +1,5 @@
 bb14244ddd03b114d6c00ba642a22bd1 *CHANGES
-239ba05d33df15dc2c2d31cf759b8e6e *DESCRIPTION
+9b132a7d361b6172ae75daa301ce6819 *DESCRIPTION
 9b500ca878b7c1daabef38f03ef1d35b *NAMESPACE
 bea6e861ba6318154eefe749cb579138 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -58,7 +58,7 @@ dd322dd6165c6a2863ebb77e1f95f6b9 *R/rWishart.R
 eb17f5e24e35753c2f53118de905879d *R/simult.pvalue.R
 26d5cb8ba15fcc37fc572c87b959920a *R/traceplot2.R
 df9aa9fd8f79030c727ec223935b2d58 *R/vecr2matr.R
-0a957d300e2ed6f0ac316ae75faab7e5 *R/zzz.R
+11508531953935ce611885162dfececc *R/zzz.R
 036a3f1dfffc4cf8ffca86b1dca590f4 *data/cgd.RData
 2116fffea2317da44840ed12f37c9713 *data/tandmob2.RData
 d21df8732277560c0bb5a9f852a52cb6 *data/tandmobRoos.RData

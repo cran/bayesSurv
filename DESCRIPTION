@@ -1,6 +1,6 @@
 Package: bayesSurv
-Version: 1.0-1
-Date: 2012-06-19
+Version: 1.1
+Date: 2012-12-27
 Title: Bayesian Survival Regression with Flexible Error and Random
         Effects Distributions
 Author: Arnošt Komárek <arnost.komarek@mff.cuni.cz>
@@ -9,8 +9,8 @@ Depends: R (>= 2.10.0), survival, coda, smoothSurv
 Description: Later
 Encoding: UTF-8
 License: GPL (>= 2)
-URL: http://www.karlin.mff.cuni.cz/~komarek
+URL: http://msekce.karlin.mff.cuni.cz/~komarek
 ZipData: no
-Packaged: 2012-06-19 12:51:49 UTC; komarek
+Packaged: 2012-12-27 08:02:53 UTC; komarek
 Repository: CRAN
-Date/Publication: 2012-06-19 15:46:53
+Date/Publication: 2012-12-27 10:20:23
