@@ -166,6 +166,8 @@ Gspline::update_alla_lambda(const int* mixtureNM,  int* a_ipars,  const int* ite
   switch (_dim){
 
   case 1:
+    if (_K[0] == 0) return;          /* There is only one G-spline component, no update needed. */
+
     if (_type_update_a < Block){     /* Slice, ARS_quantile, ARS_mode */
       update_lambda();
       for (k0 = 0; k0 <= _order; k0++){
@@ -197,6 +199,8 @@ Gspline::update_alla_lambda(const int* mixtureNM,  int* a_ipars,  const int* ite
     return;  /** end of _dim == 1 **/
 
   case 2:
+    if (_K[0] == 0 && _K[1] == 0) return;    /* There is only one G-spline component, no update needed. */
+
     update_lambda();
     for (k1 = 0; k1 <= _order; k1++){
       for (k0 = 0; k0 <= _order; k0++){

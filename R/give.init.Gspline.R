@@ -29,6 +29,7 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   
   if (dim <= 0 | dim > 2) stop("Dimension must be either 1 or 2")
 
+  
   ## Model specification
   ## ===================
   tmp <- match("specification", inprior, nomatch=NA)
@@ -366,28 +367,32 @@ give.init.Gspline <- function(prior, init, mcmc.par, dim)
   tmp <- match("a", ininit, nomatch=NA)
   if(is.na(tmp) | (!is.na(tmp) & !length(init$a))){  
     acoef <- list()
-    for (j in 1:dim){      
-      delta <- prior$c4delta[j]*init$sigma[j]
-      range <- delta*2*prior$K[j]        ## range of knots with this choice of delta
-      delta2 <- (8/range)*delta          ## rescale it to knots from -4 to 4
-      knots <- seq(-prior$K[j], prior$K[j], by=1)*delta2
-      sdspline <- delta2/prior$c4delta[j]
-      if (sdspline >= 0.95) sdspline <- 0.95
-      minp <- minPenalty(knots=knots, sdspline=sdspline, difforder=3, info=FALSE)
-      if (minp$fail) stop("Unable to guess initial 'a' coefficients, give your own")
-      acoef[[j]] <- minp$spline[, "a coef."]
-      if (aconstraint == "mean"){
-        acoef[[j]] <- as.vector(acoef[[j]] - mean(acoef[[j]]))
+    for (j in 1:dim){
+      if (prior$K[j] == 0){
+        acoef[[j]] <- 0
+      }else{        
+        delta <- prior$c4delta[j] * init$sigma[j]
+        range <- delta * 2 * prior$K[j]        ## range of knots with this choice of delta
+        delta2 <- (8/range) * delta          ## rescale it to knots from -4 to 4
+        knots <- seq(-prior$K[j], prior$K[j], by = 1) * delta2
+        sdspline <- delta2 / prior$c4delta[j]
+        if (sdspline >= 0.95) sdspline <- 0.95
+        minp <- minPenalty(knots = knots, sdspline = sdspline, difforder = 3, info = FALSE)
+        if (minp$fail) stop("Unable to guess initial 'a' coefficients, give your own")
+        acoef[[j]] <- minp$spline[, "a coef."]
+        if (aconstraint == "mean"){
+          acoef[[j]] <- as.vector(acoef[[j]] - mean(acoef[[j]]))
+        }
+        else{
+          acoef[[j]] <- as.vector(acoef[[j]] - acoef[[j]][prior$izero[j] + prior$K[j] + 1])
+        }
       }
-      else{
-        acoef[[j]] <- as.vector(acoef[[j]] - acoef[[j]][prior$izero[j] + prior$K[j] + 1])
-      }  
     }
     if (dim == 1){ init$a <- acoef[[1]] }
     else{                 if (dim == 2){ init$a <- outer(acoef[[1]], acoef[[2]], "+")                           }
                           else         { stop("Unimplemented dimension appeared in bayesHistogram.priorInit()") }
         }
-  }
+  }  
   total.length <- ifelse(dim == 1, 2*prior$K[1] + 1,
                                   (2*prior$K[1] + 1)*(2*prior$K[2] + 1))
   init$a <- init$a[1:total.length]

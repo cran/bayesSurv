@@ -42,6 +42,7 @@ bayesBisurvreg.priorInit <- function(dim, prior, init, design, mcmc.par, prior2,
   else           init2.y <- init2$y
   
   yy <- give.init.y2(init.y, init2.y, dim, design, design2, doubly)    
+
   
   ### Prior/inits for the onset time/event time related quantities
   ### ============================================================

@@ -29,7 +29,7 @@ bayessurvreg3.priorb(prior.b, init, design, mcmc.par)
 
 bayessurvreg3.writeHeaders(dir, doubly, prior.init,
    priorb.di, priorb2.di, store, design, design2,
-   version)
+   version, mclass)
 
 bayessurvreg3.priorinitNb(priorinit.Nb, init, init2,
    design, design2, doubly)
@@ -86,9 +86,13 @@ bayessurvreg3.checkrho(rho, doubly)
     It is equal to 31 if we are estimating correlation coefficient
     between the onset and time-to-event random intercepts.
   }
+  \item{mclass}{object created by \code{\link{bayessurvreg3}} function
+    related to a model which considers possible misclassification of the
+    event status.
+  }
 }
 \value{
-Some lists.
+Some lists (in most cases).
 }
 \section{Value for bayessurvreg3.priorb}{
   A list with the following components:

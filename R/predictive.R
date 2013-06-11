@@ -157,11 +157,11 @@ predictive <- function(
    filesindir <- dir(dir)    ## character vector with files in dir
       
    write.headers <- function(filename, predict0, dir, filesindir, n, gridall, cumngrid, obs = TRUE, label, namesX)
-   {     
+   {
      lf <- nchar(filename)
      remove <- substring(filesindir, first = 1, last = lf)
      remove <- pmatch(remove, table = filename, nomatch = 0, duplicates.ok = TRUE)
-     file.remove(paste(dir, "/", filesindir[remove == 1], sep = ""))
+     if (any(remove)) file.remove(paste(dir, "/", filesindir[remove == 1], sep = ""))
      if (predict0){
        if (obs){
          for (i in 1:n){
@@ -197,7 +197,7 @@ predictive <- function(
    nsimul <- c(M, 0, nwrite)       ## (nthin is ignored)
    tolers <- c(toler.chol, toler.qr)
    prior.pari <- c(kmax, 0, 1*Eb0.depend.mix)
-
+   
    cat("Simulation started on                       ", date(), "\n", sep = "")
    fit <- .C("predictive", as.integer(typeError),
                            as.character(dir),

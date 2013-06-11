@@ -163,7 +163,7 @@ bayessurvreg3.priorb <- function(prior.b, init, design, mcmc.par)
     tmp <- match("a.b", ininit, nomatch=NA)
     if(is.na(tmp)) init.tmp$a <- numeric(0)
     else           init.tmp$a <- init$a.b
-    
+
     bgspl <- give.init.Gspline(prior=prior.b, init=init.tmp, mcmc.par=mcmc.par.tmp, dim=1)
     init.tmp <- attr(bgspl, "init")
     mcmc.par.tmp <- attr(bgspl, "mcmc.par")

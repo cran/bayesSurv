@@ -15,7 +15,7 @@
 ##
 ## Write headers to files where simulated values will be stored
 ##
-bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, priorb2.di, store, design, design2, version)
+bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, priorb2.di, store, design, design2, version, mclass)
 {
   bayesBisurvreg.writeHeaders(dir=dir, dim=1, nP=design$n, doubly=doubly,
                               prior.init=prior.init, store=store, design=design, design2=design2)
@@ -95,5 +95,27 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
     if ("rho_b.sim" %in% FILES) file.remove(paste(dir, "/rho_b.sim", sep = ""))
   }  
 
-  
+  ## Files related to misclassification model
+  if (mclass$nModel > 0){
+    sink(paste(dir, "/sens_spec.sim", sep = ""), append = FALSE)    
+    switch (mclass$Model,
+      "Examiner" = {
+        cat(paste(paste("alpha", mclass$labelExaminer, sep = ""), collapse = "  "))
+        cat("  ")
+        cat(paste(paste("eta",   mclass$labelExaminer, sep = ""), collapse = "  "))
+        cat("\n")
+      },
+      "Factor:Examiner" = {
+        cat(paste(paste("alpha", rep(mclass$labelExaminer, each = mclass$nFactor), ".", rep(mclass$labelFactor, mclass$nExaminer), sep = ""), collapse = "  "))
+        cat("  ")
+        cat(paste(paste("eta", rep(mclass$labelExaminer, each = mclass$nFactor), ".", rep(mclass$labelFactor, mclass$nExaminer), sep = ""), collapse = "  "))        
+        cat("\n")
+      },
+      {
+        sink()
+        stop("some part of the code not implemented for this option")
+      }  
+    )
+    sink()    
+  }  
 }

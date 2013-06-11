@@ -11,8 +11,8 @@
   In the case of doubly-interval censoring, different regression models
   can be specified for the onset and event times.
 
-  A~univariate random effect (random intercept)
-  with the distribution expressed as a~penalized normal
+  A univariate random effect (random intercept)
+  with the distribution expressed as a penalized normal
   mixture can be included in the model to adjust for clusters.
 
   The error density of the regression model is specified as a mixture of
@@ -23,6 +23,10 @@
   For details, see Komárek (2006)
   and Komárek and Lesaffre (2008).
 
+  SUPPLEMENTED IN 06/2013:  Interval-censored times might be subject to
+  misclassification. In case of doubly-interval-censored data, the event
+  time might be subject to misclassification. For details, see GKJ (2013+).  
+  
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
            T[i,l], i=1,..., N, l=1,..., n[i]}
@@ -35,16 +39,16 @@
   \eqn{b_i}{b[i]} is a cluster-specific random effect (random intercept).
 
   The random effects \eqn{b_i,\;i=1,\dots, N}{b[i], i=1,..., N}
-  are assumed to be i.i.d. with a~univariate density \eqn{g_{b}(b)}{g[b](b)}.
+  are assumed to be i.i.d. with a univariate density \eqn{g_{b}(b)}{g[b](b)}.
   The error terms
   \eqn{\varepsilon_{i,l},\;i=1,\dots, N, l=1,\dots, n_i}{%
        epsilon[i,l], i=1,..., N, l=1,..., n[i]}
-  are assumed to be i.i.d. with a~univariate density
+  are assumed to be i.i.d. with a univariate density
   \eqn{g_{\varepsilon}(e)}{g[epsilon](e)}.
   
   Densities \eqn{g_{b}}{g[b]} and \eqn{g_{\varepsilon}}{g[epsilon]} are
   both expressed as
-  a~mixture of Bayesian G-splines (normal densities with equidistant
+  a mixture of Bayesian G-splines (normal densities with equidistant
   means and constant variances). We distinguish two,
   theoretically equivalent, specifications.
 
@@ -62,7 +66,7 @@
       where \eqn{\sigma^2}{sigma^2} is the
       \bold{unknown} basis variance and
       \eqn{\mu_{j},\;j=-K,\dots, K}{mu[j],\;j=-K,..., K}
-      is an~equidistant grid of knots symmetric around the
+      is an equidistant grid of knots symmetric around the
       \bold{unknown} point \eqn{\gamma}{gamma} 
       and related to the unknown basis variance through the
       relationship
@@ -70,7 +74,7 @@
 	mu[j] = gamma + j*delta*sigma, j=K,...,	K}
       where \eqn{\delta}{delta} is fixed
       constants, e.g. \eqn{\delta=2/3}{delta=2/3}
-      (which has a~justification of being close to cubic B-splines).
+      (which has a justification of being close to cubic B-splines).
       \deqn{}{}
     }
     \item{Specification 2}{
@@ -87,7 +91,7 @@
 	V is distributed as sum[j=-K][K]
 	w[j] N(mu[j], sigma^2)}
       where \eqn{\mu_{j},\;j=-K,\dots, K}{mu[j], j=-K,..., K}
-      is an~equidistant grid of \bold{fixed} knots (means), usually
+      is an equidistant grid of \bold{fixed} knots (means), usually
       symmetric about the \bold{fixed} point \eqn{\gamma=0}{gamma = 0} and
       \eqn{\sigma^2}{sigma^2} is \bold{fixed} basis variance.
       Reasonable values for the numbers of grid
@@ -99,8 +103,7 @@
     }  
   }
   Personally, I found Specification 2 performing better. In the paper
-  Komárek and Lesaffre (2008) only
-  Specification 2 is described.
+  Komárek and Lesaffre (2008) only Specification 2 is described.
 
   The mixture weights
   \eqn{w_{j},\;j=-K,\dots, K}{w[j], j=-K,..., K} are
@@ -113,7 +116,7 @@
         a[j] = exp(w[j])/sum[m] exp(w[m])}
   are estimated instead.
 
-  A~Bayesian model is set up for all unknown parameters. For more
+  A Bayesian model is set up for all unknown parameters. For more
   details I refer to Komárek and Lesaffre (2008).
       
   If there are doubly-censored data the model of the same type as above
@@ -157,6 +160,10 @@
 \usage{
 bayessurvreg3(formula, random, formula2, random2,
    data = parent.frame(),
+   classification,
+   classParam = list(Model = c("Examiner", "Factor:Examiner"),
+                     a.sens = 1, b.sens = 1, a.spec = 1, b.spec = 1,
+                     init.sens = NULL, init.spec = NULL),
    na.action = na.fail, onlyX = FALSE,
    nsimul = list(niter = 10, nthin = 1, nburn = 0, nwrite = 10),   
    prior, prior.beta, prior.b, init = list(iter = 0),
@@ -167,8 +174,8 @@ bayessurvreg3(formula, random, formula2, random2,
    prior2, prior.beta2, prior.b2, init2,
    mcmc.par2 = list(type.update.a = "slice", k.overrelax.a = 1,
                     k.overrelax.sigma = 1, k.overrelax.scale = 1,
-                   type.update.a.b = "slice", k.overrelax.a.b = 1,
-                   k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
+                    type.update.a.b = "slice", k.overrelax.a.b = 1,
+                    k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
    priorinit.Nb,
    rho = list(type.update = "fixed.zero", init=0, sigmaL=0.1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
@@ -181,11 +188,11 @@ bayessurvreg3(formula, random, formula2, random2,
     doubly-censored data, this is the model formula for the onset
     time.
 
-    The left-hand side of the \code{formula} must be an~object created
+    The left-hand side of the \code{formula} must be an object created
     using \code{\link[survival]{Surv}}.
 
     Intercept is implicitely included in the model by the
-    estimation of the error distribution. As a~consequence \code{-1} in
+    estimation of the error distribution. As a consequence \code{-1} in
     the model formula does not have any effect on the model
     specification.
 
@@ -216,6 +223,70 @@ bayessurvreg3(formula, random, formula2, random2,
     occuring in the \code{formula}, \code{formula2}, \code{random},
     \code{random2} statements.
   }  %% end of item{data}
+  \item{classification}{\code{data.frame} with the
+    information for a model which considers misclassification of the
+    event times. It is assumed to have the following columns where the
+    position of columns is important, not their names:
+    \enumerate{
+      \item{\bold{idUnit}: variable which determines the rows of
+	\code{classification} matrix pertaining to one unit in
+	\code{formula/formula2} \code{data}. Number of unique \code{idUnit} values must be the
+	same as in \code{formula/formula2} \code{data},
+	\code{classification} matrix must be sorted in the same order as
+        \code{formula/formula2} \code{data} and having all rows
+	pertaining to one unit in its consecutive rows.}
+      \item{\bold{Time}: variable with the examination times. It is
+	assumed that the \code{Time}s are sorted in an increasing order
+	for each \code{idUnit}.}      
+      \item{\bold{Examiner}: variable which determines the examiner who
+	performed evaluation at a specific visit. Number of unique
+	\code{Examiner} values determines the number of examiners.}
+      \item{\bold{Status}: 0/1 variable giving the event status
+	according to examiner, 0 = no event, 1 = event.}
+      \item{\bold{Factor}: possible factor (e.g., tooth in our dental
+	application which may influence the misclassification). Numeric
+	or character variables are converted to a \code{factor}. This
+	column is obligatory only if \code{classModel} is \dQuote{Factor:Examiner}.}
+    }
+    Possible additional columns are ignored.
+    
+    If missing, no misclassification is considered.
+  }
+  \item{classParam}{a \code{list} with additional parameters for the
+    misclassification model. It is ignored if there is no
+    \code{classification} argument specified.
+
+    The following components of the \code{list} \code{classParam} are expected.
+    \describe{
+      \item{Model}{a character string which specifies the model
+	considered. It can be 1. \dQuote{Examiner}:
+        sensitivity and specificity depend only on \code{Examiner},
+	2. \dQuote{Factor:Examiner}: sensitivity and specificity is for each
+	examiner generally different for different levels of a factor \code{Factor}.
+      }
+      \item{a.sens}{parameter \sQuote{a} (\code{shape1}) of the beta prior distributions
+        for sensitivities.}
+      \item{b.sens}{parameter \sQuote{b} (\code{shape2}) of the beta prior distributions
+        for sensitivities.}
+      \item{a.spec}{parameter \sQuote{a} (\code{shape1}) of the beta prior distributions
+        for specificities.}
+      \item{b.spec}{parameter \sQuote{b} (\code{shape2}) of the beta prior distributions
+        for specificities.}
+      \item{init.sens}{a vector or matrix with initial values of
+	sensitivities. A vector is expected if \code{Model} is
+	\dQuote{Examiner} in which case each component of the vector
+	corresponds to each examiner. A matrix is expected if
+	\code{Model} is \dQuote{Factor:Examiner} in which case rows of
+	the matrix correspond to the values of \code{Factor} and columns
+        to examiners.
+
+	If not given then the initial sensitivities are sampled from a
+	uniform distribution on (0.8, 0.9).
+      }
+      \item{init.spec}{a vector or matrix with initial values of
+	specificities. The structure is the same as for \code{init.sens}.}      
+    }  
+  }
   \item{na.action}{the user is discouraged from changing the default
     value \code{na.fail}.
   }  %% end of item{na.action}
@@ -239,7 +310,7 @@ bayessurvreg3(formula, random, formula2, random2,
 	writen to files;}
     }    
   }  %% end of item{nsimul}
-  \item{prior}{a~list specifying the prior distribution of the G-spline
+  \item{prior}{a list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model
     given by \code{formula} and \code{random}. See \code{prior} argument of
     \code{\link{bayesHistogram}} function for more detail. In this list
@@ -248,7 +319,7 @@ bayessurvreg3(formula, random, formula2, random2,
     The item \code{prior$neighbor.system} can only be equal to
     \code{uniCAR} here.
   }  %% end of item{prior}
-  \item{prior.b}{a~list specifying the prior distribution of the
+  \item{prior.b}{a list specifying the prior distribution of the
     G-spline defining the distribution of the random intercept in the
     regression model given by \code{formula} and \code{random}. See
     \code{prior} argument of \code{\link{bayesHistogram}} function for
@@ -265,11 +336,11 @@ bayessurvreg3(formula, random, formula2, random2,
     the onset time, i.e. it is related to \code{formula} and
     \code{random}.
     
-    This should be a~list with the following components:
+    This should be a list with the following components:
     \describe{
-    \item{mean.prior}{a~vector specifying a~prior mean for each
+    \item{mean.prior}{a vector specifying a prior mean for each
       \code{beta} parameter in the model.}
-    \item{var.prior}{a~vector specifying a~prior variance for each
+    \item{var.prior}{a vector specifying a prior variance for each
       \code{beta} parameter.}
     }
     It is recommended to run the function
@@ -277,24 +348,24 @@ bayessurvreg3(formula, random, formula2, random2,
     to find out how the betas are sorted. They must correspond to a
     design matrix X taken from \code{formula}.
   }  %% end of item{prior.beta}
-  \item{init}{an~optional list with initial values for the MCMC related
+  \item{init}{an optional list with initial values for the MCMC related
     to the model given by \code{formula} and \code{random}. The list can have the following components:
     \describe{
     \item{iter}{the number of the iteration to which the initial values
       correspond, usually zero.}
-    \item{beta}{a~vector of initial values for the regression
+    \item{beta}{a vector of initial values for the regression
       parameters.
       It must be sorted in the same way as are the columns
       in the design matrix. Use \code{onlyX=TRUE} if you do not know how
       the columns in the design matrix are created.}
-    \item{a}{a~vector of length \eqn{2K+1}{2*K+1} with the initial
+    \item{a}{a vector of length \eqn{2K+1}{2*K+1} with the initial
       values of transformed mixture weights for the G-spline defining
       the distribution of the error term \eqn{\varepsilon}{epsilon}.}
     \item{lambda}{initial values for the Markov random fields precision
       parameter for the G-spline defining
       the distribution of the error term \eqn{\varepsilon}{epsilon}. 
     }
-    \item{gamma}{an~initial values for the middle
+    \item{gamma}{an initial values for the middle
       knot \eqn{\gamma}{gamma} for the G-spline defining
       the distribution of the error term \eqn{\varepsilon}{epsilon}.
       
@@ -306,7 +377,7 @@ bayessurvreg3(formula, random, formula2, random2,
       If \sQuote{Specification} is 1 \code{init$gamma} should be
       approximately equal to the mean value of the residuals.
     }
-    \item{sigma}{an~initial values of the basis
+    \item{sigma}{an initial values of the basis
       standard deviation \eqn{\sigma}{sigma} for the G-spline defining
       the distribution of the error term \eqn{\varepsilon}{epsilon}.
       
@@ -322,26 +393,26 @@ bayessurvreg3(formula, random, formula2, random2,
       divided by the number of knots \eqn{(2K+1)}{(2*K+1)} and
       multiplied again by something like 2/3.
       }  
-    \item{intercept}{an~initial values of the
+    \item{intercept}{an initial values of the
       intercept term \eqn{\alpha}{alpha} for the G-spline defining
       the distribution of the error term \eqn{\varepsilon}{epsilon}.
       
       If \sQuote{Specification} is 1 this value is not changed by the
       MCMC and the initial value is always changed to zero.}
-    \item{scale}{an~initial value of the scale
+    \item{scale}{an initial value of the scale
       parameter \eqn{\tau}{tau} for the G-spline defining
       the distribution of the error term \eqn{\varepsilon}{epsilon}.
 
       If \sQuote{Specification} is 1 this value is not changed by the MCMC
       and the initial value is always changed to one.}
-    \item{a.b}{a~vector of length \eqn{2K+1}{2*K+1} with the initial
+    \item{a.b}{a vector of length \eqn{2K+1}{2*K+1} with the initial
       values of transformed mixture weights for the G-spline defining
       the distribution of the random intercept \eqn{b}{b}.}
     \item{lambda.b}{initial values for the Markov random fields precision
       parameter for the G-spline defining
       the distribution of the random intercept \eqn{b}{b}. 
     }
-    \item{gamma.b}{an~initial values for the middle
+    \item{gamma.b}{an initial values for the middle
       knot \eqn{\gamma}{gamma} for the G-spline defining
       the distribution of the random intercept \eqn{b}{b}.
 
@@ -349,7 +420,7 @@ bayessurvreg3(formula, random, formula2, random2,
       zero and is for neither \sQuote{Specification} updated by the
       MCMC.
     }
-    \item{sigma.b}{an~initial values of the basis
+    \item{sigma.b}{an initial values of the basis
       standard deviation \eqn{\sigma}{sigma} for the G-spline defining
       the distribution of the random intercept \eqn{b}{b}.
       
@@ -365,7 +436,7 @@ bayessurvreg3(formula, random, formula2, random2,
       divided by the number of knots \eqn{(2K+1)}{(2*K+1)} and
       multiplied again by something like 2/3.
       }  
-    \item{intercept.b}{an~initial values of the
+    \item{intercept.b}{an initial values of the
       intercept term \eqn{\alpha}{alpha} for the G-spline defining
       the distribution of the random intercept \eqn{b}{b}.
 
@@ -373,7 +444,7 @@ bayessurvreg3(formula, random, formula2, random2,
       zero and is for neither \sQuote{Specification} updated by the
       MCMC.
       }
-    \item{scale.b}{an~initial value of the scale
+    \item{scale.b}{an initial value of the scale
       parameter \eqn{\tau}{tau} for the G-spline defining
       the distribution of the random intercept \eqn{b}{b}.
 
@@ -389,7 +460,7 @@ bayessurvreg3(formula, random, formula2, random2,
       component labels for each residual. All values must be between
       \eqn{-K}{-K} and \eqn{K.}{K.} See argument \code{init} of
       the function \code{\link{bayesHistogram}} for more details.}
-    \item{r.b}{a~vector of length \eqn{N}{N}
+    \item{r.b}{a vector of length \eqn{N}{N}
       with initial
       component labels for each random intercept. All values must be between
       \eqn{-K}{-K} and \eqn{K.}{K.} See argument \code{init} of
@@ -425,14 +496,14 @@ bayessurvreg3(formula, random, formula2, random2,
   }  %% end of item{prior2}
   \item{prior.b2}{prior specification for the parameters related to the
     random effects from \code{formula2} and \code{random2}. This should
-    be a~list with the same structure as \code{prior.b}.
+    be a list with the same structure as \code{prior.b}.
 
     It is ignored if the argument \code{priorinit.Nb} is given.    
   }  %% end of item{prior.b2}    
   \item{prior.beta2}{prior specification for the regression parameters
     of time-to-event in the case of doubly censored data (related to
     \code{formula2} and \code{random2}).
-    This should be a~list with the same structure as \code{prior.beta}.
+    This should be a list with the same structure as \code{prior.beta}.
   }  %% end of item{prior.beta2}
   \item{init2}{an optional list with initial values for the MCMC related
     to the model given by \code{formula2} and \code{random2}.
@@ -686,11 +757,11 @@ bayessurvreg3(formula, random, formula2, random2,
       If \sQuote{Specification} is 2, this column usually contains zeros;
             
       \bold{sigma1} = basis standard deviation \eqn{\sigma}{sigma}
-      of the G-spline. This column contains a~fixed value
+      of the G-spline. This column contains a fixed value
       if \sQuote{Specification} is 2;
             
       \bold{delta1} = distance \eqn{delta}{delta} between the two knots of the G-spline.
-      This column contains a~fixed value if \sQuote{Specification} is 2;
+      This column contains a fixed value if \sQuote{Specification} is 2;
       
       \bold{intercept1} = the intercept term \eqn{\alpha}{alpha} of the G-spline.
       If \sQuote{Specification} is 1, this column usually contains zeros;
@@ -939,6 +1010,10 @@ bayessurvreg3(formula, random, formula2, random2,
   }
 }
 \references{
+  GKJ (2013+).
+  PAPER BEING PREPARED.
+  \emph{WHO KNOWS WHERE PUBLISHED.}
+  
   Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
     Interval-Censored Data with Flexible Distributional Assumptions}.

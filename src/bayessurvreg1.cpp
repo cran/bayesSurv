@@ -428,9 +428,10 @@ bayessurvreg1(char** dirP,
     List<int>* invrM = new List<int>[*kmaxP];
     List<int>* propinvrM = new List<int>[*kmaxP];
     int* mixtureNM = new int[*kmaxP];
-    int* propmixtureNM = new int[*kmaxP];
+    int* propmixtureNM = new int[*kmaxP];   
     int kP[1] = {int(mixtureM[0])};
     int propkP[1] = {*kP};
+    
     if (wM == NULL || muM == NULL || invsigma2M == NULL || propwM == NULL || propmuM == NULL || propinvsigma2M == NULL ||
         proprM == NULL || invrM == NULL || propinvrM == NULL || mixtureNM == NULL || propmixtureNM == NULL)
            throw returnR("C++ Error: Could not allocate a memory for a working space, buy more memory...", 1);

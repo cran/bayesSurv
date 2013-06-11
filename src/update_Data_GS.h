@@ -19,19 +19,55 @@ const double _LOG_ZERO_TIME_ = log(_ZERO_TIME_);
 // =======================================================================================================
 void
 update_Data_GS(double* YsM,
-               const double* y_left,  const double* y_right,   const int* status,
-               const int* rM,         const Gspline* gg,
-               const int* nP,         const int* n_censored);
+               const double*  y_left,  
+               const double*  y_right,   
+               const int*     status,
+               const int*     rM,         
+               const Gspline* gg,
+               const int*     nP,         
+               const int*     n_censored);
 
 void
-update_Data_GS_regres(double* YsM,           double* regresResM,
-                      const double* y_left,  const double* y_right,   const int* status,
-                      const int* rM,         const Gspline* gg,       const int* nP);
+update_Data_GS_regres(double* YsM,           
+                      double* regresResM,
+                      const double*  y_left,  
+                      const double*  y_right,   
+                      const int*     status,
+                      const int*     rM,         
+                      const Gspline* gg,       
+                      const int* nP);
 
 void
-update_Data_GS_doubly(double* Yevent,        double* regresResM,
-                      const double* Yonset, 
-  	              const double* t_left,  const double* t_right,   const int* status,
-                      const int* rM,         const Gspline* gg,       const int* nP);
+update_Data_GS_doubly(double* Yevent,        
+                      double* regresResM,
+                      const double*  Yonset, 
+  	              const double*  t_left,  
+                      const double*  t_right,    
+                      const int*     status,
+                      const int*     rM,         
+                      const Gspline* gg,       
+                      const int*     nP);
+
+void
+update_Data_GS_regres_misclass(double* YsM,           
+                               double* regresResM,
+                               int*    n00,
+                               int*    n10,
+                               int*    n01,
+                               int*    n11,
+                               double* dwork,
+                               const double*  sens,
+                               const double*  spec,
+                               const double*  logvtime,
+                               const int*     status,
+                               const int*     nExaminer,
+                               const int*     nFactor,
+                               const int*     nvisit,
+                               const int*     maxnvisit,
+                               const int*     Examiner,
+                               const int*     Factor,
+                               const int*     rM,         
+                               const Gspline* gg,       
+                               const int*     nP);
 
 #endif

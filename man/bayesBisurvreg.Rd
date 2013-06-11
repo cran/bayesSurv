@@ -121,7 +121,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
                    k.overrelax.sigma = 1, k.overrelax.scale = 1),
    prior2, prior.beta2, init2,
    mcmc.par2 = list(type.update.a = "slice", k.overrelax.a = 1,
-                    k.overrelax.sigma = 1, k.overrelax.scale = 1),                           
+                    k.overrelax.sigma = 1, k.overrelax.scale = 1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
                 r = FALSE, r2 = FALSE),
    dir = getwd())

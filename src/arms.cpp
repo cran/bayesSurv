@@ -445,6 +445,10 @@ void invert(double prob, ENVELOPE *env, POINT *p)
     p->x = q->x;
     p->y = q->y;
     p->ey = q->ey;
+
+    xl = p->x;      /* These lines added by AK on 20130530 to avoid warning: variable 'xl' is used uninitialized whenever 'if' condition is true */
+    xr = p->x;      /* which relates to use of xl and xr in if ((p->x < xl) || (p->x > xr)) below. This definition of xl, xr should never lead   */
+                    /* to error("arms error 1\n").                                                                                               */
   } else {
     xl = q->pl->x;
     xr = q->x;

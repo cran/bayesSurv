@@ -18,6 +18,7 @@
 //              * previous versions took take this info in beta1->randomIntcpt() and beta2->randomIntcpt()
 //                which was always set to 0 if there are no covariates in the model  
 //              * this caused SEGFAULT in RandomEff::GIBBSupdate
+// 29/05/2013:  for some versions, possibility of having misclassification started to be implemented (visit to Santiago)
 //
 #include "bayessurvreg2.h"
 
@@ -106,28 +107,61 @@ extern "C"{
 // mainSimul .................. 0/1, if 0 then all parameters are written to files only every nwrite iteration
 
 void
-bayessurvreg2(char **dirP,             const int *dimsP,         const double *X1,     const double *X2,
-              const double *y1_left,   const double *y1_right,   const int *status1,
-              const double *t2_left,   const double *t2_right,   const int *status2,               
-              double *Y1,              double *Y2,
-              int *r1,                 int *r2,                  const int *specif,    
-              int *r_b1,               int *r_b2,                const int *specif_b,
-              int *GsplineI1,          double *GsplineD1,
-              int *GsplineI2,          double *GsplineD2,
-              int *priorBeta1I,        double *priorBeta1D,
-              int *priorBeta2I,        double *priorBeta2D,
-              int *priorb1I,           double *priorb1D,
-              int *priorb2I,           double *priorb2D,
-              int *priorCovMat1I,      double *priorCovMat1D,
-              int *priorCovMat2I,      double *priorCovMat2D,              
-              double *rhob,            int *rho_accept,          const int *rhobI,     const double *rhobD,
-              int *iterM,              int *nsimulP,             int *storeP,
-              const int *version,      const int *mainSimul,     int *errP)
+bayessurvreg2(char** dirP,             
+              const int*    dimsP,         
+              const double* X1,     
+              const double* X2,
+              const double* y1_left,   
+              const double* y1_right,   
+              const int*    status1,
+              const double* t2_left,   
+              const double* t2_right,   
+              const int*    status2,               
+              double* Y1,              
+              double* Y2,
+              int* r1,                 
+              int* r2,                  
+              const int* specif,    
+              int* r_b1,               
+              int* r_b2,                
+              const int* specif_b,
+              int*    GsplineI1,          
+              double* GsplineD1,
+              int*    GsplineI2,          
+              double* GsplineD2,
+              int*    priorBeta1I,        
+              double* priorBeta1D,
+              int*    priorBeta2I,        
+              double* priorBeta2D,
+              int*    priorb1I,           
+              double* priorb1D,
+              int*    priorb2I,           
+              double* priorb2D,
+              int*    priorCovMat1I,      
+              double* priorCovMat1D,
+              int*    priorCovMat2I,      
+              double* priorCovMat2D,              
+              double* rhob,            
+              int*    rho_accept,          
+              const int*    rhobI,     
+              const double* rhobD,
+              double*       mcsensspec,
+              const double* mclogvtime,
+              const int*    mcstatus,
+              const int*    mcparI,
+              const double* mcparD,
+              int* iterM,              
+              int* nsimulP,             
+              int* storeP,
+              const int* version,      
+              const int* mainSimul,     
+              int* errP)
 {
   try{
     int out_format[2] = {6, 1};                /** precision and width for output **/
     double dtemp;
-    int itemp;
+    int    itemp;
+    const int* citempP;
     double *ddtemp = (double*)malloc(sizeof(double));
 
     const int check_k_effect = 0;    /** option for writeToFiles_bayesHistogram function **/
@@ -177,7 +211,7 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
 
     /** Dimensionality parameters  **/        
     const int *nP        = dimsP;                                      /* number of observational uni- or bivariate vectors  */
-    const int *doubly    = dimsP + 1;                                  /* 0/1 .... is doubly censored?                       */
+    const int *doubly    = nP + 1;                                     /* 0/1 .... is doubly censored?                       */
 
 
     /** Dimensionality parameters for compatibility with bayesBisurvreg **/
@@ -195,6 +229,70 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
     if ((*version == 32) && !(*doubly))
       throw returnR("Error: Version 32 of Cpp bayessurvreg2 expects doubly-interval-censored data", 1);
 
+
+    /** Parameters related to misclassification model **/
+    const int *mcModel     = mcparI;                     /* type of model, 0 = no misclassification model                             */
+    const int *mcnExaminer = mcModel + 1;                /* number of examiners                                                       */
+    const int *mcnFactor   = mcnExaminer + 1;            /* number of additional factors                                              */
+    const int *mcnvisit    = mcnFactor + 1;              /* number of "visits" for each observation, vector of length *nP = nobs      */
+    int sum_mcnvisit = 0;
+    if (*mcModel){
+      citempP = mcnvisit;
+      for (i = 0; i < *nP; i++){
+        sum_mcnvisit += *citempP;
+        citempP++;
+      }
+    }
+    const int *mcExaminer  = mcnvisit + *nP;                /* examiner for each observation, vector of length sum(mcnvisit)             */
+    const int *mcFactor    = mcExaminer + sum_mcnvisit;     /* additional factor for each observation,  vector of length sum(mcnvisit)   */
+    if (*mcModel){
+      if (*version == 2) 
+        throw returnR("Error: Misclassification model not implemented for bayessurvreg2.", 1);
+      if ((*version == 3 || *version == 31 || *version == 32) && *doubly) 
+        throw returnR("Error: Misclassification model not implemented for bayessurvreg3 with doubly-censored data.", 1);
+    }   
+
+    //Rprintf("mcModel = %d, mcnExaminer = %d, mcnFactor = %d, mcnvisit[0...LAST] = %d...%d\n", *mcModel, *mcnExaminer, *mcnFactor, *mcnvisit, mcnvisit[*nP - 1]);
+    //Rprintf("mcExaminer:"); for (int ii = 0; ii < sum_mcnvisit; ii++) Rprintf("%d, ", mcExaminer[ii]); Rprintf("\n");
+    //Rprintf("mcFactor:");   for (int ii = 0; ii < sum_mcnvisit; ii++) Rprintf("%d, ", mcFactor[ii]); Rprintf("\n");
+
+    const int lgth_sensspec = *mcnExaminer * *mcnFactor * 2;   /* length of vector mcsensspec */
+    double *mcsens = mcsensspec;                               /* vector of sensitivities     */
+    double *mcspec = mcsens + *mcnExaminer * *mcnFactor;       /* vector of specificities     */
+
+    const double *mcPrior = mcparD;    /* a.sens, b.sens, a.spec, b.spec:  parameters of beta priors for sensitivities and specificities */
+
+    /** Arrays to store classification matrices for each examiner and factor combination    **/
+    /** in a model with misclassification.                                                  **/
+    int *mcn00 = &itemp;
+    int *mcn10 = &itemp;
+    int *mcn01 = &itemp;
+    int *mcn11 = &itemp;
+    if (*mcModel){
+      mcn00 = (int*) calloc(*mcnExaminer * *mcnFactor, sizeof(int));
+      mcn10 = (int*) calloc(*mcnExaminer * *mcnFactor, sizeof(int));
+      mcn01 = (int*) calloc(*mcnExaminer * *mcnFactor, sizeof(int));
+      mcn11 = (int*) calloc(*mcnExaminer * *mcnFactor, sizeof(int));
+      if (!mcn00 || !mcn10 || !mcn01 || !mcn11) throw returnR("Not enough memory available in bayessurvreg2 (mcn/mcn00/mcn10/mcn01/mcn11)", 1);
+    }
+    // Leave mcn00, mcn10, mcn01, mcn11 uninitialized. They will be initialized during the first update of event times.
+
+    /** Maximal number of visits **/
+    int mcmaxnvisit[1] = {0};
+    if (*mcModel){
+      citempP = mcnvisit;
+      for (i = 0; i < *nP; i++){
+        if (*citempP > *mcmaxnvisit) *mcmaxnvisit = *citempP;
+        citempP++;
+      }
+    }
+
+    /** Working arrays for update to event times in a model with misclassification **/
+    double *mcdwork_updateY = &dtemp;
+    if (*mcModel){
+      mcdwork_updateY = (double*) calloc(6 * (1 + *mcmaxnvisit), sizeof(double));
+     if (!mcdwork_updateY) throw returnR("Not enough memory available in bayessurvreg2 (mcdwork_updateY)", 1);
+    }
 
     /** Find out how many censored observations we have **/
     int n1_interval = 0;
@@ -542,12 +640,15 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
 
     std::string rhobpath       = dir + "/rho_b.sim";
 
+    std::string sensspecpath   = dir + "/sens_spec.sim";
+
     std::ofstream iterfile, betafile, betafile2, bbfile, bbfile2, Dfile, Dfile2;
     std::ofstream sigmafile, lambdafile, mixmomentfile, mweightfile, mlogweightfile, mmeanfile, Yfile, rfile, logposterfile;
     std::ofstream sigmafile2, lambdafile2, mixmomentfile2, mweightfile2, mlogweightfile2, mmeanfile2, Yfile2, rfile2, logposterfile2;
     std::ofstream sigmafile_b, lambdafile_b, mixmomentfile_b, mweightfile_b, mlogweightfile_b, mmeanfile_b, rfile_b, logposterfile_b;
     std::ofstream sigmafile_b2, lambdafile_b2, mixmomentfile_b2, mweightfile_b2, mlogweightfile_b2, mmeanfile_b2, rfile_b2, logposterfile_b2;
     std::ofstream rhobfile;
+    std::ofstream sensspecfile;
 
     const bool writeSumExpa = false;
     std::string ssumexpa    = dir + "/sumexpa.sim";
@@ -636,6 +737,10 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
 	  		       sigmapath2, lambdapath2, mixmomentpath2, mweightpath2, mlogweightpath2, mmeanpath2, 
                                Ypath2, rpath2, logposterpath2,
                                1, 'a');
+    }
+
+    if (*mcModel){
+      openFile(sensspecfile, sensspecpath, 'a');
     }
 
 
@@ -888,7 +993,16 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
           iterTotal++;                        /* = (iter-1)*nthin + witer                    */
           iterTotalNow++;                     /* = (iter-1)*nthin + witer - nullthIter*nthin */
 
-          update_Data_GS_regres(Y1, regresRes1, y1_left, y1_right, status1, r1, g_y1, nP);
+          if (*mcModel){
+            update_Data_GS_regres_misclass(Y1, regresRes1, mcn00, mcn10, mcn01, mcn11, mcdwork_updateY,
+                                           mcsens, mcspec, mclogvtime, mcstatus, mcnExaminer, mcnFactor, mcnvisit, mcmaxnvisit,
+                                           mcExaminer, mcFactor, r1, g_y1, nP);
+            update_sens_spec_misclassification(mcsens, mcspec, mcPrior, mcn00, mcn10, mcn01, mcn11, mcnExaminer, mcnFactor);
+          }
+          else {
+            update_Data_GS_regres(Y1, regresRes1, y1_left, y1_right, status1, r1, g_y1, nP);         
+	  }
+
           update_Alloc_GS(r1, mixtureN1, mu1, log_poster1 + 0, log_poster1 + i_logpr1, g_y1, regresRes1, nP, iwork1, dwork1);
           g_y1->update_alla_lambda(mixtureN1, a_ipars, &iterTotalNow);
 
@@ -1011,6 +1125,11 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
                 sigmafile2, lambdafile2, mixmomentfile2, mweightfile2, mlogweightfile2, mmeanfile2, Yfile2, rfile2, logposterfile2,
 	        _null_weight2, out_format[0], out_format[1], check_k_effect);
           }
+
+          if (*mcModel){
+            writeToFile_1(mcsensspec, lgth_sensspec, sensspecfile, out_format[0], out_format[1]);
+          }
+
           writeAll = 0;
         }
       }    /** end of the main cycle over iter **/
@@ -1306,6 +1425,11 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
       closeFiles_bayesHistogram(sigmafile2, lambdafile2, mixmomentfile2, mweightfile2, 
                                 mlogweightfile2, mmeanfile2, Yfile2, rfile2, logposterfile2, 1);
     }
+
+    if (*mcModel){
+      sensspecfile.close();
+    }
+
     Rprintf("\n");
 
 
@@ -1431,6 +1555,15 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
     delete beta1;
     delete beta2;
 
+    if (*mcModel){
+      free(mcn00);
+      free(mcn10);
+      free(mcn01);
+      free(mcn11);
+
+      free(mcdwork_updateY);
+    }
+
     free(ddtemp);
     PutRNGstate();
     return;
@@ -1456,7 +1589,9 @@ bayessurvreg2(char **dirP,             const int *dimsP,         const double *X
 // bb .......... individual random intercepts
 //
 void
-adjust_intcpt(Gspline* g_eps,  Gspline* g_b,  RandomEff* bb)
+adjust_intcpt(Gspline*   g_eps,  
+              Gspline*   g_b,  
+              RandomEff* bb)
 {
   static double Eb;
 
@@ -1478,7 +1613,11 @@ adjust_intcpt(Gspline* g_eps,  Gspline* g_b,  RandomEff* bb)
 
 
 void
-print_iter_info(int &writeAll,  int &backs,  const int &iter,  const int &nwrite,  const int &lastIter)
+print_iter_info(int& writeAll,  
+                int& backs,  
+                const int& iter,  
+                const int& nwrite,  
+                const int& lastIter)
 {
   static int i;
 

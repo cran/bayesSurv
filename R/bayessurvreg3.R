@@ -16,6 +16,8 @@
 ## 01/02/2005: start working on it
 ## 02/02/2005: finished
 ## 07/12/2006: extension allowing inclulsion of the estimated correlation between the onset and time-to-event random intercepts
+## 31/05/2013: extension allowing for misclassification of the event status added
+##             (cooperation with Maria Jose Garcia Zattera and Alejandro Jara)
 ##
 bayessurvreg3 <- function
 (  formula,
@@ -23,6 +25,10 @@ bayessurvreg3 <- function
    formula2,
    random2,
    data = parent.frame(),
+   classification,
+   classParam = list(Model = c("Examiner", "Factor:Examiner"),
+                     a.sens = 1, b.sens = 1, a.spec = 1, b.spec = 1,
+                     init.sens = NULL, init.spec = NULL),
    na.action = na.fail,
    onlyX = FALSE,
    nsimul = list(niter = 10, nthin = 1, nburn = 0, nwrite = 10),   
@@ -30,23 +36,23 @@ bayessurvreg3 <- function
    prior.beta,
    prior.b,
    init = list(iter = 0),
-   mcmc.par = list(type.update.a = "slice", k.overrelax.a = 1, k.overrelax.sigma = 1, k.overrelax.scale = 1,
+   mcmc.par = list(type.update.a = "slice",   k.overrelax.a = 1,   k.overrelax.sigma = 1,   k.overrelax.scale = 1,
                    type.update.a.b = "slice", k.overrelax.a.b = 1, k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
    prior2,
    prior.beta2,
    prior.b2,
    init2,
-   mcmc.par2 = list(type.update.a = "slice", k.overrelax.a = 1, k.overrelax.sigma = 1, k.overrelax.scale = 1,
+   mcmc.par2 = list(type.update.a = "slice",   k.overrelax.a = 1,   k.overrelax.sigma = 1,   k.overrelax.scale = 1,
                     type.update.a.b = "slice", k.overrelax.a.b = 1, k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
    priorinit.Nb,
-   rho = list(type.update = "fixed.zero", init=0, sigmaL=0.1),
+   rho = list(type.update = "fixed.zero", init = 0, sigmaL = 0.1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE, r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
                 a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
    dir = getwd())
-{
+{  
   thispackage = "bayesSurv"
   #thispackage = NULL
-  store <- bayessurvreg3.checkStore(store)
+  store  <- bayessurvreg3.checkStore(store)
   nsimul <- bayessurvreg.checknsimul(nsimul)
   
   transform = function(t){log(t)}
@@ -61,22 +67,22 @@ bayessurvreg3 <- function
   ## Do not transform the response at this moment
   doubly <- ifelse(missing(formula2), FALSE, TRUE)
   m <- match.call(expand.dots = FALSE)
-  des <- bayessurvreg.design(m=m, formula=formula, random=random, data=data, transform=transform2, dtransform=transform2)
-  if (doubly) des2 <- bayessurvreg.design(m=m, formula=formula2, random=random2, data=data, transform=transform2, dtransform=transform2)
+  des <- bayessurvreg.design(m = m, formula = formula, random = random, data = data, transform = transform2, dtransform = transform2)
+  if (doubly) des2 <- bayessurvreg.design(m = m, formula = formula2, random = random2, data = data, transform = transform2, dtransform = transform2)
   else        des2 <- list(nX = 0, n = des$n, nrandom = 0, randomInt = FALSE)
   
   if (onlyX){
-    if (doubly) return(list(X=des$X, X2=des2$X))
+    if (doubly) return(list(X = des$X, X2 = des2$X))
     else        return(des$X)
   } 
   
   if (!des$nrandom){
-    store$b <- FALSE
+    store$b   <- FALSE
     store$a.b <- FALSE
     store$r.b <- FALSE
   }
   if (!des2$nrandom){
-    store$b2 <- FALSE
+    store$b2   <- FALSE
     store$a.b2 <- FALSE
     store$r.b2 <- FALSE
   }  
@@ -93,7 +99,143 @@ bayessurvreg3 <- function
     nobs2 <- des2$n
     if (nobs != nobs2) stop("Inconsistent formula and formula2 (different number of observations indicated)")
   }
+
   
+  ### ------------------------------------------------------------------------------------
+  ### 201305: Code related to misclassification models
+  ### ------------------------------------------------------------------------------------
+  if (missing(classification)){
+    mclass <- list(Model = "NONE", nModel = 0, nvisit = rep(1, nobs),
+                   nExaminer = 0, labelExaminer = "0", Examiner = rep(0, nobs),
+                   nFactor   = 0, labelFactor   = "0", Factor   = rep(0, nobs),
+                   Prior     = rep(1, 4),
+                   logTime   = 0, Status = 0,
+                   init.sens = 0, init.spec = 0)
+
+    ## mclass$nModel == 0 ==> no misclassification model 
+    
+  }else{
+    if (doubly) stop("misclassification model not (yet) implemented for doubly-interval-censored data.")    
+    mclass <- list()        ## To keep the information being then passed to C++
+    
+    if (!is.data.frame(classification)) stop("classification must be a data.frame")
+    if (ncol(classification) < 4) stop("too low number of columns in the classification data.frame")    
+    if (ncol(classification) == 4){
+      colnames(classification) <- c("idUnit", "Time", "Examiner", "Status")
+      classification[, "Factor"] <- 0
+    }else{
+      classification <- classification[, 1:5]
+      colnames(classification) <- c("idUnit", "Time", "Examiner", "Status", "Factor")
+    }  
+
+    ### Some checks
+    if (any(is.na(classification[, "idUnit"])))          stop("NA's not allowed in the idUnit column of classification.")    
+    if (any(is.na(classification[, "Time"])))            stop("NA's not allowed in the Time column of classification.")
+    if (any(classification[, "Time"] <= 0))              stop("all values in the Time column of classification must be positive.")
+    if (any(is.na(classification[, "Examiner"])))        stop("NA's not allowed in the Examiner column of classification.")
+    if (any(is.na(classification[, "Status"])))          stop("NA's not allowed in the Status column of classification.")
+    if (any(!(classification[, "Status"] %in% c(0, 1)))) stop("all values in the Status column of classification must be 0/1.")
+    
+    ### idUnit values that appear in the data
+    IDUnit <- unique(classification[, "idUnit"])                                             ### This maintains original ordering
+
+    ### Consistency check    
+    if (length(IDUnit) != nobs) stop("classification data.frame not consistent with the survival data (different number of experimental units)")
+
+    ### Misclassification model
+    classParam$Model <- classParam$Model[1]
+    mclass$Model <- classParam$Model
+    mclass$nModel <- pmatch(mclass$Model, table = c("Examiner", "Factor:Examiner"))
+    if (is.na(mclass$nModel)) stop("unknown classParam$Model specified.")
+        
+    ### Number of visits per unit (tooth)
+    mclass$nvisit <- as.numeric(table(factor(classification[, "idUnit"], levels = IDUnit)))  ### Also here, the original ordering is maintained
+
+    ### Number of examinators
+    mclass$nExaminer <- length(unique(classification[, "Examiner"]))
+
+    ### Examiners labeled 0, ..., nExaminer - 1 and their original labels
+    mclass$labelExaminer <- levels(factor(classification[, "Examiner"]))
+    mclass$Examiner <- as.numeric(factor(classification[, "Examiner"])) - 1
+
+    ### Factor related variables (if needed)
+    switch (mclass$Model,
+      "Examiner" = {
+        mclass$nFactor <- 1
+
+        mclass$labelFactor <- "0"
+        mclass$Factor <- rep(0, sum(mclass$nvisit))
+      },
+      "Factor:Examiner" = {
+        ### Number of unique values of Factor
+        mclass$nFactor <- length(unique(classification[, "Factor"]))
+
+        ### Factor values labeled 0, ..., nFactor - 1 and their original labels
+        mclass$labelFactor <- levels(factor(classification[, "Factor"]))
+        mclass$Factor <- as.numeric(factor(classification[, "Factor"])) - 1            
+      },
+      stop("some part of the code not yet implemented for this option.")             
+    )
+    
+    ### Prior parameters
+    if (is.null(classParam$a.sens)) classParam$a.sens <- 1
+    if (is.null(classParam$b.sens)) classParam$b.sens <- 1    
+    if (is.null(classParam$a.spec)) classParam$a.spec <- 1
+    if (is.null(classParam$b.spec)) classParam$b.spec <- 1
+    if (classParam$a.sens <= 0 | classParam$b.sens <= 0 | classParam$a.spec <= 0 | classParam$b.spec <= 0) stop("incorrect prior parameter for misclassification sensitivities/specificities")
+    mclass$Prior <- c(classParam$a.sens, classParam$b.sens, classParam$a.spec, classParam$b.spec)
+    names(mclass$Prior) <- c("a.sens", "b.sens", "a.spec", "b.spec")    
+
+    ### Transformation of the visit times
+    mclass$logTime <- log(classification[, "Time"])
+
+    ### Status
+    mclass$Status <- classification[, "Status"]
+    
+    ### Initial sensitivities
+    if (is.null(classParam$init.sens)){
+      switch (mclass$Model,
+        "Examiner" = {
+          classParam$init.sens <- runif(mclass$nExaminer, min = 0.80, max = 0.90)
+          names(classParam$init.sens) <- mclass$labelExaminer
+        },
+        "Factor:Examiner" = {
+          classParam$init.sens <- matrix(runif(mclass$nFactor * mclass$nExaminer, min = 0.80, max = 0.90), nrow = mclass$nFactor, ncol = mclass$nExaminer)
+          rownames(classParam$init.sens) <- mclass$labelFactor
+          colnames(classParam$init.sens) <- mclass$labelExaminer
+        },
+        stop("some part of the code not yet implemented for this option.") 
+      )
+    }
+    if (length(classParam$init.sens) != mclass$nFactor * mclass$nExaminer) stop("incorrect classParam$init.sens specified")
+    if (any(is.na(classParam$init.sens))) stop("NA's not allowed in classParam$init.sens")
+    if (any(classParam$init.sens <= 0) | any(classParam$init.sens >= 1)) stop("all classParam$init.sens must lie in (0, 1)")
+
+    mclass$init.sens <- as.numeric(classParam$init.sens)
+    
+    ### Initial specificities
+    if (is.null(classParam$init.spec)){
+      switch (mclass$Model,
+        "Examiner" = {
+          classParam$init.spec <- runif(mclass$nExaminer, min = 0.80, max = 0.90)
+          names(classParam$init.spec) <- mclass$labelExaminer
+        },
+        "Factor:Examiner" = {
+          classParam$init.spec <- matrix(runif(mclass$nFactor * mclass$nExaminer, min = 0.80, max = 0.90), nrow = mclass$nFactor, ncol = mclass$nExaminer)
+          rownames(classParam$init.spec) <- mclass$labelFactor
+          colnames(classParam$init.spec) <- mclass$labelExaminer
+        },
+        stop("some part of the code not yet implemented for this option.") 
+      )
+    }        
+    if (length(classParam$init.spec) != mclass$nFactor * mclass$nExaminer) stop("incorrect classParam$init.spec specified")
+    if (any(is.na(classParam$init.spec))) stop("NA's not allowed in classParam$init.spec")
+    if (any(classParam$init.spec <= 0) | any(classParam$init.spec >= 1)) stop("all classParam$init.spec must lie in (0, 1)")
+
+    mclass$init.spec <- as.numeric(classParam$init.spec)    
+  }  
+  ### ------------------------------------------------------------------------------------
+    
   ## Priors and inits for beta parameters
   if (missing(init))        init <- list()
   if (missing(init2))       init2 <- list()
@@ -110,7 +252,7 @@ bayessurvreg3 <- function
   betadi2 <- bayessurvreg3.priorBeta(prior.beta2, init2, des2)
   init2$beta <- attr(betadi2, "init")
   prior.beta2 <- attr(betadi2, "prior.beta")
-
+  
   ## Priors and inits for rho (correlation coefficient between two random intercepts)
   if (missing(priorinit.Nb)){
     rho <- bayessurvreg3.checkrho(rho=rho, doubly=doubly)
@@ -162,7 +304,8 @@ bayessurvreg3 <- function
   init2     <- attr(prinit, "init2")
   prior2    <- attr(prinit, "prior2")  
   mcmc.par2 <- attr(prinit, "mcmc.par2")
-  
+
+
   ## Compute quantities to determine the space needed to be allocated
   ##   and numbers of iterations in different phases
   if (nsimul$nburn >= nsimul$niter) nsimul$nburn <- nsimul$niter - 1
@@ -180,8 +323,9 @@ bayessurvreg3 <- function
   max.nwrite <- max(nwrite.run)
 
   ## Write headers to files with stored values  
-  bayessurvreg3.writeHeaders(dir=dir, doubly=doubly, prior.init=prinit,
-                             priorb.di=reffdi, priorb2.di=reffdi2, store=store, design=des, design2=des2, version=version)  
+  bayessurvreg3.writeHeaders(dir = dir, doubly = doubly, prior.init = prinit,
+                             priorb.di = reffdi, priorb2.di = reffdi2, store = store, design = des, design2 = des2, version = version,
+                             mclass = mclass)  
 
   ## Combine similar parameters into one vector  
   dims <- c(nobs, as.numeric(doubly))
@@ -230,7 +374,12 @@ bayessurvreg3 <- function
                              rho             = as.double(rho$init),
                              rho.accept      = integer(nsample1),
                              rho.type.update = as.integer(rho$typeI),
-                             rho.sigmaL      = as.double(rho$sigmaL),           
+                             rho.sigmaL      = as.double(rho$sigmaL),
+                             mclass.sens.spec = as.double(c(mclass$init.sens, mclass$init.spec)),            
+                             mclass.logtime   = as.double(mclass$logTime),
+                             mclass.status    = as.integer(mclass$Status),
+                             mclass.paramI    = as.integer(c(mclass$nModel, mclass$nExaminer, mclass$nFactor, mclass$nvisit, mclass$Examiner, mclass$Factor)),
+                             mclass.paramD    = as.double(mclass$Prior),
                              iter = as.integer(prinit$iter),
                              nsimul = as.integer(nsimul.run1),
                              store = as.integer(storeV),
@@ -243,8 +392,9 @@ bayessurvreg3 <- function
   cat("Burn-up finished on                         ", date(), "   (iteration ", fit$iter, ")", "\n", sep = "")
   
   ## Rewrite sampled values by new files
-  bayessurvreg3.writeHeaders(dir=dir, doubly=doubly, prior.init=prinit,
-                             priorb.di=reffdi, priorb2.di=reffdi2, store=store, design=des, design2=des2, version=version)  
+  bayessurvreg3.writeHeaders(dir = dir, doubly = doubly, prior.init = prinit,
+                             priorb.di = reffdi, priorb2.di = reffdi2, store = store, design = des, design2 = des2, version = version,
+                             mclass = mclass)  
   
   ## Main simulation
   fit <- .C("bayessurvreg2", as.character(dir),
@@ -284,7 +434,12 @@ bayessurvreg3 <- function
                              rho             = as.double(fit$rho),
                              rho.accept      = integer(nsample2),
                              rho.type.update = as.integer(fit$rho.type.update),
-                             rho.sigmaL      = as.double(fit$rho.sigmaL),                       
+                             rho.sigmaL      = as.double(fit$rho.sigmaL),
+                             mclass.sens.spec = as.double(fit$mclass.sens.spec),            
+                             mclass.logtime   = as.double(mclass$logTime),
+                             mclass.status    = as.integer(mclass$Status),
+                             mclass.paramI    = as.integer(c(mclass$nModel, mclass$nExaminer, mclass$nFactor, mclass$nvisit, mclass$Examiner, mclass$Factor)),
+                             mclass.paramD    = as.double(mclass$Prior),            
                              iter = as.integer(fit$iter),
                              nsimul = as.integer(nsimul.run2),
                              store = as.integer(fit$store),
@@ -321,7 +476,13 @@ bayessurvreg3 <- function
 
   if (version == 32){
     attr(toreturn, "priorinit.Nb") <- fit$priorinit.Nb
-  }  
+  }
+
+  if (mclass$nModel){
+    attr(toreturn, "prior.classification") <- mclass$Prior
+    attr(toreturn, "init.sens") <- classParam$init.sens
+    attr(toreturn, "init.spec") <- classParam$init.spec
+  }
     
   class(toreturn) <- "bayessurvreg3"
   return(toreturn)    

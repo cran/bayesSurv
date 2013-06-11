@@ -12,6 +12,7 @@
 ### ======================================
 predictive2.control <- function(predict, only.aver, quantile, obs.dim, time0, Gspline, n)
 {
+  
   ## predict
   ## ========
   if(length(predict) == 0) inpredict <- "arnost"
@@ -60,7 +61,7 @@ predictive2.control <- function(predict, only.aver, quantile, obs.dim, time0, Gs
   if (length(Gspline$K) < Gspline$dim) stop("Incorrect Gspline$K supplied")
   Gspline$K <- Gspline$K[1:Gspline$dim]
   if (sum(is.na(Gspline$K))) stop("Incorrect Gspline$K supplied")
-  if (sum(Gspline$K <= 0)) stop("Incorrect Gspline$K supplied")
+  if (sum(Gspline$K < 0)) stop("Incorrect Gspline$K supplied")
 
   Gspline$total.length <- prod(2*Gspline$K + 1)
 

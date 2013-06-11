@@ -18,9 +18,13 @@
 //
 void
 update_Data_GS(double* YsM,
-               const double* y_left,  const double* y_right,   const int* status,
-               const int* rM,         const Gspline* gg,
-               const int* nP,         const int* n_censored)
+               const double*  y_left,  
+               const double*  y_right,   
+               const int*     status,
+               const int*     rM,         
+               const Gspline* gg,
+               const int*     nP,         
+               const int*     n_censored)
 {
   if (!(*n_censored)) return;
 
@@ -184,7 +188,7 @@ update_Data_GS(double* YsM,
 }    /*** end of function update_Data_GS ***/
 
 
-// ****** update_Data_GS ***********************
+// ****** update_Data_GS_regres ***********************
 //
 // Version with possible regression
 // ================================
@@ -197,9 +201,14 @@ update_Data_GS(double* YsM,
 // rM[nP] ........................ component labels taking values 0, 1, ..., gg->total_length()-1
 //
 void
-update_Data_GS_regres(double* YsM,           double* regresResM,
-                      const double* y_left,  const double* y_right,   const int* status,
-                      const int* rM,         const Gspline* gg,       const int* nP)
+update_Data_GS_regres(double* YsM,           
+                      double* regresResM,
+                      const double*  y_left,  
+                      const double*  y_right,   
+                      const int*     status,
+                      const int*     rM,         
+                      const Gspline* gg,       
+                      const int* nP)
 {
   int obs, j;
   double mu_jk = 0;
@@ -215,6 +224,12 @@ update_Data_GS_regres(double* YsM,           double* regresResM,
     invsigma[j] = 1/gg->sigma(j);
     invscale[j] = 1/gg->scale(j);
   }
+
+  //Rprintf("\nG-spline dim: %d\n", gg->dim());
+  //Rprintf("mu[0, 0]  = %g\n", gg->mu_component(0, 0));
+  //Rprintf("sigma[0]  = %g\n", gg->sigma(0));
+  //Rprintf("intcpt[0] = %g\n", gg->intcpt(0));
+  //Rprintf("scale[0]  = %g\n", gg->scale(0));      
 
   double* y_obs = YsM;
   double* regRes = regresResM;
@@ -388,10 +403,15 @@ update_Data_GS_regres(double* YsM,           double* regresResM,
 // n_censored ................ number of censored event times
 //
 void
-update_Data_GS_doubly(double* Yevent,        double* regresResM,
-                      const double* Yonset, 
-  	              const double* t_left,  const double* t_right,   const int* status,
-                      const int* rM,         const Gspline* gg,       const int* nP)
+update_Data_GS_doubly(double* Yevent,        
+                      double* regresResM,
+                      const double*  Yonset, 
+  	              const double*  t_left,  
+                      const double*  t_right,    
+                      const int*     status,
+                      const int*     rM,         
+                      const Gspline* gg,       
+                      const int*     nP)
 {
   int obs, j;
   double t_onset, yL, yU, help;
@@ -625,3 +645,299 @@ update_Data_GS_doubly(double* Yevent,        double* regresResM,
   
   return;
 }    /*** end of function update_Data_GS_doubly ***/
+
+
+// ****** update_Data_GS_regres_misclass ***********************
+//
+// Version with possible regression and misclassification of the event status
+// ============================================================================
+//
+// Created in 201305 by modification of 'update_Data_GS_regres' function.
+// -----------------------------------------------------------------------------
+//
+// This function assumes that gg->dim() = 1.
+//
+// YsM[nP x gg->dim()] ........... on INPUT:  current vector of (imputed) log(event times)
+//                                 on OUTPUT: updated vector of (augmented) log(event times)
+// regresResM[nP x gg->dim()] .... on INPUT:  current vector of regression residuals (y - x'beta - z'b))
+//                                 on OUTPUT: updated vector of regression residuals
+// n00[nExaminer * nFactor] ...... INPUT:  whatsever
+//                                 OUTPUT: numbers of (0-0) correctly classified events for each examiner:factor
+// n10[nExaminer * nFactor] ...... INPUT:  whatsever
+//                                 OUTPUT: numbers of (Classification = 1 | True = 0) incorrectly classified events for each examiner:factor
+// n01[nExaminer * nFactor] ...... INPUT:  whatsever
+//                                 OUTPUT: numbers of (Classification = 0 | True = 1) incorrectly classified events for each examiner:factor
+// n11[nExaminer * nFactor] ...... INPUT:  whatsever
+//                                 OUTPUT: numbers of (1-1) correctly classified events for each examiner:factor
+//
+// dwork[(1 + max(nvisit)) * 6] .. working array
+//
+// sens[nExaminer * nFactor]...... sensitivities for each examiner:factor
+// spec[nExaminer * nFactor]...... specificities for each examiner:factor
+// logvtime[nP * sum(nvisit)] .... logarithms of visit times for each observation
+// status[nP * sum(nvisit)] ...... classified event status for each visit
+// 
+// nvisit[nP] .................... numbers of visits for each observation
+// Examiner[nP * sum(nvisit)] .... examiner (0, 1, ..., nExaminer - 1) identification at each visit
+// Factor[nP * sum(nvisit)] ...... factor (0, 1, ..., nFactor - 1) identification at each visit
+//
+// rM[nP] ........................ component labels taking values 0, 1, ..., gg->total_length()-1
+//
+void
+update_Data_GS_regres_misclass(double* YsM,           
+                               double* regresResM,
+                               int*    n00,
+                               int*    n10,
+                               int*    n01,
+                               int*    n11,
+                               double* dwork,
+                               const double*  sens,
+                               const double*  spec,
+                               const double*  logvtime,
+                               const int*     status,
+                               const int*     nExaminer,
+                               const int*     nFactor,
+                               const int*     nvisit,
+                               const int*     maxnvisit,
+                               const int*     Examiner,
+                               const int*     Factor,
+                               const int*     rM,         
+                               const Gspline* gg,       
+                               const int*     nP)
+{ 
+  if (gg->dim() > 1) REprintf("update_Data_GS_regres_misclass: Error, not implemented for gg->dim() > 1.\n");
+
+  /*** Some general variables ***/
+  int    obs, m, k, L;
+  double mu_i = 0;
+  double normConst = 0;
+  double u    = 0;
+  double Phi  = 0;
+  double stres_sampled = 0;
+
+  double invsigma_invscale = 1 / (gg->sigma(0) * gg->scale(0));
+
+  /*** Working arrays and related variables ***/
+  double *A      = dwork;                             /* A numbers                                                                    */
+  double *cumInt = A + (1 + *maxnvisit);              /* cumsum(A * int_{y_{k-1}}^{y_k} f(s)ds), the last is the normalizing constant */
+  double *cprod_sens = cumInt + (1 + *maxnvisit);     /* cumulative product needed for 'A's based on sensitivities                    */
+  double *cprod_spec = cprod_sens + (1 + *maxnvisit); /* cumulative product needed for 'A's based on specificities                    */
+  double *stres_cut  = cprod_spec + (1 + *maxnvisit); /* limits of intervals on the scale of standardized residuals                   */ 
+  double *Phi_cut    = stres_cut + (1 + *maxnvisit);  /* Phi(stres_cut)                                                               */
+
+  double *A_k;
+  double *cumInt_k; 
+  double *cprod_sens_k;
+  double *cprod_spec_k;
+  double *stres_cut_k;
+  double *Phi_cut_k;
+
+  /*** Reset classification matrices ***/
+  int* n00P = n00;
+  int* n10P = n10;
+  int* n01P = n01;
+  int* n11P = n11;
+  for (m = 0; m < *nExaminer * *nFactor; m++){
+    *n00P = 0;
+    *n10P = 0;
+    *n01P = 0;
+    *n11P = 0;
+
+    n00P++;
+    n10P++;
+    n01P++;
+    n11P++;    
+  }
+
+  /*** Main loop over observations ***/
+  double* y_i      = YsM;
+  double* regRes_i = regresResM;
+  
+  const int*    nvisit_i    = nvisit;
+
+  const double* logvtime_i = logvtime;
+  const double* logvtime_ik;
+
+  const int* status_i = status;
+  const int* status_ik;
+
+  const int* Examiner_i = Examiner;
+  const int* Examiner_ik;
+
+  const int* Factor_i = Factor;
+  const int* Factor_ik;
+  
+  const int* r_i = rM;
+
+  for (obs = 0; obs < *nP; obs++){
+
+    mu_i = gg->mu_component(0, *r_i);
+    *regRes_i -= *y_i;
+
+    /*** Calculate cumulative products based on specificities needed for 'A' numbers ***/
+    cprod_spec_k = cprod_spec;
+    *cprod_spec_k = 1.0;            /* k = 0*/
+    cprod_spec_k++;
+
+    status_ik   = status_i;
+    Examiner_ik = Examiner_i;
+    Factor_ik   = Factor_i;
+    for (k = 1; k <= *nvisit_i; k++){
+      *cprod_spec_k = *(cprod_spec_k - 1) * (*status_ik == 1 ? (1 - spec[*nFactor * *Examiner_ik + *Factor_ik]) : spec[*nFactor * *Examiner_ik + *Factor_ik]);
+      cprod_spec_k++;
+      status_ik++;
+      Examiner_ik++;
+      Factor_ik++;
+    }
+    
+    /*** Calculate cumulative products based on sensitivities needed for 'A' numbers ***/
+    cprod_sens_k = cprod_sens + *nvisit_i;
+    *cprod_sens_k = 1.0;                    /* k = nvisit */
+    cprod_sens_k--;
+
+    status_ik--;
+    Examiner_ik--;
+    Factor_ik--;
+    for (k = *nvisit_i - 1; k >= 0; k--){
+      *cprod_sens_k = *(cprod_sens_k + 1) * (*status_ik == 1 ? sens[*nFactor * *Examiner_ik + *Factor_ik] : (1 - sens[*nFactor * *Examiner_ik + *Factor_ik]));
+      cprod_sens_k--;
+      status_ik--;
+      Examiner_ik--;
+      Factor_ik--;
+    }    
+
+    /*** Calculate the 'A' numbers and 'cumInt' for this observation ***/
+    A_k          = A;
+    cprod_sens_k = cprod_sens;
+    cprod_spec_k = cprod_spec;
+    cumInt_k     = cumInt;
+    stres_cut_k  = stres_cut;
+    Phi_cut_k    = Phi_cut;
+    logvtime_ik  = logvtime_i;
+
+    /** k = 0: first visit - like left-censored) **/
+    *A_k = *cprod_sens_k * *cprod_spec_k;
+
+    *stres_cut_k = (*logvtime_ik + (*regRes_i) - gg->intcpt(0) - gg->scale(0) * mu_i) * invsigma_invscale;
+    *Phi_cut_k   = pnorm(*stres_cut_k, 0, 1, 1, 0);
+
+    *cumInt_k = *A_k * *Phi_cut_k;
+
+    A_k++;
+    cprod_sens_k++;
+    cprod_spec_k++;
+    cumInt_k++;
+    stres_cut_k++;
+    Phi_cut_k++;
+    logvtime_ik++;
+
+    /** k = 1, ..., *nvisit_i - 1: like interval-censored **/
+    for (k = 1; k < *nvisit_i; k++){      
+      *A_k = *cprod_sens_k * *cprod_spec_k;
+   
+      *stres_cut_k = (*logvtime_ik + (*regRes_i) - gg->intcpt(0) - gg->scale(0) * mu_i) * invsigma_invscale;
+      *Phi_cut_k   = pnorm(*stres_cut_k, 0, 1, 1, 0);
+
+      *cumInt_k = *(cumInt_k - 1) + *A_k * (*Phi_cut_k - *(Phi_cut_k - 1));
+
+      A_k++;
+      cprod_sens_k++;
+      cprod_spec_k++;
+      cumInt_k++;
+      stres_cut_k++;
+      Phi_cut_k++;
+      logvtime_ik++;
+    }
+
+    /** k = *nvisit_i: like right-censored **/
+    *A_k = *cprod_sens_k * *cprod_spec_k;
+    *cumInt_k = *(cumInt_k - 1) + *A_k * (1 - *(Phi_cut_k - 1));
+
+    /** Normalizing constant **/
+    normConst = *cumInt_k;
+
+    /** Debuging section **/
+    //if (obs == 5){
+    //  Rprintf("alpha <- c("); for (k = 0; k < *nFactor * *nExaminer; k++) Rprintf("%g, ", sens[k]); Rprintf(")\n");
+    //  Rprintf("eta <- c(");   for (k = 0; k < *nFactor * *nExaminer; k++) Rprintf("%g, ", spec[k]); Rprintf(")\n");
+    //  Rprintf("nvisit = %d\n", *nvisit_i);
+    //  Rprintf("   logv <- c("); for (k = 0; k < *nvisit_i; k++) Rprintf("%g, ", logvtime_i[k]); Rprintf(")\n");
+    //  Rprintf("   stres <- c("); for (k = 0; k < *nvisit_i; k++) Rprintf("%g, ", stres_cut[k]); Rprintf(")\n");
+    //  Rprintf("   Phi  <- c("); for (k = 0; k < *nvisit_i; k++) Rprintf("%g, ", Phi_cut[k]); Rprintf(")\n");
+    //  Rprintf("   Y <- c("); for (k = 0; k < *nvisit_i; k++) Rprintf("%d, ", status_i[k]); Rprintf(")\n");
+    //  Rprintf("   A <- c("); for (k = 0; k <= *nvisit_i; k++) Rprintf("%g, ", A[k]); Rprintf(")\n");
+    //  Rprintf("   cumInt <- c("); for (k = 0; k <= *nvisit_i; k++) Rprintf("%g, ", cumInt[k]); Rprintf(")\n\n");
+    //}
+
+    /** Sample a uniform random variable **/
+    u = runif(0, 1);
+
+    /** Find out to which piece the 'u' value points out **/
+    cumInt_k    = cumInt;
+    A_k         = A;
+    //stres_cut_k = stres_cut;
+    Phi_cut_k   = Phi_cut;
+    for (L = 0; L < *nvisit_i; L++){
+      if (u <=  *cumInt_k / normConst) break;
+      cumInt_k++;
+      A_k++;
+      //stres_cut_k++;
+      Phi_cut_k++;
+    }
+    /*** Now: L = 0:                  u belongs to piece (-infty, vtime[0]],       A_k = A[0],   stres_cut_k = stres[0]      ***/
+    /***      L = 1:                  u belongs to piece (vtime[0], vtime[1]],     A_k = A[1],   stres_cut_k = stres[1]      ***/
+    /***      ...                                                                                                            ***/
+    /***      L = nvisit - 1 = K - 1: u belongs to piece (vtime[K-2], vtime[K-1]], A_k = A[K-1], stres_cut_k = stres[K-1]    ***/
+    /***      L = nvisit = K        : u belongs to piece (vtime[K-1], infty),      A_k = A[K],   stres_cut_k = N.A.          ***/
+
+    /*** Get the sampled value of the standardized residual ***/
+    if (L == 0){                     /*** Like LEFT-CENSORED observation     ***/
+      Phi = (normConst * u) / *A_k;
+    }else{                           /*** L = 1, ..., nvisit_i: Like INTERVAL or RIGHT-CENSORED observation ***/
+      Phi = (normConst * u - *(cumInt_k - 1)) / *A_k + *(Phi_cut_k - 1);
+    }
+    if (Phi <= NORM_ZERO){        // PROBLEM1: stres_sampled = -infty
+      stres_sampled = -QNORM_ONE;
+    }else{
+      if (Phi >= 1 - NORM_ZERO){  // PROBLEM2: stres_sampled = infty
+        stres_sampled = QNORM_ONE;
+      }else{                      // NO PROBLEMS
+        stres_sampled = qnorm(Phi, 0, 1, 1, 0);
+      }
+    }
+
+    /*** Calculate the sampled value of the log event time and the regression residual ***/
+    *y_i = gg->sigma(0) * gg->scale(0) * stres_sampled - *regRes_i + gg->intcpt(0) + gg->scale(0) * mu_i; 
+    *regRes_i += *y_i;
+
+    /*** Update the classification matrices                                           ***/
+    /*** Shift pointers logvtime_i, status_i, Examiner_i, Factor_i at the same time.  ***/
+    for (k = 0; k < *nvisit_i; k++){
+      if (*y_i <= *logvtime_i){    /*** True status is 1. ***/
+        if (*status_i == 1){          /** Correct (1, 1)   **/
+          n11[*nFactor * *Examiner_i + *Factor_i] += 1;
+        }else{                        /** Incorrect (0, 1) **/
+          n01[*nFactor * *Examiner_i + *Factor_i] += 1;
+        }
+      }else{                       /*** True status is 0. ***/
+        if (*status_i == 1){          /** Incorrect (1, 0)   **/
+          n10[*nFactor * *Examiner_i + *Factor_i] += 1;
+        }else{                        /** Correct (0, 0) **/
+          n00[*nFactor * *Examiner_i + *Factor_i] += 1;
+        } 
+      }
+      logvtime_i++;
+      status_i++;
+      Examiner_i++;
+      Factor_i++;
+    }
+
+    /*** Shift remaining pointers ***/
+    y_i++;
+    regRes_i++;
+    r_i++;
+    nvisit_i++;
+  }
+  
+  return;
+}    /*** end of function update_Data_GS_regres_misclass ***/

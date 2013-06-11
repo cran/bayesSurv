@@ -10,7 +10,8 @@
   of a \code{coda} package to conform to my personal preferences.
 }
 \usage{
-densplot2(x, plot = TRUE, show.obs = FALSE, bwf, bty = "n", main = "", xlim, ylim, xlab, ylab, \dots) 
+densplot2(x, plot = TRUE, show.obs = FALSE, bwf, bty = "n", main = "",
+          xlim, ylim, xlab, ylab, \dots)
 }
 \arguments{
   \item{x}{an \code{\link[coda]{mcmc}} or \code{\link[coda]{mcmc.list}} object.}

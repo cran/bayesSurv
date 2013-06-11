@@ -41,13 +41,13 @@
 // Log of the Jacobian of the transformation
 //   * for different transformations
 // =========================================================
-extern "C"{
-
 inline double
 logdlogtrans(const double y){ return -y;}
 
 inline double
 logdidenttrans(const double y){ return 0;}
+
+extern "C"{
 
 void 
 bayessurvreg1(char** dirP,

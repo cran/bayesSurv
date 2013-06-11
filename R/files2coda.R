@@ -6,8 +6,12 @@
 ####                                                 ####
 #### FUNCTIONS:  files2coda                          ####
 #########################################################
+##
 ## 11/04/2004: rewritten such that it returns directly mcmc object
 ##             with chains for all parameters
+##
+## 01/03/2013: minor changes
+##
 
 ### ======================================
 ### files2coda
@@ -80,9 +84,12 @@ files2coda <- function(files,
   if (length(files) > 0){
     for (i in 1:length(files)){
       if (sum(!is.na(match(filesindir, files[i])))){
+
         if (files[i] == "mixture.sim"){
           help <- read.table(file = paste(dir, "/", files[i], sep = ""), header = header, nrows = 1)
-          if (!dim(help)[1]) stop("Incorrect 'header' parameter.")
+          if (!dim(help)[1]){
+            stop(files[i], ": Incorrect 'header' parameter.", sep="")            
+          }  
           kncol <- dim(help)[2]
           help <- scan(file = paste(dir, "/", files[i], sep = ""), skip = 1*header)
           wanna <- seq(1, length(help), by = kncol)
@@ -90,7 +97,11 @@ files2coda <- function(files,
         }
         else{        
           help <- read.table(file = paste(dir, "/", files[i], sep = ""), header = header)
-          if (!dim(help)[1]) stop("Incorrect 'header' parameter.")
+          if (!dim(help)[1]){
+            ### This usually happens for those files where only a subset of iterations was stored (like Y, r, u, ...)
+            ### * skip reading of this file
+            next
+          }  
         }          
 
         if (start > nrow(help)) stop("start is not compatible with data.")

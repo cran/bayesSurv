@@ -54,7 +54,25 @@ Gspline::update_Scale(const double* regresResM,  const int* rM,  const int* nP, 
   sqrt_eta  = zeta_1 + 1;
   xi_half   = sqrt_eta + 1;
   for (j = 0; j < _dim; j++){
-    if (_prior_for_scale[j] == Fixed_) continue;
+
+    if (_prior_for_scale[j] == Fixed_){
+      zeta_1   = xi_half + 2;
+      sqrt_eta = zeta_1 + 1;
+      xi_half  = sqrt_eta + 1;
+      continue;
+    }
+       
+    if (_prior_for_scale[j] == Gamma && _K[j] == 0 && _gamma[j] == 0){  /* Full conditional is gamma, sample directly from it. */ 
+      _invscale2[j] = rgamma(*zeta_1 + 1, 1 / (*sqrt_eta * *sqrt_eta));
+      _scale[j]     = 1 / sqrt(_invscale2[j]);  
+
+      zeta_1   = xi_half + 2;
+      sqrt_eta = zeta_1 + 1;
+      xi_half  = sqrt_eta + 1;    
+      continue;
+    }
+
+    /** Use slice sampling **/
     overrelax = 1*((*iter/_k_overrelax_scale[j]) != 0);
 
     /** Evaluate the full conditional distribution in the current point and sample the level defining the slice **/

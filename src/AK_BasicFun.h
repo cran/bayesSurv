@@ -36,14 +36,14 @@ const double _AK_TOL_CHOL = 1e-10;           // tolerance for the Cholesky decom
 inline double
 exp_AK(const double &x){
   return (x < _AK_EMIN ? 0.0 : (x > _AK_EMAX ? R_PosInf : exp(x)));
-};
+}
 
 /* exp(x)/(1 + exp(x)) */
 inline double
 invlogit_AK(const double &x){
   const double exp_x=exp(x);
   return (x < _AK_EMIN ? 0.0 : (x > _AK_EMAX ? 1.0 : exp_x/(1 + exp_x)));
-};
+}
 
 /* log(x) */
 inline double

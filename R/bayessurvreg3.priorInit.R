@@ -19,6 +19,6 @@
 ##
 bayessurvreg3.priorInit <- function(prior, init, design, mcmc.par, prior2, init2, design2, mcmc.par2, doubly)
 {
-  return(bayesBisurvreg.priorInit(dim=1, prior=prior, init=init, design=design, mcmc.par=mcmc.par,
-                                         prior2=prior2, init2=init2, design2=design2, mcmc.par2=mcmc.par2, doubly=doubly))
+  return(bayesBisurvreg.priorInit(dim = 1, prior  = prior,  init  = init,  design  = design,  mcmc.par  = mcmc.par,
+                                           prior2 = prior2, init2 = init2, design2 = design2, mcmc.par2 = mcmc.par2, doubly = doubly))
 }

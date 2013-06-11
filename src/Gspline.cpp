@@ -158,8 +158,8 @@ Gspline::Gspline(const int *parmI,   const double *parmD)
       _length[i] = 2*_K[i] + 1;
       if (parmI[iizero+i] < -_K[i] || parmI[iizero+i] > _K[i]) throw returnR("C++ Error: Supplied izero for the G-spline out of range", 1);     
       _izero[i]  = parmI[iizero+i] + _K[i];     /* change R index (-K,...,K) to G-spline index (0,...,2K) */
-    }
-    
+    }   
+
     switch (_dim){
     case 1:
       _total_length = _length[0];
@@ -395,14 +395,19 @@ Gspline::Gspline(const int *parmI,   const double *parmD)
       for (i = 0; i < 2; i++) _prior_scale[2*k+i] = 0.0;
     }
 
-
   /*** Stuff for adaptive rejection/slice  sampling of 'a' coefficients ***/
     _abscis = (double**) calloc(_total_length, sizeof(double*));
     if (_abscis == NULL) throw returnR("C++ Error: Could not allocate needed memory", 1);
-    for (i = 0; i < _total_length; i++){
-      _abscis[i] = (double*) calloc(_nabscis, sizeof(double));
-      if (_abscis[i] == NULL) throw returnR("C++ Error: Could not allocate needed memory", 1);
-      find_start_abscis(&i);
+    if (_total_length == 1){
+      _abscis[0] = (double*) calloc(_nabscis, sizeof(double));
+      if (_abscis[0] == NULL) throw returnR("C++ Error: Could not allocate needed memory", 1);      
+      // No need to initialize it since a's will not be updated.
+    }else{
+      for (i = 0; i < _total_length; i++){
+        _abscis[i] = (double*) calloc(_nabscis, sizeof(double));
+        if (_abscis[i] == NULL) throw returnR("C++ Error: Could not allocate needed memory", 1);      
+        find_start_abscis(&i);
+      }
     }
 
     _iwv = (int*) calloc(7 + _ns, sizeof(int));
@@ -455,7 +460,6 @@ Gspline::Gspline(const int *parmI,   const double *parmD)
                                            /**   also performs adjustment of _a if _a_max > _a_ceil                      **/
       penalty();      
     }
-
 
     /*** Stuff needed only for joint update of a's, currently implemented only if _dim = 1 ***/    
     if (_dim == 1){

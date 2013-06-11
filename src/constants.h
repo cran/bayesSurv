@@ -12,7 +12,8 @@ const int ONE_INT = 1;
 const int ZERO_INT = 0;
 
 const double LOG_SQRT_2PI = 0.918938533204672741780329736406;	     // log(sqrt(2*pi)) 
-const double NORM_ZERO = 1e-16;                                      // qnorm(1 - 1e-16) is still non infty in R
+const double NORM_ZERO  = 1e-16;                                      // qnorm(1 - 1e-16) is still non infty in R
+const double QNORM_ONE = 8.0;                                         // approx. qnorm(1 - 1e-16)
 const double ZERO = 1e-50;
 const double invFLT_MAX = 1e-50;
 const double LOG_2 = 0.6931472;

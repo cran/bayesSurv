@@ -1,6 +1,8 @@
 // Class to store covariance matrices (or other symmetric positive definite matrices)
 //
 // 30/01/2004: start working on it
+// 04/03/2013: forgotten jpvt = new int[_nrow] line added to a non-parametric constructor
+//             (this caused SegFaults)
 //
 #include "covMatrix.h"
 
@@ -18,8 +20,9 @@ covMatrix::covMatrix()
 
   qr = new double[_nrow*_nrow];
   qraux = new double[_nrow];
+  jpvt = new int[_nrow];
 
-  if (ichicovm == NULL || icovm == NULL || diagI == NULL || qr == NULL || qraux == NULL)
+  if (ichicovm == NULL || icovm == NULL || diagI == NULL || qr == NULL || qraux == NULL || jpvt == NULL)
     throw returnR("C++ Error: 'covMatrix::covMatrix()' could not allocate a memory for a working space.", 1);
 }
 
