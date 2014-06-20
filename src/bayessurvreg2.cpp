@@ -47,6 +47,13 @@ extern "C"{
 // For version 32: priorb1D[0,...,nCluster-1] = initial values of the random intercept for onset
 //                 priorb2D[0,...,nCluster-1] = initial values of the random intercept for time-to-event
 
+//
+// iPML[nP] ........ INPUT:  whatsever
+//                   OUTPUT: individual contributions to pseudo-marginal likelihood
+//                   (see Garcia, Jara, Komarek, 2013+)
+//                   Currently used only in misclassification models.
+//
+
 // priorCovMat
 // ============
 // 1) in version for normal random effects, these are arguments for the constructor of the class CovMatrix
@@ -116,7 +123,8 @@ bayessurvreg2(char** dirP,
               const int*    status1,
               const double* t2_left,   
               const double* t2_right,   
-              const int*    status2,               
+              const int*    status2, 
+              double* iPML,              
               double* Y1,              
               double* Y2,
               int* r1,                 
@@ -293,6 +301,38 @@ bayessurvreg2(char** dirP,
       mcdwork_updateY = (double*) calloc(6 * (1 + *mcmaxnvisit), sizeof(double));
      if (!mcdwork_updateY) throw returnR("Not enough memory available in bayessurvreg2 (mcdwork_updateY)", 1);
     }
+
+    /** Working array to store minus linear predictors **/
+    double *min_eta = &dtemp;
+    double *min_eta_i = &dtemp;        // pointer to loop
+    const double *y_i      = &dtemp;   // pointer to loop
+    const double *regres_i = &dtemp;   // pointer to loop
+    if (*mcModel){
+      min_eta = (double*) calloc(*nP, sizeof(double));
+     if (!min_eta) throw returnR("Not enough memory available in bayessurvreg2 (min_eta)", 1);
+    }  
+
+    /** Array to store individual contributions to pseudomarginal likelihood                      **/
+    /** (currently only used in a misclassification model)                                        **/
+    /** Deviance for the misclassification model according to Garcia, Jara, Komarek (2013+) paper **/
+    double *mciPML        = &dtemp;
+    double *mcsumiiPML    = &dtemp;     // sum of 1/mciPML over MCMC iterations (only those stored)
+    double *mciPML_i      = &dtemp;     // pointer to loop when calculating the deviance and updating mcsumiPML
+    double *mcsumiiPML_i  = &dtemp;     // pointer to loop 
+    double devianceGJK[1] = {0};
+    int    mcsumiiPML_stored = 0;        // number of times when mcsumiiPML was updated
+    if (*mcModel){
+      mciPML     = (double*) calloc(*nP, sizeof(double));
+      mcsumiiPML = (double*) calloc(*nP, sizeof(double));
+     if (!mciPML || !mcsumiiPML) throw returnR("Not enough memory available in bayessurvreg2 (mciMPL)", 1);
+
+     /** Reset mcsumiPML **/
+     mcsumiiPML_i = mcsumiiPML;
+     for (i = 0; i < *nP; i++){
+       *mcsumiiPML_i = 0.0;
+       mcsumiiPML_i++; 
+     } 
+    }       
 
     /** Find out how many censored observations we have **/
     int n1_interval = 0;
@@ -540,7 +580,7 @@ bayessurvreg2(char** dirP,
     Gspline *g_y1 = new Gspline;
     Gspline *g_y2 = new Gspline;
     if (!g_y1 || !g_y2) throw returnR("Not enough memory available in bayessurvreg2 (g_y1/g_y2)", 1);
-    *g_y1 = Gspline(GsplineI1, GsplineD1);
+    *g_y1 = Gspline(GsplineI1, GsplineD1);    
 
     const double _null_weight1 = _null_mass/g_y1->total_length();        
     double _null_weight2;
@@ -549,6 +589,12 @@ bayessurvreg2(char** dirP,
       _null_weight2 = _null_mass/g_y2->total_length();        
     }
 
+    /** Object to store G-spline weights (used by misclassification model) **/
+    double *g_y1_weights = &dtemp;
+    if (*mcModel){
+      g_y1_weights  = (double*) calloc(g_y1->total_length(), sizeof(double));
+     if (!g_y1_weights) throw returnR("Not enough memory available in bayessurvreg2 (g_y1_weights)", 1);
+    }  
 
     /** Arrays to store numbers of observations belonging to each mixture component  **/
     /** Subtract 1 from each rM (R -> C++ indeces) and check for consistency         **/
@@ -641,6 +687,8 @@ bayessurvreg2(char** dirP,
     std::string rhobpath       = dir + "/rho_b.sim";
 
     std::string sensspecpath   = dir + "/sens_spec.sim";
+    std::string devGJKpath     = dir + "/devianceGJK.sim";
+
 
     std::ofstream iterfile, betafile, betafile2, bbfile, bbfile2, Dfile, Dfile2;
     std::ofstream sigmafile, lambdafile, mixmomentfile, mweightfile, mlogweightfile, mmeanfile, Yfile, rfile, logposterfile;
@@ -649,6 +697,7 @@ bayessurvreg2(char** dirP,
     std::ofstream sigmafile_b2, lambdafile_b2, mixmomentfile_b2, mweightfile_b2, mlogweightfile_b2, mmeanfile_b2, rfile_b2, logposterfile_b2;
     std::ofstream rhobfile;
     std::ofstream sensspecfile;
+    std::ofstream devGJKfile;
 
     const bool writeSumExpa = false;
     std::string ssumexpa    = dir + "/sumexpa.sim";
@@ -741,6 +790,7 @@ bayessurvreg2(char** dirP,
 
     if (*mcModel){
       openFile(sensspecfile, sensspecpath, 'a');
+      openFile(devGJKfile,   devGJKpath, 'a');
     }
 
 
@@ -994,10 +1044,15 @@ bayessurvreg2(char** dirP,
           iterTotalNow++;                     /* = (iter-1)*nthin + witer - nullthIter*nthin */
 
           if (*mcModel){
-            update_Data_GS_regres_misclass(Y1, regresRes1, mcn00, mcn10, mcn01, mcn11, mcdwork_updateY,
+            /** Update latent event times, calculate entries for the deviance and pseudo-marginal likelihood at the same time **/
+            /** !!! When calculating the pseudo-marginal likelihood here, it is conditioned also on component allocations     **/
+            /**     from the G-spline for the errors !!!                                                                      **/
+            update_Data_GS_regres_misclass(Y1, regresRes1, mcn00, mcn10, mcn01, mcn11, mciPML, mcdwork_updateY,
                                            mcsens, mcspec, mclogvtime, mcstatus, mcnExaminer, mcnFactor, mcnvisit, mcmaxnvisit,
                                            mcExaminer, mcFactor, r1, g_y1, nP);
-            update_sens_spec_misclassification(mcsens, mcspec, mcPrior, mcn00, mcn10, mcn01, mcn11, mcnExaminer, mcnFactor);
+
+            /** Update sensitivities and specificities **/
+            update_sens_spec_misclassification(mcsens, mcspec, mcPrior, mcn00, mcn10, mcn01, mcn11, mcnExaminer, mcnFactor);            
           }
           else {
             update_Data_GS_regres(Y1, regresRes1, y1_left, y1_right, status1, r1, g_y1, nP);         
@@ -1127,7 +1182,51 @@ bayessurvreg2(char** dirP,
           }
 
           if (*mcModel){
-            writeToFile_1(mcsensspec, lgth_sensspec, sensspecfile, out_format[0], out_format[1]);
+            /*** Calculate pseudo-marginal likelihood contributions where it is not conditioned by component allocations. ***/
+            /*** This is not necessary when there is only one mixture component, i.e., K = 0, in the G-spline g_y1 since  ***/
+            /*** then unconditioned are the same as conditioned ones.                                                     ***/
+            /*** Added on 20130624.                                                                                       ***/
+            if (g_y1->K(0) > 0){
+
+              /** Calculate current values of minus linear predictors **/
+	      y_i       = Y1;            
+              regres_i  = regresRes1;
+              min_eta_i = min_eta;
+              for (i = 0; i < *nP; i++){
+                *min_eta_i = *regres_i - *y_i;
+                y_i++;
+                regres_i++;
+                min_eta_i++;
+              }
+    
+              /*** Calculate pseudo-marginal likelihood contributions. ***/
+              g_y1->wArray(g_y1_weights);
+              iPML_misclass_GJK(mciPML, mcdwork_updateY, min_eta, 
+                                mcsens, mcspec, mclogvtime, mcstatus, mcnExaminer, mcnFactor, mcnvisit, mcmaxnvisit,
+                                mcExaminer, mcFactor, 
+                                g_y1->KP(), g_y1->gammaP(), g_y1->deltaP(), g_y1->sigmaP(), g_y1->intcptP(), g_y1->scaleP(), g_y1_weights, 
+                                nP);
+            }
+
+            /*** Calculate deviance and update the sum used to get the pseudo-marginal likelihood contributions ***/
+            /*** of each unit (added on 20130624).                                                              ***/
+            mcsumiiPML_stored++;
+ 
+            mciPML_i     = mciPML;
+            mcsumiiPML_i = mcsumiiPML;
+            *devianceGJK = 0.0;
+            for (i = 0; i < *nP; i++){
+              *mcsumiiPML_i += (1 / *mciPML_i);
+              *devianceGJK  += log(*mciPML_i);
+
+              mcsumiiPML_i++;
+              mciPML_i++;              
+            }
+            *devianceGJK *= -2;
+
+            /*** Write to files ***/
+            writeToFile_1(mcsensspec,  lgth_sensspec, sensspecfile, out_format[0], out_format[1]);
+            writeToFile_1(devianceGJK, 1,             devGJKfile,   out_format[0], out_format[1]);
           }
 
           writeAll = 0;
@@ -1428,6 +1527,7 @@ bayessurvreg2(char** dirP,
 
     if (*mcModel){
       sensspecfile.close();
+      devGJKfile.close();
     }
 
     Rprintf("\n");
@@ -1476,6 +1576,20 @@ bayessurvreg2(char** dirP,
 
     case 32:
       break;
+    }
+
+
+    /** Calculate individual contributions to the pseudo-marginal likelihood **/
+    /** (in the misclassification model)                                     **/
+    if (*mcModel){
+      mciPML_i     = iPML;
+      mcsumiiPML_i = mcsumiiPML;
+      for (i = 0; i < *nP; i++){
+        *mciPML_i = mcsumiiPML_stored / *mcsumiiPML_i;
+
+        mcsumiiPML_i++;
+        mciPML_i++;              
+      }
     }
 
 
@@ -1562,6 +1676,12 @@ bayessurvreg2(char** dirP,
       free(mcn11);
 
       free(mcdwork_updateY);
+      free(min_eta);      
+
+      free(mciPML);
+      free(mcsumiiPML);
+
+      free(g_y1_weights);
     }
 
     free(ddtemp);

@@ -55,6 +55,7 @@ update_Data_GS_regres_misclass(double* YsM,
                                int*    n10,
                                int*    n01,
                                int*    n11,
+                               double* iPML,
                                double* dwork,
                                const double*  sens,
                                const double*  spec,
@@ -69,5 +70,32 @@ update_Data_GS_regres_misclass(double* YsM,
                                const int*     rM,         
                                const Gspline* gg,       
                                const int*     nP);
+
+extern "C"{
+
+void
+iPML_misclass_GJK(double* iPML,                  
+                  double* dwork,
+                  const double* etaM,
+                  const double* sens,
+                  const double* spec,
+                  const double* logvtime,
+                  const int*    status,
+                  const int*    nExaminer,
+                  const int*    nFactor,
+                  const int*    nvisit,
+                  const int*    maxnvisit,
+                  const int*    Examiner,
+                  const int*    Factor,
+                  const int*    gg_K,
+                  const double* gg_gamma,
+                  const double* gg_delta,         
+                  const double* gg_sigma,        
+                  const double* gg_intcpt,        
+                  const double* gg_scale,
+                  const double* gg_w,        
+                  const int*    nP);
+
+}         // end of extern "C"
 
 #endif

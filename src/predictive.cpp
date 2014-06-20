@@ -6,7 +6,7 @@
 // * for all quantities, always mean and desired quantiles are computed
 
 //
-// Remark: predictive values of random effects are alewys sampled using a Gibbs move
+// Remark: predictive values of random effects are always sampled using a Gibbs move
 
 // 07/03/2004: start working on it
 // 23/03/2004: version without computation of quantiles and means finished
@@ -172,6 +172,7 @@ predictive(const int* errorTypeP,  const char** dirP,        int* dimsP,        
     if (*byP <= 0) throw returnR("C++ Error: by parameter must be positive", 1);
     if (*skipP < 0) throw returnR("C++ Error: skip parameter must not be negative", 1);
     const int nread = 1 + (niter - (*skipP) - 1) / (*byP);
+    //Rprintf("\nnread = %d\n", nread);
 
     int *indquant1 = &itemp;
     int *indquant2 = &itemp;
@@ -193,8 +194,7 @@ predictive(const int* errorTypeP,  const char** dirP,        int* dimsP,        
                  indquant1[i] = indquant2[i] = int(floor(help));
                }
              }
-//      cout << "indquant1 = "; printArray(indquant1, nquantileP);
-//      cout << "indquant2 = "; printArray(indquant2, nquantileP);
+        //Rprintf("quantile = %g, indquant1 = %d, indquant2 = %d\n", quantileA[i], indquant1[i], indquant2[i]);
       }
     }
 

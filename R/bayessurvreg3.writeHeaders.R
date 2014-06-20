@@ -116,6 +116,10 @@ bayessurvreg3.writeHeaders <- function(dir, doubly, prior.init, priorb.di, prior
         stop("some part of the code not implemented for this option")
       }  
     )
-    sink()    
+    sink()
+
+    sink(paste(dir, "/devianceGJK.sim", sep = ""), append = FALSE)
+    cat("D\n")
+    sink()
   }  
 }

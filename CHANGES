@@ -1,3 +1,9 @@
+2.2
+25/06/2013:
+  bayessurvreg3 function calculates for misclassification models also DIC and pseudo-marginal likelihood,
+  see attribute "fitStat" of the resulting object
+
+2.1
 06/2013:
   implementation of models involving possible misclassification of the event status
 

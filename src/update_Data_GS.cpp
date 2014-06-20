@@ -5,6 +5,7 @@
 // 12/01/2005: 'update_Data_GS_doubly'
 //             'update_Data_GS_regres'
 // 20/01/2005: 'update_Data_GS_doubly' rewritten
+// 06/06/2013: 'update_Data_GS_regres_misclass' added
 //
 #include "update_Data_GS.h"
 
@@ -652,6 +653,11 @@ update_Data_GS_doubly(double* Yevent,
 // Version with possible regression and misclassification of the event status
 // ============================================================================
 //
+// REMARK to calculation of iPML: iPML calculated here conditions also by component allocations.
+//                                This is different to 'iPML_misclass_GJK' function below
+//                                which integrates the component allocations out by using the
+//                                whole mixture in the expression for iPML.
+//
 // Created in 201305 by modification of 'update_Data_GS_regres' function.
 // -----------------------------------------------------------------------------
 //
@@ -669,6 +675,9 @@ update_Data_GS_doubly(double* Yevent,
 //                                 OUTPUT: numbers of (Classification = 0 | True = 1) incorrectly classified events for each examiner:factor
 // n11[nExaminer * nFactor] ...... INPUT:  whatsever
 //                                 OUTPUT: numbers of (1-1) correctly classified events for each examiner:factor
+//
+// iPML[nExaminer * nFactor] ..... INPUT:  whatsever
+//                                 OUTPUT: individual contributions needed to calculate the pseudo marginal likelihood and also the deviance
 //
 // dwork[(1 + max(nvisit)) * 6] .. working array
 //
@@ -690,6 +699,7 @@ update_Data_GS_regres_misclass(double* YsM,
                                int*    n10,
                                int*    n01,
                                int*    n11,
+                               double* iPML,
                                double* dwork,
                                const double*  sens,
                                const double*  spec,
@@ -710,7 +720,6 @@ update_Data_GS_regres_misclass(double* YsM,
   /*** Some general variables ***/
   int    obs, m, k, L;
   double mu_i = 0;
-  double normConst = 0;
   double u    = 0;
   double Phi  = 0;
   double stres_sampled = 0;
@@ -720,6 +729,7 @@ update_Data_GS_regres_misclass(double* YsM,
   /*** Working arrays and related variables ***/
   double *A      = dwork;                             /* A numbers                                                                    */
   double *cumInt = A + (1 + *maxnvisit);              /* cumsum(A * int_{y_{k-1}}^{y_k} f(s)ds), the last is the normalizing constant */
+                                                      /* and also the value of iPML                                                   */
   double *cprod_sens = cumInt + (1 + *maxnvisit);     /* cumulative product needed for 'A's based on sensitivities                    */
   double *cprod_spec = cprod_sens + (1 + *maxnvisit); /* cumulative product needed for 'A's based on specificities                    */
   double *stres_cut  = cprod_spec + (1 + *maxnvisit); /* limits of intervals on the scale of standardized residuals                   */ 
@@ -752,6 +762,7 @@ update_Data_GS_regres_misclass(double* YsM,
   /*** Main loop over observations ***/
   double* y_i      = YsM;
   double* regRes_i = regresResM;
+  double* iPML_i   = iPML;
   
   const int*    nvisit_i    = nvisit;
 
@@ -853,8 +864,8 @@ update_Data_GS_regres_misclass(double* YsM,
     *A_k = *cprod_sens_k * *cprod_spec_k;
     *cumInt_k = *(cumInt_k - 1) + *A_k * (1 - *(Phi_cut_k - 1));
 
-    /** Normalizing constant **/
-    normConst = *cumInt_k;
+    /** Normalizing constant and also iPML **/
+    *iPML_i = *cumInt_k;
 
     /** Debuging section **/
     //if (obs == 5){
@@ -878,7 +889,7 @@ update_Data_GS_regres_misclass(double* YsM,
     //stres_cut_k = stres_cut;
     Phi_cut_k   = Phi_cut;
     for (L = 0; L < *nvisit_i; L++){
-      if (u <=  *cumInt_k / normConst) break;
+      if (u <=  *cumInt_k / *iPML_i) break;
       cumInt_k++;
       A_k++;
       //stres_cut_k++;
@@ -892,9 +903,9 @@ update_Data_GS_regres_misclass(double* YsM,
 
     /*** Get the sampled value of the standardized residual ***/
     if (L == 0){                     /*** Like LEFT-CENSORED observation     ***/
-      Phi = (normConst * u) / *A_k;
+      Phi = (*iPML_i * u) / *A_k;
     }else{                           /*** L = 1, ..., nvisit_i: Like INTERVAL or RIGHT-CENSORED observation ***/
-      Phi = (normConst * u - *(cumInt_k - 1)) / *A_k + *(Phi_cut_k - 1);
+      Phi = (*iPML_i * u - *(cumInt_k - 1)) / *A_k + *(Phi_cut_k - 1);
     }
     if (Phi <= NORM_ZERO){        // PROBLEM1: stres_sampled = -infty
       stres_sampled = -QNORM_ONE;
@@ -937,7 +948,187 @@ update_Data_GS_regres_misclass(double* YsM,
     regRes_i++;
     r_i++;
     nvisit_i++;
+    iPML_i++;
   }
   
   return;
 }    /*** end of function update_Data_GS_regres_misclass ***/
+
+
+// ****** iPML_misclass_GJK ***********************
+//
+// This is more or less a subest of update_Data_GS_regres_misclass which only calculates iPML.
+// Its main purpose is to use it to calculate "D.in.bar" by a simple .C call from R.
+//
+// Difference in calculation of iPML compared to 'update_Data_GS_regres_misclass' function:
+//   * component allocations are integrated out here by using the whole mixture in the definition
+//     of iPML
+// 
+// It assumes only dim = 1 G-spline and all needed G-spline parameters are supplied as simple arrays.
+//
+// min_etaM[nP] ................ minus linear predictors (including the random effects)
+//                               = regresResM - YsM from the 'update_...' function
+//
+// dwork[] ................. this might be shorter than the same argument of 'update_Data_GS_regres_misclass'
+//
+extern "C"{
+
+void
+iPML_misclass_GJK(double* iPML,                  
+                  double* dwork,
+                  const double* min_etaM,
+                  const double* sens,
+                  const double* spec,
+                  const double* logvtime,
+                  const int*    status,
+                  const int*    nExaminer,
+                  const int*    nFactor,
+                  const int*    nvisit,
+                  const int*    maxnvisit,
+                  const int*    Examiner,
+                  const int*    Factor,
+                  const int*    gg_K,
+                  const double* gg_gamma,
+                  const double* gg_delta,         
+                  const double* gg_sigma,        
+                  const double* gg_intcpt,        
+                  const double* gg_scale,
+                  const double* gg_w,        
+                  const int*    nP)
+{ 
+  /*** Some general variables ***/
+  int    obs, k, r;
+  double mu_r = 0;
+
+  double invsigma_invscale = 1 / (*gg_sigma * *gg_scale);
+
+  /*** Working arrays and related variables ***/
+  double *A      = dwork;                             /* A numbers                                                                    */
+  double *cprod_sens = A + (1 + *maxnvisit);          /* cumulative product needed for 'A's based on sensitivities                    */
+  double *cprod_spec = cprod_sens + (1 + *maxnvisit); /* cumulative product needed for 'A's based on specificities                    */
+  //double *next  = cprod_spec + (1 + *maxnvisit);    /* limits of intervals on the scale of standardized residuals                   */ 
+
+  double *A_k;
+  double *cprod_sens_k;
+  double *cprod_spec_k;
+  double stres_cut_k, stres_cut_common_r;
+  double Phi_cut_k, Phi_cut_k_min_1;
+
+  /*** Main loop over observations ***/
+  const double* min_eta_i  = min_etaM;
+  double* iPML_i = iPML;
+  
+  const int*    nvisit_i    = nvisit;
+
+  const double* logvtime_i = logvtime;
+  const double* logvtime_ik;
+
+  const int* status_i = status;
+  const int* status_ik;
+
+  const int* Examiner_i = Examiner;
+  const int* Examiner_ik;
+
+  const int* Factor_i = Factor;
+  const int* Factor_ik;
+  
+  const double* w_r;
+
+  for (obs = 0; obs < *nP; obs++){
+
+    /*** Calculate cumulative products based on specificities needed for 'A' numbers ***/
+    cprod_spec_k = cprod_spec;
+    *cprod_spec_k = 1.0;            /* k = 0*/
+    cprod_spec_k++;
+
+    status_ik   = status_i;
+    Examiner_ik = Examiner_i;
+    Factor_ik   = Factor_i;
+    for (k = 1; k <= *nvisit_i; k++){
+      *cprod_spec_k = *(cprod_spec_k - 1) * (*status_ik == 1 ? (1 - spec[*nFactor * *Examiner_ik + *Factor_ik]) : spec[*nFactor * *Examiner_ik + *Factor_ik]);
+      cprod_spec_k++;
+      status_ik++;
+      Examiner_ik++;
+      Factor_ik++;
+    }
+    
+    /*** Calculate cumulative products based on sensitivities needed for 'A' numbers ***/
+    cprod_sens_k = cprod_sens + *nvisit_i;
+    *cprod_sens_k = 1.0;                    /* k = nvisit */
+    cprod_sens_k--;
+
+    status_ik--;
+    Examiner_ik--;
+    Factor_ik--;
+    for (k = *nvisit_i - 1; k >= 0; k--){
+      *cprod_sens_k = *(cprod_sens_k + 1) * (*status_ik == 1 ? sens[*nFactor * *Examiner_ik + *Factor_ik] : (1 - sens[*nFactor * *Examiner_ik + *Factor_ik]));
+      cprod_sens_k--;
+      status_ik--;
+      Examiner_ik--;
+      Factor_ik--;
+    }    
+
+    /*** Calculate the 'A' numbers for this observation ***/
+    A_k          = A;
+    cprod_sens_k = cprod_sens;
+    cprod_spec_k = cprod_spec;
+    for (k = 0; k <= *nvisit_i; k++){
+      *A_k = *cprod_sens_k * *cprod_spec_k;
+      A_k++;
+      cprod_sens_k++;
+      cprod_spec_k++;
+    }
+
+    /*** Calculate iPML for this observation ***/
+    *iPML_i = 0.0;
+    w_r  = gg_w;
+    mu_r = *gg_gamma - *gg_K * *gg_delta;                     // = mu(0), see Gspline.h, function mu_component.
+    for (r = 0; r <= 2 * *gg_K; r++){
+      A_k = A;
+      logvtime_ik  = logvtime_i;
+      stres_cut_common_r = ((*min_eta_i) - *gg_intcpt - *gg_scale * mu_r) * invsigma_invscale;
+
+      /** k = 0: first visit - like left-censored) **/
+      stres_cut_k = stres_cut_common_r + *logvtime_ik * invsigma_invscale;
+      Phi_cut_k = pnorm(stres_cut_k, 0, 1, 1, 0);
+      *iPML_i += *A_k * *w_r * Phi_cut_k;
+
+      A_k++;
+      logvtime_ik++;
+
+      /** k = 1, ..., *nvisit_i - 1: like interval-censored **/
+      for (k = 1; k < *nvisit_i; k++){  
+        Phi_cut_k_min_1 = Phi_cut_k;
+
+        stres_cut_k = stres_cut_common_r + *logvtime_ik * invsigma_invscale;
+        Phi_cut_k   = pnorm(stres_cut_k, 0, 1, 1, 0);
+        *iPML_i += *A_k * *w_r * (Phi_cut_k - Phi_cut_k_min_1);
+
+        A_k++;
+        logvtime_ik++;
+      }
+
+      /** k = *nvisit_i: like right-censored **/
+      *iPML_i += *A_k * *w_r * (1 - Phi_cut_k);
+ 
+      /** Shift mixture pointers **/
+      w_r++;
+      mu_r += *gg_delta;                                     // = mu(r + 1), see Gspline.h, function mu_component.
+    }
+
+    /*** Shift pointers logvtime_i, status_i, Examiner_i, Factor_i at the same time.  ***/
+    logvtime_i += *nvisit_i;
+    status_i   += *nvisit_i;
+    Examiner_i += *nvisit_i;
+    Factor_i   += *nvisit_i;
+
+    /*** Shift remaining pointers ***/
+    min_eta_i++;
+    nvisit_i++;
+    iPML_i++;
+  }
+  
+  return;
+}    /*** end of function iPML_misclass_GJK ***/
+
+}    // end of extern "C" {

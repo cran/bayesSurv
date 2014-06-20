@@ -2,7 +2,7 @@
 // ***** Header for miscellaneous_GS.cpp: different helping functions for G-spline applications    *****//
 // ========================================================================================================
 #ifndef _MISCELLANEOUS_GS_H_
-#define _MISCALLENOUS_GS_H_
+#define _MISCELLANEOUS_GS_H_
 
 #include <R.h>
 #include <Rmath.h>

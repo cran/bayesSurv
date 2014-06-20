@@ -194,6 +194,9 @@ class Gspline
     return _K[j];
   }
 
+  inline int*
+  KP() const { return _K;}
+
   inline bool
   equal_lambda() const { return _equal_lambda;}
 
@@ -368,6 +371,24 @@ class Gspline
   {
     if (ia < 0 || ia >= _total_length) throw returnR("C++ Error: Incorrect ia in Gspline:w(ia)", 1);
     return _expa[ia]/_sumexpa;
+  }
+
+  inline void    // added on 20130624
+  wArray(double* warray) const
+  {
+    static double* warrayP;
+    static const double* expaP;
+    static int ia;
+
+    warrayP = warray;
+    expaP   = _expa;
+    for (ia = 0; ia < _total_length; ia++){
+      *warrayP = *expaP / _sumexpa;
+      warrayP++;
+      expaP++;
+    }
+
+    return;
   }
 
   inline double

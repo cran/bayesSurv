@@ -75,7 +75,7 @@ bayessurvreg3 <- function
     if (doubly) return(list(X = des$X, X2 = des2$X))
     else        return(des$X)
   } 
-  
+
   if (!des$nrandom){
     store$b   <- FALSE
     store$a.b <- FALSE
@@ -335,7 +335,7 @@ bayessurvreg3 <- function
   names(nsimul.run1) <- names(nsimul.run2) <- c("niter", "nthin", "nwrite")
   nsample1 <- nsimul.run1["niter"] %/% nsimul.run1["nthin"]
   nsample2 <- nsimul.run2["niter"] %/% nsimul.run2["nthin"]  
-
+  
   cat("Simulation started on                       ", date(), "\n", sep = "")
   fit <- .C("bayessurvreg2", as.character(dir),
                              dims = as.integer(dims),
@@ -347,6 +347,7 @@ bayessurvreg3 <- function
                              t2.left = as.double(prinit$t2.left),
                              t2.right = as.double(prinit$t2.right),
                              status2 = as.integer(prinit$status2),
+                             iPML = double(dims[1]),
                              Ys1 = as.double(prinit$y),
                              Ys2 = as.double(prinit$y2),
                              r1 = as.integer(prinit$r),
@@ -407,6 +408,7 @@ bayessurvreg3 <- function
                              t2.left = as.double(fit$t2.left),
                              t2.right = as.double(fit$t2.right),
                              status2 = as.integer(fit$status2),
+                             iPML = double(dims[1]),            
                              Ys1 = as.double(fit$Ys1),
                              Ys2 = as.double(fit$Ys2),
                              r1 = as.integer(fit$r1),
@@ -482,8 +484,102 @@ bayessurvreg3 <- function
     attr(toreturn, "prior.classification") <- mclass$Prior
     attr(toreturn, "init.sens") <- classParam$init.sens
     attr(toreturn, "init.spec") <- classParam$init.spec
-  }
+
+    ##### Calculate model fit statistics
+    ##### -----------------------------------
     
+    ### Deviance sample
+    devGJK <- scan(paste(dir, "/devianceGJK.sim", sep = ""), skip = 1, quiet = TRUE)
+    D.bar <- mean(devGJK, na.rm = TRUE)
+
+    ### Posterior means of sensitivities/specificities
+    sensspec <- matrix(scan(paste(dir, "/sens_spec.sim", sep = ""), skip = 1, quiet = TRUE), ncol = 2 * mclass$nExaminer * mclass$nFactor, byrow = TRUE)
+    colnames(sensspec) <- scan(paste(dir, "/sens_spec.sim", sep = ""), what = character(), nlines = 1, quiet = TRUE)
+    sensspec.bar <- apply(sensspec, 2, mean, na.rm = TRUE)
+    rm(list = "sensspec")
+
+    ### Init for posterior means of linear predictors
+    eta.bar <- rep(0, des$n)
+    
+    ### Posterior means of random effects
+    if (des$nrandom > 0){
+      if (store$b){        
+        bb <- matrix(scan(paste(dir, "/b.sim", sep = ""), skip = 1, quiet = TRUE), ncol = des$ncluster, byrow = TRUE)
+        bb.bar <- apply(bb, 2, mean, na.rm = TRUE)
+        rm(list = "bb")
+      }else{
+        bb.bar <- rep(NA, des$ncluster)
+        warning("to have DIC calculated, store$b must be TRUE.")
+      }
+      eta.bar <- eta.bar + rep(bb.bar, des$nwithin)
+    }
+
+    ### Posterior means of fixed effects
+    if (des$nX){
+      beta <- matrix(scan(paste(dir, "/beta.sim", sep = ""), skip = 1, quiet = TRUE), ncol = des$nX, byrow = TRUE)
+      colnames(beta) <- scan(paste(dir, "/beta.sim", sep = ""), what = character(), nlines = 1, quiet = TRUE)
+      beta.bar <- apply(beta, 2, mean, na.rm = TRUE)
+      rm(list = "beta")
+      eta.bar <- eta.bar + as.numeric(des$X %*% beta.bar)
+    }  
+    
+    ### Posterior means of G-spline (error term) parameters
+    gspline <- matrix(scan(paste(dir, "/gspline.sim", sep = ""), skip = 1, quiet = TRUE), ncol = 5, byrow = TRUE)
+    colnames(gspline) <- scan(paste(dir, "/gspline.sim", sep = ""), what = character(), nlines = 1, quiet = TRUE)
+    gspline.bar <- apply(gspline, 2, mean, na.rm = TRUE)
+    gspline.sigmaSq.bar <- mean(gspline[, "sigma1"]^2, na.rm = TRUE)
+    gspline.scaleSq.bar <- mean(gspline[, "scale1"]^2, na.rm = TRUE)    
+    rm(list = "gspline")
+
+    mweight <- matrix(scan(paste(dir, "/mweight.sim", sep = ""), skip = 1, quiet = TRUE), ncol = 2 * prinit$Gparmi["K1"] + 1, byrow = TRUE)
+    mweight.bar <- apply(mweight, 2, mean, na.rm = TRUE)
+    rm(list = "mweight")
+    
+    ### Input for D.in.bar to be calculated in C++
+    if (any(is.na(eta.bar))){
+      D.in.bar <- NA      
+    }else{
+      maxnvisit <- max(mclass$nvisit)
+      nss <- mclass$nExaminer * mclass$nFactor
+      inD <- .C("iPML_misclass_GJK",     
+                iPML  = double(des$n),
+                dwork = double(3 * (1 + maxnvisit)),
+                min_etaM  = as.double((-1) * eta.bar),
+                sens      = as.double(sensspec.bar[1:nss]),
+                spec      = as.double(sensspec.bar[(nss + 1):(2 * nss)]),
+                logvtime  = as.double(mclass$logTime),
+                status    = as.integer(mclass$Status),
+                nExaminer = as.integer(mclass$nExaminer),
+                nFactor   = as.integer(mclass$nFactor),
+                nvisit    = as.integer(mclass$nvisit),
+                maxnvisit = as.integer(maxnvisit),
+                Examiner  = as.integer(mclass$Examiner),
+                Factor    = as.integer(mclass$Factor),
+                gg_K      = as.integer(prinit$Gparmi["K1"]),
+                gg_gamma  = as.double(gspline.bar["gamma1"]),
+                gg_delta  = as.double(gspline.bar["delta1"]),
+                gg_sigma  = as.double(sqrt(gspline.sigmaSq.bar)),
+                #gg_sigma  = as.double(gspline.bar["sigma1"]),
+                gg_intcpt = as.double(gspline.bar["intercept1"]),
+                gg_scale  = as.double(sqrt(gspline.scaleSq.bar)),
+                #gg_scale  = as.double(gspline.bar["scale1"]),
+                gg_w      = as.double(mweight.bar),
+                nP        = as.integer(des$n),
+                PACKAGE = thispackage)      
+    }
+    D.in.bar <- -2 * sum(log(inD$iPML))
+           
+    ### DIC and log(PML)
+    pD <- D.bar - D.in.bar
+    DIC <- D.bar + pD
+    logPML <- sum(log(fit$iPML))
+    
+    attr(toreturn, "fitStat") <- c(logPML, DIC, D.bar, D.in.bar, pD)
+    names(attr(toreturn, "fitStat")) <- c("logPML", "DIC", "D.bar", "D.in.bar", "pD")
+    attr(toreturn, "iPML")   <- fit$iPML
+    
+  }
+  
   class(toreturn) <- "bayessurvreg3"
   return(toreturn)    
 }
