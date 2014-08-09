@@ -1,5 +1,5 @@
 aeef8caeff6912b996049e20ce4b3655 *CHANGES
-ce08338819d54f434bbca5f0e3505130 *DESCRIPTION
+bf91f5bb49be49c9e6b3e1db689c22b7 *DESCRIPTION
 9b500ca878b7c1daabef38f03ef1d35b *NAMESPACE
 bea6e861ba6318154eefe749cb579138 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -69,7 +69,7 @@ fbaaf47994c2d5b8893ef81a84521a03 *inst/doc/IDsampled50.dat
 f2670e20333bfd7deb73b1f2b58591eb *inst/doc/ex-tandmobCS.R
 65b08724dcb3dd03a1f6554c819f4be1 *inst/doc/ex-tandmobMixture.R
 1fcf6fe1022e19871cca27ff359ee348 *inst/doc/ex-tandmobPA.R
-5cbf9b4a49a07ceb8cba7b7420df8249 *inst/doc/index.html
+56d0c5dd0d31a1832df0589e4cebd5f4 *inst/doc/index.html
 cfb037e4f03232349b154165d87bcf8c *man/bayesBisurvreg.Rd
 4158e52bc650e9940648346dc003d234 *man/bayesBisurvreg.help.Rd
 fb15d851e1cd40a98d0aac5dc053f2c7 *man/bayesDensity.Rd
