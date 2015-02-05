@@ -1,3 +1,7 @@
+2.4
+05//02/2015:
+  CITATION file updated (desc changed to meta)
+
 2.2
 25/06/2013:
   bayessurvreg3 function calculates for misclassification models also DIC and pseudo-marginal likelihood,

@@ -1,5 +1,5 @@
-aeef8caeff6912b996049e20ce4b3655 *CHANGES
-bf91f5bb49be49c9e6b3e1db689c22b7 *DESCRIPTION
+354eca69c6dd718d7f62e83429afc67e *CHANGES
+6380c9a6995ac7c1ef69392c59b91c41 *DESCRIPTION
 9b500ca878b7c1daabef38f03ef1d35b *NAMESPACE
 bea6e861ba6318154eefe749cb579138 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -62,7 +62,7 @@ df9aa9fd8f79030c727ec223935b2d58 *R/vecr2matr.R
 036a3f1dfffc4cf8ffca86b1dca590f4 *data/cgd.RData
 2116fffea2317da44840ed12f37c9713 *data/tandmob2.RData
 d21df8732277560c0bb5a9f852a52cb6 *data/tandmobRoos.RData
-43ba7316037ab20dc965e988ea087e05 *inst/CITATION
+45ecb7d80d2b928fa0691dee2098b268 *inst/CITATION
 fbaaf47994c2d5b8893ef81a84521a03 *inst/doc/IDsampled50.dat
 5b267eef2de94983166c0fe956301493 *inst/doc/IDsampled500.dat
 73a4dec9712a93d1f0e633ea62e871af *inst/doc/ex-cgd.R
