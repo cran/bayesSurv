@@ -1,5 +1,6 @@
 \name{bayessurvreg3}
 \alias{bayessurvreg3}
+\alias{bayessurvreg3Para}
 \title{
   Cluster-specific accelerated failure time model for multivariate,
   possibly doubly-interval-censored data with flexibly specified random effects
@@ -159,6 +160,31 @@
 }
 \usage{
 bayessurvreg3(formula, random, formula2, random2,
+   data = parent.frame(),
+   classification,
+   classParam = list(Model = c("Examiner", "Factor:Examiner"),
+                     a.sens = 1, b.sens = 1, a.spec = 1, b.spec = 1,
+                     init.sens = NULL, init.spec = NULL),
+   na.action = na.fail, onlyX = FALSE,
+   nsimul = list(niter = 10, nthin = 1, nburn = 0, nwrite = 10),   
+   prior, prior.beta, prior.b, init = list(iter = 0),
+   mcmc.par = list(type.update.a = "slice", k.overrelax.a = 1,
+                   k.overrelax.sigma = 1, k.overrelax.scale = 1,
+                   type.update.a.b = "slice", k.overrelax.a.b = 1,
+                   k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
+   prior2, prior.beta2, prior.b2, init2,
+   mcmc.par2 = list(type.update.a = "slice", k.overrelax.a = 1,
+                    k.overrelax.sigma = 1, k.overrelax.scale = 1,
+                    type.update.a.b = "slice", k.overrelax.a.b = 1,
+                    k.overrelax.sigma.b = 1, k.overrelax.scale.b = 1),
+   priorinit.Nb,
+   rho = list(type.update = "fixed.zero", init=0, sigmaL=0.1),
+   store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
+                r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
+                a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
+   dir = getwd())
+
+bayessurvreg3Para(formula, random, formula2, random2,
    data = parent.frame(),
    classification,
    classParam = list(Model = c("Examiner", "Factor:Examiner"),

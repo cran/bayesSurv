@@ -1,5 +1,15 @@
+2.6
+27/07/2015:
+  NAMESPACE supplemented by imports from standard packages graphics, stats, utils
+
+2.5
+18/03/2015: 
+  bug in bayessurvreg3 fixed which happened if 'inD' object was not calculated
+  bayessurvreg3Para function added to allow for parallel simulations
+   with bayessurvreg3 function
+
 2.4
-05//02/2015:
+05/02/2015:
   CITATION file updated (desc changed to meta)
 
 2.2

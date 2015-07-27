@@ -1,5 +1,6 @@
 \name{predictive2}
 \alias{predictive2}
+\alias{predictive2Para}
 \alias{predictive2.control}
 \title{
   Compute predictive quantities based on a Bayesian survival regression
@@ -18,6 +19,15 @@
 }
 \usage{
 predictive2(formula, random, obs.dim, time0, data = parent.frame(),
+     grid, na.action = na.fail, Gspline,
+     quantile = c(0, 0.025, 0.5, 0.975, 1),
+     skip = 0, by = 1, last.iter, nwrite,
+     only.aver = TRUE,
+     predict = list(density=FALSE, Surv=TRUE,
+                    hazard=FALSE, cum.hazard=FALSE),
+     dir = getwd(), extens = "", extens.random="_b", version=0)
+
+predictive2Para(formula, random, obs.dim, time0, data = parent.frame(),
      grid, na.action = na.fail, Gspline,
      quantile = c(0, 0.025, 0.5, 0.975, 1),
      skip = 0, by = 1, last.iter, nwrite,
