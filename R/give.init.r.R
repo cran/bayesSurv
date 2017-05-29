@@ -43,9 +43,13 @@ give.init.r <- function(init.r, init.y, dim, KK, gamma, sigma, c4delta, intcpt, 
   if(!length(init.r)){  
     for (j in 1:dim){
       knots <- gamma[j] + seq(-KK[j], KK[j], by=1)*c4delta[j]*sigma[j]
-      ind <- .C("findClosestKnot", ind=integer(n), as.double(knots), as.double((init.y[,j] - intcpt[j])/scale[j]),
-                                   as.integer(length(knots)), as.integer(n),
-                                   PACKAGE = thispackage)
+      ind <- .C(C_findClosestKnot,
+                ind=integer(n),
+                as.double(knots),
+                as.double((init.y[,j] - intcpt[j])/scale[j]),
+                as.integer(length(knots)),
+                as.integer(n),
+                PACKAGE = thispackage)
       ind <- ind$ind
       if (j == 1) init.r <- ind - KK[j]
       else        init.r <- cbind(init.r, ind - KK[j])

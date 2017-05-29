@@ -9,8 +9,10 @@
 
 #include "bayesBisurvreg.h"
 
+#ifdef __cplusplus
 extern "C" {
-
+#endif
+  
 // n    = sample size (number of (bi)variate observational vectors)
 // dim  = dimension of the sample (1 or 2)
 // p1   = number of regressors (intercept excluded) for the event time (or onset time in the case of doubly-censored data)
@@ -483,4 +485,6 @@ bayesBisurvreg(char** dirP,             const int* dimsP,         const double* 
   }
 }
 
+#ifdef __cplusplus  
 }    /*** end of extern "C"  ***/
+#endif

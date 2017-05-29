@@ -103,14 +103,15 @@ marginal.bayesGspline <- function(dir = getwd(), extens = "", K, grid1, grid2, s
   lvalue2 <- ifelse(only.aver, nx2, nx2* (1 + (M-skip-1) %/% by))  
   if (missing(nwrite)) nwrite <- M
 
-  mcmc <- .C("marginal_bayesGspline",
+  mcmc <- .C(C_marginal_bayesGspline,
                 average1 = double(nx1),    average2 = double(nx2),
                 value1 = double(lvalue1),  value2 = double(lvalue2),
                 M.now = integer(1),        as.integer(only.aver),
                 as.character(dir),         as.character(extens),
                 as.double(grid1),          as.double(grid2),             
                 as.integer(K),
-                as.integer(M),             as.integer(skip),         as.integer(by),   as.integer(nwrite),
+                as.integer(M),             as.integer(skip),
+                as.integer(by),            as.integer(nwrite),
                 nx1 = as.integer(nx1),     nx2 = as.integer(nx2),
                 err = integer(1),
                PACKAGE = thispackage)

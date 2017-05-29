@@ -3,6 +3,9 @@
 \alias{give.init.y}
 \alias{give.init.y2}
 \alias{give.init.r}
+\alias{C_findClosestKnot}
+\alias{C_midimputeData}
+\alias{C_midimputeDataDoubly}
 \title{
   Check and possibly fill in initial values for the G-spline, augmented
   observations and allocations for Bayesian models with G-splines

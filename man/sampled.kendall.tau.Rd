@@ -1,5 +1,6 @@
 \name{sampled.kendall.tau}
 \alias{sampled.kendall.tau}
+\alias{C_sampledKendallTau}
 \title{
   Estimate of the Kendall's tau from the bivariate model
 }

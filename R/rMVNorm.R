@@ -55,7 +55,7 @@ rMVNorm <- function(n, mean=0, Sigma=1, Q, param=c("standard", "canonical"))
   rownames(QS) <- names(mean)
 
   ## Sample
-  SAMPLE <- .C("rmvnormR2006", x=double(n*nx),
+  SAMPLE <- .C(C_rmvnormR2006, x=double(n*nx),
                                mu = as.double(mean),
                                QS = as.double(QStri),
                                err = integer(1),

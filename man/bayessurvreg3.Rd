@@ -1,6 +1,7 @@
 \name{bayessurvreg3}
 \alias{bayessurvreg3}
 \alias{bayessurvreg3Para}
+\alias{C_iPML_misclass_GJK}
 \title{
   Cluster-specific accelerated failure time model for multivariate,
   possibly doubly-interval-censored data with flexibly specified random effects
@@ -26,7 +27,8 @@
 
   SUPPLEMENTED IN 06/2013:  Interval-censored times might be subject to
   misclassification. In case of doubly-interval-censored data, the event
-  time might be subject to misclassification. For details, see GKJ (2013+).  
+  time might be subject to misclassification. For details, see
+  García-Zattera, Jara and Komárek (2016).  
   
   We explain first in more detail a model without doubly censoring.
   Let \eqn{T_{i,l},\; i=1,\dots, N,\; l=1,\dots, n_i}{%
@@ -1036,9 +1038,10 @@ bayessurvreg3Para(formula, random, formula2, random2,
   }
 }
 \references{
-  GKJ (2013+).
-  PAPER BEING PREPARED.
-  \emph{WHO KNOWS WHERE PUBLISHED.}
+  García-Zattera, M. J., Jara, A., and Komárek, A. (2016).
+  A flexible AFT model for misclassified clustered interval-censored
+  data.
+  \emph{Biometrics}, \bold{72}, 473--483.
   
   Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate

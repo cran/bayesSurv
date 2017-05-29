@@ -1,5 +1,7 @@
 \name{bayessurvreg1}
 \alias{bayessurvreg1}
+\alias{C_bayessurvreg1}
+\alias{C_cholesky}
 \title{
   A Bayesian survival regression with an error distribution
   expressed as a~normal mixture with unknown number of components

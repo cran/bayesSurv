@@ -2,6 +2,7 @@
 \alias{predictive2}
 \alias{predictive2Para}
 \alias{predictive2.control}
+\alias{C_predictive_GS}
 \title{
   Compute predictive quantities based on a Bayesian survival regression
   model fitted using bayesBisurvreg or bayessurvreg2 or bayessurvreg3 functions.

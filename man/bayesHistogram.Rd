@@ -1,5 +1,6 @@
 \name{bayesHistogram}
 \alias{bayesHistogram}
+\alias{C_bayesHistogram}
 \title{Smoothing of a uni- or bivariate histogram using Bayesian
   G-splines}
 \description{A function to estimate a density of a uni- or bivariate

@@ -1,5 +1,6 @@
 \name{rWishart}
 \alias{rWishart}
+\alias{C_rwishartR3}
 \title{
   Sample from the Wishart distribution
 }

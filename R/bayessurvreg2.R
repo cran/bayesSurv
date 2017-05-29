@@ -140,7 +140,7 @@ bayessurvreg2 <- function
   nsimul.run2 <- c(nrun[2], nsimul$nthin, nwrite.run[2])
 
   cat("Simulation started on                       ", date(), "\n", sep = "")
-  fit <- .C("bayessurvreg2", as.character(dir),
+  fit <- .C(C_bayessurvreg2, as.character(dir),
                              dims = as.integer(dims),
                              X1 = as.double(if(des$nX) t(des$X) else 0),
                              X2 = as.double(if(des2$nX) t(des2$X) else 0),
@@ -199,7 +199,7 @@ bayessurvreg2 <- function
   bayessurvreg2.writeHeaders(dir, doubly, prinit, store, des, des2)
 
   ## Main simulation
-  fit <- .C("bayessurvreg2", as.character(dir),
+  fit <- .C(C_bayessurvreg2, as.character(dir),
                              dims = as.integer(dims),
                              X1 = as.double(fit$X1),
                              X2 = as.double(fit$X2),

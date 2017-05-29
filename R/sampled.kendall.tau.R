@@ -109,11 +109,12 @@ sampled.kendall.tau <- function(dir = getwd(), extens = "", K, skip = 0, by = 1,
   lvalue <- 1 + (M-skip-1) %/% by
   if (missing(nwrite)) nwrite <- M
 
-  mcmc <- .C("sampledKendallTau", tau = double(lvalue),   M.now = integer(1),
+  mcmc <- .C(C_sampledKendallTau, tau = double(lvalue),   M.now = integer(1),
                                   as.character(dir),      as.character(extens),
                                   as.integer(K),
                                   as.double(pn.MU1diff),  as.double(pn.MU2diff),
-                                  as.integer(M),          as.integer(skip),       as.integer(by),  as.integer(nwrite),
+                                  as.integer(M),          as.integer(skip),
+                                  as.integer(by),  as.integer(nwrite),
                                   err = integer(1),
               PACKAGE = thispackage)             
 

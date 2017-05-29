@@ -1,5 +1,6 @@
 \name{marginal.bayesGspline}
 \alias{marginal.bayesGspline}
+\alias{C_marginal_bayesGspline}
 \title{
   Summary for the marginal density estimates based on the bivariate model with Bayesian
   G-splines.

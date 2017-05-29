@@ -1,5 +1,6 @@
 \name{bayesDensity}
 \alias{bayesDensity}
+\alias{C_bayesDensity}
 \title{
    Summary for the density estimate based on the mixture Bayesian AFT model.
 }

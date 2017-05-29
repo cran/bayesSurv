@@ -120,13 +120,27 @@ bayesGspline <- function(dir = getwd(),
   lvalue <- ifelse(only.aver, ngrid, ngrid* (1 + (M-skip-1) %/% by))
   if (missing(nwrite)) nwrite <- M
   
-  mcmc <- .C("bayesGspline", average = double(ngrid), value = double(lvalue),           M.now = integer(1),     as.integer(only.aver),
-                             as.character(dir),       as.character(extens),             as.character(extens.adjust),
-                             x1 = as.double(grid1),   x2 = as.double(grid2),
-                             as.integer(k.max),       as.integer(M),                    as.integer(skip),       as.integer(by),
-                             as.integer(nwrite),      nx1 = as.integer(nx1),            nx2 = as.integer(nx2),
-                             as.integer(version),     standard = as.integer(standard),  err = integer(1),
-               PACKAGE = thispackage)
+  mcmc <- .C(C_bayesGspline,
+             average = double(ngrid),
+             value = double(lvalue),
+             M.now = integer(1),
+             as.integer(only.aver),
+             as.character(dir),
+             as.character(extens),
+             as.character(extens.adjust),
+             x1 = as.double(grid1),
+             x2 = as.double(grid2),
+             as.integer(k.max),
+             as.integer(M),
+             as.integer(skip),
+             as.integer(by),
+             as.integer(nwrite),
+             nx1 = as.integer(nx1),
+             nx2 = as.integer(nx2),
+             as.integer(version),
+             standard = as.integer(standard),
+             err = integer(1),
+             PACKAGE = thispackage)
 
   if (mcmc$err) stop("No results produced, something is wrong.")
   

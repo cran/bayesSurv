@@ -125,7 +125,7 @@ bayesBisurvreg <- function
   nsimul.run2 <- c(nrun[2], nsimul$nthin, nwrite.run[2])
   
   cat("Simulation started on                       ", date(), "\n", sep = "")
-  fit <- .C("bayesBisurvreg", as.character(dir),
+  fit <- .C(C_bayesBisurvreg, as.character(dir),
                               dims = as.integer(dims),
                               X1 = as.double(if(des$nX) t(des$X) else 0),
                               X2 = as.double(if(des2$nX) t(des2$X) else 0),
@@ -153,7 +153,7 @@ bayesBisurvreg <- function
                               store = as.integer(storeV),
                               mainSimul = as.integer(0),
                               err = integer(1),
-           PACKAGE = thispackage)
+             PACKAGE = thispackage)
 
   if (fit$err != 0) stop ("Something went wrong during the simulation.")
   cat("Burn-up finished on                         ", date(), "   (iteration ", fit$iter, ")", "\n", sep = "")
@@ -162,7 +162,7 @@ bayesBisurvreg <- function
   bayesBisurvreg.writeHeaders(dir, dim, nP, doubly, prinit, store, des, des2)
   
   ## Main simulation
-  fit <- .C("bayesBisurvreg", as.character(dir),
+  fit <- .C(C_bayesBisurvreg, as.character(dir),
                               dims = as.integer(dims),
                               X1 = as.double(fit$X1),
                               X2 = as.double(fit$X2),

@@ -19,8 +19,11 @@
 #include "update_Data_GS.h"
 #include "update_Alloc_GS.h"
 
-extern "C"{
 
+#ifdef __cplusplus  
+extern "C"{
+#endif
+  
 void
 bayesBisurvreg(char** dirP,             const int* dimsP,         const double* X1,     const double* X2,
                const double* y1_left,   const double* y1_right,   const int* status1,
@@ -34,6 +37,8 @@ bayesBisurvreg(char** dirP,             const int* dimsP,         const double* 
                int* iterM,              int* nsimulP,             int* storeP,
                const int* mainSimul,    int* errP);
 
+#ifdef __cplusplus    
 }    /*** end of extern "C" ***/
+#endif
 
 #endif

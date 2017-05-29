@@ -1,5 +1,6 @@
 \name{bayessurvreg2}
 \alias{bayessurvreg2}
+\alias{C_bayessurvreg2}
 \title{
   Cluster-specific accelerated failure time model for multivariate,
   possibly doubly-interval-censored data. The error distribution is

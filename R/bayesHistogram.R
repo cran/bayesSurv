@@ -67,7 +67,7 @@ bayesHistogram <- function(
   ## Burn-in
   keep.init <- prior.init
   cat("Simulation started on                       ", date(), "\n", sep = "")
-  fit <- .C("bayesHistogram", as.character(dir),
+  fit <- .C(C_bayesHistogram, as.character(dir),
                               dims = as.integer(dims),
                               y.left = as.double(des$y.left),
                               y.right = as.double(des$y.right),
@@ -103,7 +103,7 @@ bayesHistogram <- function(
   bayesHistogram.writeHeaders(dir, des, prior.init, store)
   
   ## Main simulation
-  fit <- .C("bayesHistogram", as.character(dir),
+  fit <- .C(C_bayesHistogram, as.character(dir),
                               dims = as.integer(dims),
                               y.left = as.double(des$y.left),
                               y.right = as.double(des$y.right),

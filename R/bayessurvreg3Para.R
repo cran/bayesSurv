@@ -541,7 +541,7 @@ bayessurvreg3Para <- function
   nsample2 <- nsimul.run2["niter"] %/% nsimul.run2["nthin"]  
   
   cat("Simulation started on                       ", date(), "\n", sep = "")
-  fit <- .C("bayessurvreg2", as.character(dir),
+  fit <- .C(C_bayessurvreg2, as.character(dir),
                              dims = as.integer(dims),
                              X1 = as.double(if(des$nX) t(des$X) else 0),
                              X2 = as.double(if(des2$nX) t(des2$X) else 0),
@@ -602,7 +602,7 @@ bayessurvreg3Para <- function
                              mclass = mclass)  
   
   ## Main simulation
-  fit <- .C("bayessurvreg2", as.character(dir),
+  fit <- .C(C_bayessurvreg2, as.character(dir),
                              dims = as.integer(dims),
                              X1 = as.double(fit$X1),
                              X2 = as.double(fit$X2),
@@ -745,7 +745,7 @@ bayessurvreg3Para <- function
     }else{
       maxnvisit <- max(mclass$nvisit)
       nss <- mclass$nExaminer * mclass$nFactor
-      inD <- .C("iPML_misclass_GJK",     
+      inD <- .C(C_iPML_misclass_GJK,     
                 iPML  = double(des$n),
                 dwork = double(3 * (1 + maxnvisit)),
                 min_etaM  = as.double((-1) * eta.bar),

@@ -1,5 +1,6 @@
 \name{rMVNorm}
 \alias{rMVNorm}
+\alias{C_rmvnormR2006}
 \title{
   Sample from the multivariate normal distribution
 }

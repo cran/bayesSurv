@@ -314,7 +314,7 @@ predictive2 <- function(
    
    ## Simulation
    ## ===========
-   mcmc <- .C("predictive_GS", av.dens          = double(ifelse(predict$density, sum.ngrid, 1)),
+   mcmc <- .C(C_predictive_GS, av.dens          = double(ifelse(predict$density, sum.ngrid, 1)),
                                av.Surv          = double(ifelse(predict$Surv, sum.ngrid, 1)),
                                av.hazard        = double(ifelse(predict$hazard, sum.ngrid, 1)),
                                av.cum.hazard    = double(ifelse(predict$cum.hazard, sum.ngrid, 1)),

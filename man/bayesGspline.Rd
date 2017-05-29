@@ -1,5 +1,6 @@
 \name{bayesGspline}
 \alias{bayesGspline}
+\alias{C_bayesGspline}
 \title{
   Summary for the density estimate based on the model with Bayesian
   G-splines.
@@ -158,7 +159,10 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
        \code{version = 32} if you want to compute the density of the
        \emph{error} term in the model with doubly-interval-censored data
        and bivariate normal distribution for random intercepts in the
-       onset and time-to-event parts of the model.
+       onset and time-to-event parts of the model OR if you have just
+       interval-censored data and a simple AFT model without random
+       effects and you want to compute the density of the \emph{error}
+       term of the model.
     }
   }
 }

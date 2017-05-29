@@ -129,7 +129,7 @@ bayessurvreg1.priorb <- function(prior.b, nrandom, ncluster, toler.chol)
     diagI <- (indD * (2*nrandom - indD + 1)) / 2
     lD <- (nrandom * (nrandom + 1))/2
     if (length(prior.b$scale.D) != lD) stop("Incorrect prior scale matrix for D matrix.")
-    cholD <- .C("cholesky", as.double(prior.b$scale.D), rank = integer(1), as.integer(nrandom), as.integer(diagI), as.double(toler.chol),
+    cholD <- .C(C_cholesky, as.double(prior.b$scale.D), rank = integer(1), as.integer(nrandom), as.integer(diagI), as.double(toler.chol),
                 PACKAGE = thispackage)
     if (cholD$rank < nrandom) stop("Prior scale matrix for D matrix is not positive definite.")
   }

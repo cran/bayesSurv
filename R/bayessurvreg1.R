@@ -141,7 +141,7 @@ bayessurvreg1 <- function(
      ## Run without adaptation of a proposal covariance matrices
      ## Either the whole burn up or first part of burn up
    if (nruns == 3 | (nruns == 2 & nsimul$nnoadapt == nsimul$nburn)){
-     fit <- .C("bayessurvreg1", as.character(dir),
+     fit <- .C(C_bayessurvreg1, as.character(dir),
                                 dims = as.integer(dims),               
                                 Y = as.double(des$Y),
                                 X = as.double(des$X),
@@ -190,8 +190,11 @@ bayessurvreg1 <- function(
            vind <- 0:(dim(covmat)[1] - 1)
            diagI <- (vind * (2*dim(covmat)[1] - vind + 1)) / 2
            covmatt <- covmat[lower.tri(covmat, diag = TRUE)]
-           chol <- .C("cholesky", A = as.double(covmatt), rank = integer(1), as.integer(dim(covmat)[1]),
-                                    as.integer(diagI), as.double(toler.chol),
+           chol <- .C(C_cholesky, A = as.double(covmatt),
+                                  rank = integer(1),
+                                  as.integer(dim(covmat)[1]),
+                                  as.integer(diagI),
+                                  as.double(toler.chol),
                       PACKAGE = thispackage)
            if (chol$rank == dim(covmat)[1]){
              prior.beta$blocks$cov.prop[[to.adapt[i]]] <- as.numeric(covmatt)
@@ -217,7 +220,7 @@ bayessurvreg1 <- function(
      ## Burn up with adaptation
      ## Either the whole burn up or the second part of burn up
    if (nruns == 3 | (nruns == 2 & nsimul$nnoadapt == 0)){
-     fit <- .C("bayessurvreg1", as.character(dir),
+     fit <- .C(C_bayessurvreg1, as.character(dir),
                                 dims = as.integer(dims),               
                                 Y = as.double(des$Y),
                                 X = as.double(des$X),
@@ -260,7 +263,7 @@ bayessurvreg1 <- function(
    }     
    
      ## Main simulation
-   fit <- .C("bayessurvreg1", as.character(dir),
+   fit <- .C(C_bayessurvreg1, as.character(dir),
                               dims = as.integer(dims),               
                               Y = as.double(des$Y),
                               X = as.double(des$X),

@@ -1,5 +1,5 @@
 # Load dynamic library
-useDynLib(bayesSurv)
+useDynLib(bayesSurv, .registration = TRUE)
 
 # Export all names
 exportPattern(".")

@@ -92,9 +92,18 @@ give.init.y2 <- function(init.y, init2.y, dim, design, design2, doubly)
     else                t2.right <- matrix(rep(1, length(t2.left)), nrow=dim)
     status2 <- matrix(design2$Y[, design2$nY], nrow=dim)
 
-    midImp <- .C("midimputeDataDoubly", err=integer(1), t1=double(nP), t2=double(nP), as.integer(nP),
-                                        as.double(t1.left), as.double(t1.right), as.integer(status1),
-                                        as.double(t2.left), as.double(t2.right), as.integer(status2), PACKAGE = thispackage)
+    midImp <- .C(C_midimputeDataDoubly,
+                 err=integer(1),
+                 t1=double(nP),
+                 t2=double(nP),
+                 as.integer(nP),
+                 as.double(t1.left),
+                 as.double(t1.right),
+                 as.integer(status1),
+                 as.double(t2.left),
+                 as.double(t2.right),
+                 as.integer(status2),
+                 PACKAGE = thispackage)
     if (midImp$err) stop("Inconsistent data supplied")
     t1 <- midImp$t1
     t2 <- midImp$t2
@@ -119,8 +128,13 @@ give.init.y2 <- function(init.y, init2.y, dim, design, design2, doubly)
   ### SIMPLE censoring
   ### ----------------
   else{
-    midImp <- .C("midimputeData", err=integer(1), t1=double(nP), as.integer(nP),
-                                  as.double(t1.left), as.double(t1.right), as.integer(status1), PACKAGE = thispackage)
+      midImp <- .C(C_midimputeData,
+                   err=integer(1),
+                   t1=double(nP),
+                   as.integer(nP),
+                   as.double(t1.left),
+                   as.double(t1.right),
+                   as.integer(status1), PACKAGE = thispackage)
     if (midImp$err) stop("Inconsistent data supplied")
     t1 <- midImp$t1
 

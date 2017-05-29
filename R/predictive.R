@@ -199,7 +199,7 @@ predictive <- function(
    prior.pari <- c(kmax, 0, 1*Eb0.depend.mix)
    
    cat("Simulation started on                       ", date(), "\n", sep = "")
-   fit <- .C("predictive", as.integer(typeError),
+   fit <- .C(C_predictive, as.integer(typeError),
                            as.character(dir),
                            as.integer(dims),
                            as.integer(dims2),

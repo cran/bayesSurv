@@ -34,7 +34,7 @@ rWishart <- function(n, df, S)
   Sitri <- Si[lower.tri(Si, diag=TRUE)]
 
   ## Sample
-  SAMPLE <- .C("rwishartR3", W    = double(n*lW),
+  SAMPLE <- .C(C_rwishartR3, W    = double(n*lW),
                              work = double(2*wdim*wdim),
                              df   = as.double(df),
                              invS = as.double(Sitri),

@@ -1,5 +1,6 @@
 \name{bayesBisurvreg}
 \alias{bayesBisurvreg}
+\alias{C_bayesBisurvreg}
 \title{Population-averaged accelerated failure time model for bivariate,
   possibly doubly-interval-censored data. The error distribution is
   expressed as a~penalized bivariate normal mixture with high number

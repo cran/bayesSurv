@@ -1,6 +1,7 @@
 \name{predictive}
 \alias{predictive}
 \alias{predictive.control}
+\alias{C_predictive}
 \title{
   Compute predictive quantities based on a Bayesian survival regression
   model fitted using bayessurvreg1 function.  
