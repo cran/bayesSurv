@@ -6,6 +6,7 @@
 // 28/01/2005: basics
 //             'update_after_change_icovm'
 //             'update_after_change_covm'
+// 11/01/2018: small change of size of 'zz' variable in CovMatrix::print()
 //
 
 #include "classCovMatrix.h"
@@ -226,7 +227,7 @@ CovMatrix::print() const
   int j;
   Rprintf("   nrow = %d,  larray = %d\n", _nrow, _larray);
   Rprintf("   rank = %d,  det = %g\n", _rank, _det);
-  char zz[15];
+  char zz[20];
   switch (_type_prior){
   case InvWishart : strcpy(zz, "Inverse-Wishart"); break;
   case SDUniform  : strcpy(zz, "SD Uniform"); break;

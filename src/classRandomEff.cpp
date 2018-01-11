@@ -10,6 +10,7 @@
 //             'predictGspl_intcpt'
 // 06/02/2005: 'predictGspl_intcpt' rewritten
 // 20/02/2005: 'adjust_intcpt' added
+// 11/01/2018: small correction of size of 'zz' variable in RandomEff::print()
 //
 #include "classRandomEff.h"
 
@@ -241,7 +242,7 @@ RandomEff::print() const
   int j, k;
   Rprintf("   nRandom = %d,  nCluster = %d\n   nwithinCl = ", _nRandom, _nCluster);
   for (j = 0; j < _nCluster; j++) Rprintf("%d,  ", _nwithinCl[j]); Rprintf("\n");
-  char zz[10];
+  char zz[20];
   switch (_type_prior){
   case Normal_ : strcpy(zz, "Normal"); break;
   case Gspline_: strcpy(zz, "G-spline"); break;

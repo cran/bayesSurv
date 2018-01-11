@@ -1,5 +1,5 @@
-bd1d90d4fc7f04fee930992b8deb594d *CHANGES
-cb6826bec9bcc298070c35440634113d *DESCRIPTION
+f052f4494d628f5fd7c28d46560ddd57 *CHANGES
+19def4fe4e995bd9d39cfd399c2b6c24 *DESCRIPTION
 d4c3b4c265c5ac3cc5cb14f05da3da8a *NAMESPACE
 ff5e93f95829c3094cbdfcbc489e0bc6 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -123,7 +123,7 @@ b1a66f5a2888ff053e089d209474075b *src/GMRF_Gspline.cpp
 b3364833a81cb6eaf571ab5f12569ade *src/GMRF_Gspline.h
 0c813b083f84d541c2ec8d0d92c72181 *src/GMRF_Gspline_Util.cpp
 895857bf0cfb7adac40447599745b640 *src/GMRF_Gspline_Util.h
-cb82d2ad5fb57a2b733e80ead2e9d95d *src/Gspline.cpp
+f851f422b4dd86e85826d57485db8d33 *src/Gspline.cpp
 d9f66dc51a0ec4827c5d28630ca64abe *src/Gspline.h
 76566b56b521bd2e60206ac721eee4c6 *src/Gspline_update_Intcpt.cpp
 ed2acdfad228ef0d6196e7f0c088909b *src/Gspline_update_Scale.cpp
@@ -171,11 +171,11 @@ c8afbcaf49be54940dba97576b4f51ae *src/classBetaGamma.cpp
 48bbe225f1b35e13de28069296a94e67 *src/classBetaGamma.h
 a61dff694a1beee50558c4912229aaba *src/classBetaGammaExtend.cpp
 e1a808c9d1cd2e307ae113fceac8b81f *src/classBetaGammaExtend.h
-2af83a8d8b64de464743f9c013800ce0 *src/classCovMatrix.cpp
+ad71462b8e2d29c8fa6906ebe798c767 *src/classCovMatrix.cpp
 df4e497e14386de36c5262e298150979 *src/classCovMatrix.h
 cd063e7036b1fc929c3739c79239187d *src/classCovMatrixExtend.cpp
 05c484ff24eca2068471405f802edcd9 *src/classCovMatrixExtend.h
-547b2800e8a8a7f6fc2521e7743d3863 *src/classRandomEff.cpp
+a229dc3d7ee3f78ca7c660634e5b9f4a *src/classRandomEff.cpp
 8a0dc9fdaec57c2b1ab4231b21073dda *src/classRandomEff.h
 84c23cb897b14499c7aa44bcb6b412df *src/classRandomEff_rhoNorm.cpp
 1370a133df5347ffd9f0355d8c9411ff *src/classRandomEff_rhoNorm.h

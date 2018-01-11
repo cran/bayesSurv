@@ -3,6 +3,7 @@
 //
 // 07/10/2004: start working
 // 20/02/2005: 'adjust_intcpt' added (immediately decided not to use it)
+// 11/01/2018: small correction of size of 'z' variable in Gspline::print()
 //
 #include "Gspline.h"
 
@@ -1021,7 +1022,7 @@ Gspline::print() const
   for (j = 0; j < _dim-1; j++) Rprintf("%d,  ", _K[j]);
   Rprintf("%d\n", _K[_dim-1]);
 
-  char z[20];
+  char z[60];
   char z2[10];
   switch (_neighbor_system){
   case 0:  strcpy(z, "univariate CAR"); break;
