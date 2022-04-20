@@ -260,21 +260,22 @@ on the value of the arguments \code{predict} and \code{only.aver}):
   Komárek, A. and Lesaffre, E. (2008).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Journal of the American Statistical Association}, \bold{103}, 523--533.
+  \emph{Journal of the American Statistical Association}, \bold{103},
+  523 - 533.
 
   Komárek, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
-  \emph{Statistical Modelling}, \bold{6}, 3--22.
+  \emph{Statistical Modelling}, \bold{6}, 3 - 22.
   
   Komárek, A.,  Lesaffre, E., and Legrand, C. (2007).
   Baseline and treatment effect heterogeneity for survival
   times between centers using a random effects accelerated failure time
   model with flexible error distribution.
-  \emph{Statistics in Medicine}, \bold{26}, 5457--5472.
+  \emph{Statistics in Medicine}, \bold{26}, 5457 - 5472.
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -287,11 +288,11 @@ on the value of the arguments \code{predict} and \code{only.aver}):
 ## R commands available in the documentation
 ## directory of this package
 ##  - ex-tandmobPA.R and
-##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##    https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
 ##  - ex-tandmobCS.R and
-##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
+##    https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
 ##  - ex-eortc.R and
-##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
+##    https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
 }
 \keyword{survival}
 \keyword{regression}

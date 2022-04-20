@@ -166,6 +166,6 @@ give.init.r(init.r, init.y, dim, KK,
   To be added somewhen...
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \keyword{internal}

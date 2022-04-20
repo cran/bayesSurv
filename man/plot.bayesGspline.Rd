@@ -18,6 +18,6 @@
      arguments passed to the \code{plot.default} function.}
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \keyword{hplot}

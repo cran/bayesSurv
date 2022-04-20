@@ -1041,7 +1041,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
   García-Zattera, M. J., Jara, A., and Komárek, A. (2016).
   A flexible AFT model for misclassified clustered interval-censored
   data.
-  \emph{Biometrics}, \bold{72}, 473--483.
+  \emph{Biometrics}, \bold{72}, 473 - 483.
   
   Komárek, A. (2006).
   \emph{Accelerated Failure Time Models for Multivariate
@@ -1051,14 +1051,15 @@ bayessurvreg3Para(formula, random, formula2, random2,
   Komárek, A. and Lesaffre, E. (2008).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Journal of the American Statistical Association}, \bold{103}, 523--533.
+  \emph{Journal of the American Statistical Association}, \bold{103},
+  523 - 533.
 
   Robert C. P. and Casella, G. (2004).
   \emph{Monte Carlo Statistical Methods, Second Edition.}
   New York: Springer Science+Business Media.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -1069,7 +1070,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
 ## R commands available in the documentation
 ## directory of this package
 ## - see ex-tandmobCS.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
 ##
 }
 \keyword{survival}

@@ -52,7 +52,7 @@ scanFN(file, quiet=FALSE)
   \code{\link{scan}}
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 cat("x y z", "1 2 3", "1 4 6", "10 20 30", file="ex.data", sep="\n")

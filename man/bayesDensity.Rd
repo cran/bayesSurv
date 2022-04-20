@@ -87,7 +87,7 @@ Komárek, A. and Lesaffre, E. (2007).
   \emph{Statistica Sinica}, \bold{17}, 549--569.
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -99,10 +99,10 @@ Komárek, A. and Lesaffre, E. (2007).
 ## in the documentation
 ## directory of this package
 ## - ex-cgd.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
 ##
 ## - ex-tandmobMixture.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
 ## 
 }
 \keyword{smooth}

@@ -1,3 +1,8 @@
+3.4
+20/04/2022
+  Invalid e-mail addresses corrected in Rd files.
+  FCONE added to F77_CALLs where needed (AK_BLAS_LAPACK.cpp file).
+
 3.3
 10/02/2020
   Package re-packed to keep it on CRAN.
@@ -38,7 +43,7 @@
   implementation of models involving possible misclassification of the event status
 
 04/03/2013:
-  some minor corrections and extensions invoked by icensKBL book
+  some minor corrections and extensions invoked by icensBKL book
 
 05/04/2012:
   basic maintanance required by CRAN

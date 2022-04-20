@@ -236,7 +236,7 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
   \emph{Statistics in Medicine,} \bold{26}, 5457--5472.
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -250,11 +250,11 @@ bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
 ## in the documentation
 ## directory of this package
 ##  - ex-tandmobPA.R and
-##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##    https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
 ##  - ex-tandmobCS.R and
-##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
+##    https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
 ##  - ex-eortc.R and
-##    http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
+##    https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
 ##
 }
 \keyword{smooth}

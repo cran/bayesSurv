@@ -613,7 +613,7 @@ Komárek, A. (2006).
 Komárek, A. and Lesaffre, E. (2007).
 Bayesian accelerated failure time model for correlated interval-censored data
 with a normal mixture as an error distribution.
-\emph{Statistica Sinica}, \bold{17}, 549--569.
+\emph{Statistica Sinica}, \bold{17}, 549 - 569.
   
 Brooks, S. P., Giudici, P., and Roberts, G. O. (2003).
 Efficient construction of reversible jump Markov chain Monte Carlo
@@ -622,7 +622,7 @@ proposal distribution (with Discussion).
 
 Green, P. J. (1995).
 Reversible jump MCMC computation and Bayesian model determination.
-\emph{Biometrika,} \bold{82,} 711-732.
+\emph{Biometrika,} \bold{82,} 711 - 732.
 
 Richardson, S., and Green, P. J. (1997).
 On Bayesian analysis of mixtures with unknown number of components (with
@@ -630,7 +630,7 @@ Discussion).
 \emph{Journal of the Royal Statistical Society B,} \bold{59,} 731 - 792.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -642,10 +642,10 @@ Discussion).
 ## in the documentation
 ## directory of this package as
 ## - ex-cgd.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
 ##
 ## - ex-tandmobMixture.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
 ##
 }
 \keyword{survival}

@@ -29,7 +29,7 @@ sampleCovMat(sample)
   When \eqn{n=1}{n=1} the function returns just sum of squares.      
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
   ## Sample some values

@@ -795,19 +795,20 @@ bayesHistogram(y1, y2,
   Komárek, A. and Lesaffre, E. (2008).
   Bayesian accelerated failure time model with multivariate doubly-interval-censored data
   and flexible distributional assumptions.
-  \emph{Journal of the American Statistical Association}, \bold{103}, 523--533.
+  \emph{Journal of the American Statistical Association}, \bold{103},
+  523 - 533.
 
   Komárek, A. and Lesaffre, E. (2006b).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
-  \emph{Statistical Modelling}, \bold{6}, 3--22.
+  \emph{Statistical Modelling}, \bold{6}, 3 - 22.
   
   Neal, R. M. (2003).
   Slice sampling (with Discussion).
   \emph{The Annals of Statistics,} \bold{31}, 705 - 767.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 %\examples{}
 \keyword{smooth}

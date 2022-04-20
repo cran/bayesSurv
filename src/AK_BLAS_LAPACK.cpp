@@ -4,6 +4,7 @@
 //              akom@email.cz
 //
 //    CREATED:  10/11/2006
+//              20/04/2022 FCONE at F77_CALLs added where needed
 //
 //    PURPOSE: Wrappers to LAPACK and BLAS  + some related routines written directly by me
 //
@@ -620,7 +621,7 @@ extern "C"{
     static const char *TRANS = "T";
     static const char *DIAG  = "N";
     static const int INCX = 1;
-    F77_CALL(dtpmv)(UPLO, TRANS, DIAG, na, L, a, &INCX);
+    F77_CALL(dtpmv)(UPLO, TRANS, DIAG, na, L, a, &INCX FCONE FCONE FCONE);
 
     return;
   }
@@ -641,7 +642,7 @@ extern "C"{
     static const char *TRANS = "N";
     static const char *DIAG  = "N";
     static const int INCX = 1;
-    F77_CALL(dtpmv)(UPLO, TRANS, DIAG, na, L, a, &INCX);
+    F77_CALL(dtpmv)(UPLO, TRANS, DIAG, na, L, a, &INCX FCONE FCONE FCONE);
 
     return;
   }
@@ -667,7 +668,7 @@ extern "C"{
     static const int    INCX  = 1;
     static const double BETA  = 0;
     static const int    INCY  = 1;
-    F77_CALL(dspmv)(UPLO, nb, &ALPHA, A, b, &INCX, &BETA, c, &INCY);
+    F77_CALL(dspmv)(UPLO, nb, &ALPHA, A, b, &INCX, &BETA, c, &INCY FCONE);
 
     return;
   }
@@ -694,7 +695,7 @@ extern "C"{
     static const int INCX = 1;
     static const int INCY = 1;
     static const double BETA = 0;
-    F77_CALL(dgemv)(TRANS, nrA, ncA, &ALPHA, A, nrA, b, &INCX, &BETA, c, &INCY);
+    F77_CALL(dgemv)(TRANS, nrA, ncA, &ALPHA, A, nrA, b, &INCX, &BETA, c, &INCY FCONE);
 
     return;    
   }
@@ -721,7 +722,7 @@ extern "C"{
     static const int INCX = 1;
     static const int INCY = 1;
     static const double BETA = 0;
-    F77_CALL(dgemv)(TRANS, nrA, ncA, &ALPHA, A, nrA, b, &INCX, &BETA, c, &INCY);
+    F77_CALL(dgemv)(TRANS, nrA, ncA, &ALPHA, A, nrA, b, &INCX, &BETA, c, &INCY FCONE);
 
     return;    
   }
@@ -748,7 +749,7 @@ extern "C"{
     static const int INCX = 1;
     static const int INCY = 1;
     static const double BETA = 1;
-    F77_CALL(dgemv)(TRANS, nrA, ncA, &ALPHA, A, nrA, b, &INCX, &BETA, a, &INCY);
+    F77_CALL(dgemv)(TRANS, nrA, ncA, &ALPHA, A, nrA, b, &INCX, &BETA, a, &INCY FCONE);
 
     return;    
   }
@@ -779,7 +780,7 @@ extern "C"{
     static const char *TRANS = "N";
     static const double ALPHA = 1;
     static const double BETA = 0;
-    F77_CALL(dgemm)(TRANS, TRANS, nrA, ncB, ncA, &ALPHA, A, nrA, B, ncA, &BETA, C, nrA);
+    F77_CALL(dgemm)(TRANS, TRANS, nrA, ncB, ncA, &ALPHA, A, nrA, B, ncA, &BETA, C, nrA FCONE FCONE);
 
     return;    
   }
@@ -805,7 +806,7 @@ extern "C"{
     static const char *TRANSB = "N";
     static const double ALPHA = 1;
     static const double BETA = 0;
-    F77_CALL(dgemm)(TRANS, TRANSB, ncA, ncB, nrA, &ALPHA, A, nrA, B, nrA, &BETA, C, ncA);
+    F77_CALL(dgemm)(TRANS, TRANSB, ncA, ncB, nrA, &ALPHA, A, nrA, B, nrA, &BETA, C, ncA FCONE FCONE);
 
     return;    
   }
@@ -831,7 +832,7 @@ extern "C"{
     static const char *TRANSB = "T";
     static const double ALPHA = 1;
     static const double BETA = 0;
-    F77_CALL(dgemm)(TRANS, TRANSB, nrA, nrB, ncA, &ALPHA, A, nrA, B, nrB, &BETA, C, nrA);
+    F77_CALL(dgemm)(TRANS, TRANSB, nrA, nrB, ncA, &ALPHA, A, nrA, B, nrB, &BETA, C, nrA FCONE FCONE);
 
     return;    
   }
@@ -1215,7 +1216,7 @@ extern "C"{
   chol_dpotrf(double *Q,  const int *nrow,  int *info)
   {
     static const char *UPLO = "L";
-    F77_CALL(dpotrf)(UPLO, nrow, Q, nrow, info);
+    F77_CALL(dpotrf)(UPLO, nrow, Q, nrow, info FCONE);
     
     return;
   }
@@ -1246,7 +1247,7 @@ extern "C"{
   chol_dpptrf(double *Q,  const int *nrow,  int *info)
   {
     static const char *UPLO = "L";
-    F77_CALL(dpptrf)(UPLO, nrow, Q, info);
+    F77_CALL(dpptrf)(UPLO, nrow, Q, info FCONE);
     
     return;
   }
@@ -1316,7 +1317,7 @@ extern "C"{
   chol_dpptri(double *Q,  const int *nrow,  int *info)
   {
     static const char *UPLO = "L";
-    F77_CALL(dpptri)(UPLO, nrow, Q, info);
+    F77_CALL(dpptri)(UPLO, nrow, Q, info FCONE);
     
     return;
   }
@@ -1529,7 +1530,7 @@ extern "C"{
   {
     static const char *UPLO = "L";
     static const char *JOBZ = "V";   /** both eigenvalues and eigenvectors **/
-    F77_CALL(dspev)(JOBZ, UPLO, nrow, Q, evalues, evectors, nrow, work, info);
+    F77_CALL(dspev)(JOBZ, UPLO, nrow, Q, evalues, evectors, nrow, work, info FCONE FCONE);
     
     return;
   }

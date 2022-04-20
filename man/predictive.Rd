@@ -120,10 +120,10 @@ Komárek, A. (2006).
   Komárek, A. and Lesaffre, E. (2007).
   Bayesian accelerated failure time model for correlated interval-censored data
   with a normal mixture as an error distribution.
-  \emph{Statistica Sinica}, \bold{17}, 549--569.
+  \emph{Statistica Sinica}, \bold{17}, 549 - 569.
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -135,10 +135,10 @@ Komárek, A. (2006).
 ## in the documentation
 ## directory of this package as
 ## - ex-cgd.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-cgd.pdf
 ##
 ## - ex-tandmobMixture.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobMixture.pdf
 ##
 }
 \keyword{survival}

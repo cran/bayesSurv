@@ -103,6 +103,6 @@ The same object as that returned by \code{\link{bayesBisurvreg.priorInit}}.
   }      
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \keyword{internal}

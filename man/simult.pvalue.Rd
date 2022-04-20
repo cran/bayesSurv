@@ -48,6 +48,6 @@ simult.pvalue(sample, prob=0.99, precision=0.0001)
   \emph{Journal of Computational and Graphical Statistics,} \bold{13}, 20 - 35. 
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \keyword{htest}

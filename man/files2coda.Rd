@@ -51,7 +51,7 @@ files2coda(files, data.frames, variant = 1, dir = getwd(),
   A list with \code{mcmc} objects. One object per file or data.frame.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## *** illustration of usage of parameters 'data.frames' and 'chain' ***

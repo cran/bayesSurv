@@ -589,14 +589,14 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
   Komárek, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failure time model for paired
   doubly interval-censored data.
-  \emph{Statistical Modelling}, \bold{6}, 3--22.
+  \emph{Statistical Modelling}, \bold{6}, 3 - 22.
   
   Neal, R. M. (2003).
   Slice sampling (with Discussion).
   \emph{The Annals of Statistics,} \bold{31}, 705 - 767.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -607,7 +607,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 ## R commands available in the documentation
 ## directory of this package as
 ## - see ex-tandmobPA.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
 ##
 }
 \keyword{survival}

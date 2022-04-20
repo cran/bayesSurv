@@ -42,7 +42,7 @@ rWishart(n, df, S)
   New York: John Wiley and Sons.  
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }  
 \examples{
 ### The same as rgamma(n, shape=df/2, rate=1/(2*S))

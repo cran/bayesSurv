@@ -31,6 +31,6 @@ bayessurvreg1.files2init(dir = getwd(), row, kmax)
   in the form as required by the argument \code{init} of the function \code{\link{bayessurvreg1}}.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \keyword{file}

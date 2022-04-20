@@ -669,7 +669,7 @@ bayessurvreg2(formula, random, formula2, random2,
   \emph{Statistics in Medicine,} \bold{26}, 5457-5472.
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -679,7 +679,7 @@ bayessurvreg2(formula, random, formula2, random2,
 ## R commands available in the documentation
 ## directory of this package
 ## as ex-eortc.R and
-## http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
+## https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
 ##
 }
 \keyword{survival}

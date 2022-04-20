@@ -91,10 +91,10 @@ sampled.kendall.tau(dir = getwd(), extens = "", K,
   Komárek, A. and Lesaffre, E. (2006).
   Bayesian semi-parametric accelerated failurew time model for paired
   doubly interval-censored data.
-  \emph{Statistical Modelling}, \bold{6}, 3--22.
+  \emph{Statistical Modelling}, \bold{6}, 3 - 22.
 }  
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \examples{
 ## See the description of R commands for
@@ -106,7 +106,7 @@ sampled.kendall.tau(dir = getwd(), extens = "", K,
 ## in the documentation
 ## directory of this package
 ## - see ex-tandmobPA.R and
-##   http://www.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
 ##
 }
 \keyword{smooth}

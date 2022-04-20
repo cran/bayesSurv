@@ -62,7 +62,7 @@ vec.r <- c(1, 961, 481)
 vecr2matr(vec.r, KK)
 }
 \author{
-  Arnošt Komárek \email{arnost.komarek[AT]mff.cuni.cz}
+  Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }
 \keyword{connection}
 
