@@ -4,7 +4,7 @@
 \title{
   Cluster-specific accelerated failure time model for multivariate,
   possibly doubly-interval-censored data. The error distribution is
-  expressed as a~penalized univariate normal mixture with high number of
+  expressed as a penalized univariate normal mixture with high number of
   components (G-spline). The distribution of the vector of random
   effects is multivariate normal.  
 }
@@ -41,7 +41,7 @@
 
   The random effect vectors \eqn{b_i,\;i=1,\dots, N}{b[i], i=1,..., N}
   are assumed to be i.i.d. with a (multivariate) normal distribution
-  with the mean \eqn{\beta_b}{beta[b]} and a~covariance matrix
+  with the mean \eqn{\beta_b}{beta[b]} and a covariance matrix
   \eqn{D}{D}. Hierarchical centring (see Gelfand, Sahu, Carlin, 1995) is
   used. I.e. \eqn{\beta_b}{beta[b]} expresses the average effect of the
   covariates included in \eqn{z_{i,l}}{z[i,l]}. Note that covariates
@@ -52,9 +52,9 @@
   The error terms
   \eqn{\varepsilon_{i,l},\;i=1,\dots, N, l=1,\dots, n_i}{%
        epsilon[i,l], i=1,..., N, l=1,..., n[i]}
-  are assumed to be i.i.d. with a~univariate density
+  are assumed to be i.i.d. with a univariate density
   \eqn{g_{\varepsilon}(e)}{g[epsilon](e)}. This density is expressed as
-  a~mixture of Bayesian G-splines (normal densities with equidistant
+  a mixture of Bayesian G-splines (normal densities with equidistant
   means and constant variances). We distinguish two,
   theoretically equivalent, specifications.
 
@@ -68,7 +68,7 @@
       where \eqn{\sigma^2}{sigma^2} is the
       \bold{unknown} basis variance and
       \eqn{\mu_{j},\;j=-K,\dots, K}{mu[j],\;j=-K,..., K}
-      is an~equidistant grid of knots symmetric around the
+      is an equidistant grid of knots symmetric around the
       \bold{unknown} point \eqn{\gamma}{gamma} 
       and related to the unknown basis variance through the
       relationship
@@ -76,7 +76,7 @@
 	mu[j] = gamma + j*delta*sigma, j=K,...,	K}
       where \eqn{\delta}{delta} is fixed
       constants, e.g. \eqn{\delta=2/3}{delta=2/3}
-      (which has a~justification of being close to cubic B-splines).
+      (which has a justification of being close to cubic B-splines).
       \deqn{}{}
     }
     \item{Specification 2}{
@@ -93,7 +93,7 @@
 	V is distributed as sum[j=-K][K]
 	w[j] N(mu[j], sigma^2)}
       where \eqn{\mu_{j},\;j=-K,\dots, K}{mu[j], j=-K,..., K}
-      is an~equidistant grid of \bold{fixed} knots (means), usually
+      is an equidistant grid of \bold{fixed} knots (means), usually
       symmetric about the \bold{fixed} point \eqn{\gamma=0}{gamma = 0} and
       \eqn{\sigma^2}{sigma^2} is \bold{fixed} basis variance.
       Reasonable values for the numbers of grid
@@ -119,7 +119,7 @@
         a[j] = exp(w[j])/sum[m] exp(w[m])}
   are estimated instead.
 
-  A~Bayesian model is set up for all unknown parameters. For more
+  A Bayesian model is set up for all unknown parameters. For more
   details I refer to Komárek (2006)
   and to Komárek, Lesafre, and Legrand (2007).
       
@@ -146,13 +146,13 @@ bayessurvreg2(formula, random, formula2, random2,
     doubly-censored data, this is the model formula for the onset
     time.
 
-    The left-hand side of the \code{formula} must be an~object created
+    The left-hand side of the \code{formula} must be an object created
     using \code{\link[survival]{Surv}}.
 
     In the formula all covariates appearing both in the vector
     \eqn{x_{i,l}}{x[i,l]} and \eqn{z_{i,l}}{z[i,l]} must be
     mentioned. Intercept is implicitely included in the model by the
-    estimation of the error distribution. As a~consequence \code{-1} in
+    estimation of the error distribution. As a consequence \code{-1} in
     the model formula does not have any effect on the model
     specification.
 
@@ -160,7 +160,7 @@ bayessurvreg2(formula, random, formula2, random2,
     an identification of clusters in the form \code{cluster(id)}, where
     \code{id} is a name of the variable that determines clusters, e.g.
     \tabular{c}{
-      \code{Surv(time, event)~gender + cluster(id)}.
+      \code{Surv(time, event) gender + cluster(id)}.
     }     
   }  %% end of item{formula}
   \item{random}{formula for the `random' part of the model, i.e. the
@@ -169,12 +169,12 @@ bayessurvreg2(formula, random, formula2, random2,
     the onset time.
 
     If omitted, no random part is included in the model. E.g. to specify the model with a
-    random intercept, say \code{random=~1}. All effects mentioned in
+    random intercept, say \code{random= 1}. All effects mentioned in
     \code{random} should also be mentioned on the right-hand side of
     \code{formula}.
 
     When some random effects are included the random intercept is added
-    by default. It can be removed using e.g. \code{random=~-1 + gender}.
+    by default. It can be removed using e.g. \code{random= -1 + gender}.
   }  %% end of item{random}
   \item{formula2}{model formula for the regression of the time-to-event in
     the case of doubly-censored data. Ignored otherwise. The same structure as
@@ -211,7 +211,7 @@ bayessurvreg2(formula, random, formula2, random2,
 	writen to files;}
     }    
   }  %% end of item{nsimul}
-  \item{prior}{a~list specifying the prior distribution of the G-spline
+  \item{prior}{a list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model
     given by \code{formula} and \code{random}. See \code{prior} argument of
     \code{\link{bayesHistogram}} function for more detail. In this list
@@ -261,7 +261,7 @@ bayessurvreg2(formula, random, formula2, random2,
     \item{scale.D}{a lower triangle of the scale matrix \eqn{S}{S} in
       the case that the prior of the matrix \eqn{D}{D} is
       inverse-Wishart or the upper limit \eqn{S}{S} of the uniform distribution in
-      the case that \eqn{\sqrt{D} \sim \mbox{Unif}(0, S)}{sqrt(D) ~ Unif(0, S)}.
+      the case that \eqn{\sqrt{D} \sim \mbox{Unif}(0, S)}{sqrt(D)   Unif(0, S)}.
       }    
     }  %% end of describe
   }  %% end of prior.b  
@@ -273,11 +273,11 @@ bayessurvreg2(formula, random, formula2, random2,
     \eqn{\beta}{beta} and the means of the random effects (except the
     random intercept) \eqn{\beta_b}{beta[b]}.
     
-    This should be a~list with the following components:
+    This should be a list with the following components:
     \describe{
-    \item{mean.prior}{a~vector specifying a~prior mean for each
+    \item{mean.prior}{a vector specifying a prior mean for each
       \code{beta} parameter in the model.}
-    \item{var.prior}{a~vector specifying a~prior variance for each
+    \item{var.prior}{a vector specifying a prior variance for each
       \code{beta} parameter.}
     }
     It is recommended to run the function
@@ -285,21 +285,21 @@ bayessurvreg2(formula, random, formula2, random2,
     to find out how the betas are sorted. They must correspond to a
     design matrix X taken from \code{formula}.
   }  %% end of item{prior.beta}
-  \item{init}{an~optional list with initial values for the MCMC related
+  \item{init}{an optional list with initial values for the MCMC related
     to the model given by \code{formula} and \code{random}. The list can have the following components:
     \describe{
     \item{iter}{the number of the iteration to which the initial values
       correspond, usually zero.}
-    \item{beta}{a~vector of initial values for the regression
+    \item{beta}{a vector of initial values for the regression
       parameters (both the fixed effects and means of the random
       effects).
       It must be sorted in the same way as are the columns
       in the design matrix. Use \code{onlyX=TRUE} if you do not know how
       the columns in the design matrix are created.}
-    \item{a}{a~vector of length \eqn{2K+1}{2*K+1} with the initial values of transformed mixture weights.}
+    \item{a}{a vector of length \eqn{2K+1}{2*K+1} with the initial values of transformed mixture weights.}
     \item{lambda}{initial values for the Markov random fields precision parameter. 
     }
-    \item{gamma}{an~initial values for the middle
+    \item{gamma}{an initial values for the middle
       knot \eqn{\gamma.}{gamma.}
       
       If \sQuote{Specification} is 2, this value will not be changed
@@ -310,7 +310,7 @@ bayessurvreg2(formula, random, formula2, random2,
       If \sQuote{Specification} is 1 \code{init$gamma} should be
       approximately equal to the mean value of the residuals.
     }
-    \item{sigma}{an~initial values of the basis
+    \item{sigma}{an initial values of the basis
       standard deviation \eqn{\sigma}{sigma}.
       
       If \sQuote{Specification} is 2, this value will not be changed
@@ -325,36 +325,36 @@ bayessurvreg2(formula, random, formula2, random2,
       divided by the number of knots \eqn{(2K+1)}{(2*K+1)} and
       multiplied again by something like 2/3.
       }  
-    \item{intercept}{an~initial values of the
+    \item{intercept}{an initial values of the
       intercept term \eqn{\alpha}{alpha}.
       
       If \sQuote{Specification} is 1 this value is not changed by the
       MCMC and the initial value is always changed to zero.}
-    \item{scale}{an~initial value of the scale
+    \item{scale}{an initial value of the scale
       parameter \eqn{\tau}{tau}.
 
       If \sQuote{Specification} is 1 this value is not changed by the MCMC
       and the initial value is always changed to one.}
     \item{D}{initial value for the covariance matrix of random effects
-      \eqn{D}{D}. Only its lower triangle must be given in a~vector,
+      \eqn{D}{D}. Only its lower triangle must be given in a vector,
       e.g. \code{c(d[1,1], d[2,1], d[3,1], d[2,2], d[3,2], d[3,3])}
       for a matrix \eqn{3 \times 3}{3 x 3}.}
-    \item{b}{a~vector or matrix of the initial values of random effects
+    \item{b}{a vector or matrix of the initial values of random effects
       \eqn{b_i,\;i=1,\dots,N}{b[i],\;i=1,..., N}
       for each cluster. The matrix should be of size
       \eqn{q\times N}{q x N}, where \eqn{q}{q} is the number of random
       effects. I.e. each column of the matrix contains the initial
       values for one cluster.}
-    \item{y}{a~vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
+    \item{y}{a vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
       with initial values of log-event-times.}
-    \item{r}{a~vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
+    \item{r}{a vector of length \eqn{\sum_{i=1}^N\,n_i}{sum[i=1][N] n[i]}
       with initial
       component labels for each residual. All values must be between
       \eqn{-K}{-K} and \eqn{K.}{K.} See argument \code{init} of
       the function \code{\link{bayesHistogram}} for more details.}
     }
   }  %% end of item{init}  
-  \item{mcmc.par}{a~list specifying how some of the G-spline parameters
+  \item{mcmc.par}{a list specifying how some of the G-spline parameters
     related to the distribution of the error term from \code{formula}
     are to be updated. See \code{\link{bayesBisurvreg}} for more
     details.
@@ -364,29 +364,29 @@ bayessurvreg2(formula, random, formula2, random2,
     \code{"block"} in which case all \eqn{a}{a} coefficients are updated
     in 1 block using the Metropolis-Hastings algorithm. 
   }  %% end of item{mcmc.par}
-  \item{prior2}{a~list specifying the prior distribution of the G-spline
+  \item{prior2}{a list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model
     given by \code{formula2} and \code{random2}. See \code{prior} argument of
     \code{\link{bayesHistogram}} function for more detail.
   }  %% end of item{prior2}
   \item{prior.b2}{prior specification for the parameters related to the
     random effects from \code{formula2} and \code{random2}. This should
-    be a~list with the same structure as \code{prior.b}.
+    be a list with the same structure as \code{prior.b}.
   }  %% end of item{prior.b2}  
   \item{prior.beta2}{prior specification for the regression parameters
     of time-to-event in the case of doubly censored data (related to
     \code{formula2} and \code{random2}).
-    This should be a~list with the same structure as \code{prior.beta}.
+    This should be a list with the same structure as \code{prior.beta}.
   }  %% end of item{prior.beta2}
-  \item{init2}{an~optional list with initial values for the MCMC related
+  \item{init2}{an optional list with initial values for the MCMC related
     to the model given by \code{formula2} and \code{random2}.
     The list has the same structure as \code{init}.
   }  %% end of item{init2}
-  \item{mcmc.par2}{a~list specifying how some of the G-spline parameters
+  \item{mcmc.par2}{a list specifying how some of the G-spline parameters
     related to \code{formula2} are to be updated. The list has the same
     structure as \code{mcmc.par}.
   }  %% end of item{mcmc.par2}
-  \item{store}{a~list of logical values specifying which chains that are
+  \item{store}{a list of logical values specifying which chains that are
     not stored by default are to be stored. The list can have the
     following components.
     \describe{
@@ -457,7 +457,7 @@ bayessurvreg2(formula, random, formula2, random2,
       all related to the distribution of the error term from the
       model given by \code{formula}.
     }
-    \item{mixmoment\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{mixmoment_2.sim}{in the case of doubly-censored data, the same
       structure as \code{mixmoment.sim}, however related to the model
       given by \code{formula2}.      
     }
@@ -466,7 +466,7 @@ bayessurvreg2(formula, random, formula2, random2,
       probabilities numerically higher than zero. Related to the model
       given by \code{formula}.
     }
-    \item{mweight\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{mweight_2.sim}{in the case of doubly-censored data, the same
       structure as \code{mweight.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -476,7 +476,7 @@ bayessurvreg2(formula, random, formula2, random2,
       than zero. It corresponds to the weights in
       \code{mweight.sim}. Related to the model given by \code{formula}.
     }
-    \item{mmean\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{mmean_2.sim}{in the case of doubly-censored data, the same
       structure as \code{mmean.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -500,11 +500,11 @@ bayessurvreg2(formula, random, formula2, random2,
       If \sQuote{Specification} is 2, this column usually contains zeros;
             
       \bold{sigma1} = basis standard deviation \eqn{\sigma}{sigma}
-      of the G-spline. This column contains a~fixed value
+      of the G-spline. This column contains a fixed value
       if \sQuote{Specification} is 2;
             
       \bold{delta1} = distance \eqn{delta}{delta} between the two knots of the G-spline.
-      This column contains a~fixed value if \sQuote{Specification} is 2;
+      This column contains a fixed value if \sQuote{Specification} is 2;
       
       \bold{intercept1} = the intercept term \eqn{\alpha}{alpha} of the G-spline.
       If \sQuote{Specification} is 1, this column usually contains zeros;
@@ -512,7 +512,7 @@ bayessurvreg2(formula, random, formula2, random2,
       \bold{scale1} = the scale parameter \eqn{\tau}{tau} of the G-spline.
       If \sQuote{Specification} is 1, this column usually contains ones;
     }
-    \item{gspline\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{gspline_2.sim}{in the case of doubly-censored data, the same
       structure as \code{gspline.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -524,7 +524,7 @@ bayessurvreg2(formula, random, formula2, random2,
       probabilities. This file is related to the error distribution of
       the model given by \code{formula}.
     }
-    \item{mlogweight\_{}2.sim}{fully created only if \code{store$a2 =
+    \item{mlogweight_2.sim}{fully created only if \code{store$a2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{mlogweight.sim}, however related to the error
       distribution of the model given by \code{formula2}. 
@@ -537,7 +537,7 @@ bayessurvreg2(formula, random, formula2, random2,
       \code{\link{vecr2matr}} can be used to transform it back to
       indices from \eqn{-K}{-K} to \eqn{K}{K}.
     }
-    \item{r\_{}2.sim}{fully created only if \code{store$r2 =
+    \item{r_2.sim}{fully created only if \code{store$r2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{r.sim}, however related to the model
       given by \code{formula2}. 
@@ -548,7 +548,7 @@ bayessurvreg2(formula, random, formula2, random2,
       mixture weights \eqn{a_{k}}{a[k]}). This file is
       related to the model given by \code{formula}.
     }
-    \item{lambda\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{lambda_2.sim}{in the case of doubly-censored data, the same
       structure as \code{lambda.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -560,7 +560,7 @@ bayessurvreg2(formula, random, formula2, random2,
       The columns are labeled according to the
       \code{colnames} of the design matrix.
     }
-    \item{beta\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{beta_2.sim}{in the case of doubly-censored data, the same
       structure as \code{beta.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -574,7 +574,7 @@ bayessurvreg2(formula, random, formula2, random2,
       matrix. This file is related to the model specified by
       \code{formula} and \code{random}.
     }
-    \item{D\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{D_2.sim}{in the case of doubly-censored data, the same
       structure as \code{D.sim}, however related to the model given by
       \code{formula2} and \code{random2}.
     }
@@ -585,7 +585,7 @@ bayessurvreg2(formula, random, formula2, random2,
            b[1,1],..., b[1,q],..., b[N,1],..., b[N,q]}. This file is
 	 related to the model given by \code{formula} and \code{random}.
     }
-    \item{b\_{}2.sim}{fully created only if \code{store$b2 =
+    \item{b_2.sim}{fully created only if \code{store$b2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{b.sim}, however related to the model
       given by \code{formula2} and \code{random2}. 
@@ -594,7 +594,7 @@ bayessurvreg2(formula, random, formula2, random2,
       contains sampled (augmented) log-event times for all observations
       in the data set.
     }
-    \item{Y\_{}2.sim}{fully created only if \code{store$y2 =
+    \item{Y_2.sim}{fully created only if \code{store$y2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{Y.sim}, however related to the model
       given by \code{formula2}. 
@@ -646,7 +646,7 @@ bayessurvreg2(formula, random, formula2, random2,
 	  weights})\bigr\}.}{%
       sum[i=1][N] sum[l=1][n[i]] log(p(r[i,l] | G-spline weights)).}
     }
-    \item{logposter\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{logposter_2.sim}{in the case of doubly-censored data, the same
       structure as \code{logposter.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -679,7 +679,7 @@ bayessurvreg2(formula, random, formula2, random2,
 ## R commands available in the documentation
 ## directory of this package
 ## as ex-eortc.R and
-## https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-eortc.pdf
+## https://www2.karlin.mff.cuni.cz/ komarek/software/bayesSurv/ex-eortc.pdf
 ##
 }
 \keyword{survival}

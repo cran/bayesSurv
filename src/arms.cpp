@@ -419,7 +419,7 @@ void invert(double prob, ENVELOPE *env, POINT *p)
 /* *p      : a working POINT to hold the sampled value */
 
 {
-  double u,xl,xr,yl,yr,eyl,eyr,prop,z;
+  double u,xl,xr,yl,yr,eyl,eyr,prop;
   POINT *q;
 
   /* find rightmost point in envelope */
@@ -905,18 +905,24 @@ double perfunc(FUNBAG *lpdf, ENVELOPE *env, double x)
 void display(FILE *f, ENVELOPE *env)
 
 /* to display envelope - for debugging only */
+/* all fprintf commands commented by AK on 05/10/2022 to avoid CRAN warnings:    */
+/* arms.cpp:917:45: warning: format specifies type 'unsigned int' but the argument has type 'POINT *' (aka 'point *') [-Wformat] */
+/* arms.cpp:927:56: warning: format specifies type 'unsigned int' but the argument has type 'POINT *' (aka 'point *') [-Wformat] */
+/* arms.cpp:927:58: warning: format specifies type 'unsigned int' but the argument has type 'struct point *' [-Wformat]          */
+/* arms.cpp:927:64: warning: format specifies type 'unsigned int' but the argument has type 'struct point *' [-Wformat]          */
+    
 {
   POINT *q;
 
   /* print envelope attributes */
-  fprintf(f,"========================================================\n");
-  fprintf(f,"envelope attributes:\n");
-  fprintf(f,"points in use = %d, points available = %d\n",
-          env->cpoint,env->npoint);
-  fprintf(f,"function evaluations = %d\n",*(env->neval));
-  fprintf(f,"ymax = %f, p = %x\n",env->ymax,env->p);
-  fprintf(f,"convexity adjustment = %f\n",*(env->convex));
-  fprintf(f,"--------------------------------------------------------\n");
+  //fprintf(f,"========================================================\n");
+  //fprintf(f,"envelope attributes:\n");
+  //fprintf(f,"points in use = %d, points available = %d\n",
+  //        env->cpoint,env->npoint);
+  //fprintf(f,"function evaluations = %d\n",*(env->neval));
+  //fprintf(f,"ymax = %f, p = %x\n",env->ymax,env->p);
+  //fprintf(f,"convexity adjustment = %f\n",*(env->convex));
+  //fprintf(f,"--------------------------------------------------------\n");
 
   /* find leftmost POINT */
   q = env->p;
@@ -924,11 +930,11 @@ void display(FILE *f, ENVELOPE *env)
 
   /* now print each POINT from left to right */
   for(q = env->p; q != NULL; q = q->pr){
-    fprintf(f,"point at %x, left at %x, right at %x\n",q,q->pl,q->pr);
-    fprintf(f,"x = %f, y = %f, ey = %f, cum = %f, f = %d\n",
-            q->x,q->y,q->ey,q->cum,q->f);
+    //fprintf(f,"point at %x, left at %x, right at %x\n",q,q->pl,q->pr);
+    //fprintf(f,"x = %f, y = %f, ey = %f, cum = %f, f = %d\n",
+    //        q->x,q->y,q->ey,q->cum,q->f);
   }
-  fprintf(f,"========================================================\n");
+  //fprintf(f,"========================================================\n");
 
   return;
 }

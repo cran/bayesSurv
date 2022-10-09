@@ -1,5 +1,5 @@
-9281155663915f1b9e89d6f5a86a2a39 *CHANGES
-e7eb8b94b70397efadf9dc4e8ab30686 *DESCRIPTION
+fede9cbe1f23cbcf8d9ffcb18a97b6c7 *CHANGES
+8312243c7eac1fb7ab9b4aab2bbc73ee *DESCRIPTION
 d4c3b4c265c5ac3cc5cb14f05da3da8a *NAMESPACE
 ff5e93f95829c3094cbdfcbc489e0bc6 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -72,7 +72,7 @@ f2670e20333bfd7deb73b1f2b58591eb *inst/doc/ex-tandmobCS.R
 65b08724dcb3dd03a1f6554c819f4be1 *inst/doc/ex-tandmobMixture.R
 1fcf6fe1022e19871cca27ff359ee348 *inst/doc/ex-tandmobPA.R
 a8f839d595534afd3dd5b8efdd262261 *inst/doc/index.html
-76266dfbeb3d28d9631c792b5783470c *man/bayesBisurvreg.Rd
+64c313683a2587413a3c5a5d4ea00ba3 *man/bayesBisurvreg.Rd
 1b8682fea31411395ad5cee121ddf683 *man/bayesBisurvreg.help.Rd
 c728b6aa540b78661716771993795d87 *man/bayesDensity.Rd
 358c9e79d0a7c457700f407cb74749ad *man/bayesGspline.Rd
@@ -82,9 +82,9 @@ e1f05caf8967c0a177476047cf0e4f7c *man/bayessurvreg.help.Rd
 accf7dca2e295c71a53624c64ec654a0 *man/bayessurvreg1.Rd
 c83a941273b837a83febefd3eb6b0646 *man/bayessurvreg1.files2init.Rd
 b238dc32e4f426e88a08e4649a9ff999 *man/bayessurvreg1.help.Rd
-c646f691572bee882b7fa7fbc0548684 *man/bayessurvreg2.Rd
+18732af79026372900d676d2f7a672ba *man/bayessurvreg2.Rd
 088b4bd7df434f85fb09065c3f4f1410 *man/bayessurvreg2.help.Rd
-9e3e16d818c5c934905f5029be0596d4 *man/bayessurvreg3.Rd
+4b107c602d9d344b02888d9f56a81e40 *man/bayessurvreg3.Rd
 df4dd0e13b9fa42dc8c7eebf0adeffd3 *man/bayessurvreg3.help.Rd
 032b7d04a773f491613d0cf1ac74dba2 *man/cgd.Rd
 3b148afdd01e66200016306d8716a162 *man/credible.region.Rd
@@ -104,7 +104,7 @@ d2449f825f6f65883265e0eccd565c00 *man/print.bayesDensity.Rd
 d58e9dcd37aa6f148fad4377692e21a7 *man/rWishart.Rd
 fc40c4e2fb27d782e36c11a8406a3e88 *man/sampleCovMat.Rd
 2af870c003d4fbe0dc637e26fc3e55dd *man/sampled.kendall.tau.Rd
-ab6a5d3eebaff8c84c0ef1755dfb859b *man/scanFN.Rd
+0236651b960b16c1626ba2ea81690d96 *man/scanFN.Rd
 ba956b56f7e9d201767e37d8083c0926 *man/simult.pvalue.Rd
 b1463727ba0749b4145dd35fa024c591 *man/tandmob2.Rd
 d00022b2c622600aa14d299646512a72 *man/tandmobRoos.Rd
@@ -142,7 +142,7 @@ b86188bf274d505b5f885215dbc9f7fa *src/MHproposal.cpp
 2801cf4cb84b89d9441dc5cca1a4d0c7 *src/Mvtdist3.h
 5a85679f03eb51e726208fdf67d56aea *src/Slice_sampler2.cpp
 022f2770505e062ed457908dbd875d2a *src/Slice_sampler2.h
-bb3ac42d2d88417065dfd1e1542a25d7 *src/arms.cpp
+31546e9cf450799a91f08d74fd7f2bb5 *src/arms.cpp
 d6a0b1cc34cf43aab3b22ea02e4f00e8 *src/arms.h
 4f3bb86fe5ad48cf3de7ec5bfd0fce40 *src/arrays2Mat.cpp
 f8411c942983da50886d32832ef5dac7 *src/arrays2Mat.h

@@ -3,7 +3,7 @@
 \alias{C_bayesBisurvreg}
 \title{Population-averaged accelerated failure time model for bivariate,
   possibly doubly-interval-censored data. The error distribution is
-  expressed as a~penalized bivariate normal mixture with high number
+  expressed as a penalized bivariate normal mixture with high number
   of components (bivariate G-spline).
 }
 \description{A function to estimate a regression model with bivariate
@@ -27,9 +27,9 @@
   where \eqn{\beta}{beta} is unknown regression parameter vector and
   \eqn{x_{i,l}}{x[i,l]} is a vector of covariates. The bivariate error terms
   \eqn{\varepsilon_i=(\varepsilon_{i,1},\,\varepsilon_{i,2})',\;i=1,\dots,N}{epsilon[i] = (epsilon[i,1], epsilon[i,2])', i=1,..., N}
-  are assumed to be i.i.d. with a~bivariate density
+  are assumed to be i.i.d. with a bivariate density
   \eqn{g_{\varepsilon}(e_1,\,e_2)}{g[epsilon](e[1], e[2])}. This density is expressed as
-  a~mixture of Bayesian G-splines (normal densities with equidistant
+  a mixture of Bayesian G-splines (normal densities with equidistant
   means and constant variance matrices). We distinguish two,
   theoretically equivalent, specifications.
 
@@ -44,7 +44,7 @@
       \bold{unknown} basis variances and
       \eqn{\mu_{(j_1,j_2)} = (\mu_{1,j_1},\,\mu_{2,j_2})'}{%
 	         mu[(j[1],j[2])] = (mu[1,j[1]],	mu[2,j[2]])'}
-      is an~equidistant grid of knots symmetric around the
+      is an equidistant grid of knots symmetric around the
       \bold{unknown} point \eqn{(\gamma_1,\,\gamma_2)'}{(gamma[1], gamma[2])'} 
       and related to the unknown basis variances through the
       relationship
@@ -54,7 +54,7 @@
 	    mu[2,j[2]] = gamma[2] + j[2]*delta[2]*sigma[2], j[2]=-K[2],..., K[2]}
       where \eqn{\delta_1,\,\delta_2}{delta[1], delta[2]} are fixed
       constants, e.g. \eqn{\delta_1=\delta_2=2/3}{delta[1]=delta[2]=2/3}
-      (which has a~justification of being close to cubic B-splines).
+      (which has a justification of being close to cubic B-splines).
       \deqn{}{}
     }
     \item{Specification 2}{
@@ -75,7 +75,7 @@
 	diag(sigma[1]^2, sigma[2]^2))}
       where \eqn{\mu_{(j_1,j_2)} =
 	(\mu_{1,j_1},\,\mu_{2,j_2})'}{mu[(j[1],j[2])] = (mu[1,j[1]],
-	mu[2,j[2]])'} is an~equidistant grid of \bold{fixed} knots (means), usually
+	mu[2,j[2]])'} is an equidistant grid of \bold{fixed} knots (means), usually
       symmetric about the \bold{fixed} point \eqn{(\gamma_1,\,\gamma_2)'=(0,
 	0)'}{(gamma[1], gamma[2])' = (0, 0)'} and
       \eqn{\sigma_1^2,\,\sigma_2^2}{sigma[1]^2, sigma[2]^2} are
@@ -106,7 +106,7 @@
   a[j[1],j[2]] = exp(w[j[1],j[2]])/sum[m[1]]sum[m[2]] exp(w[m[1],m[2]])}
   are estimated instead.
 
-  A~Bayesian model is set up for all unknown parameters. For more
+  A Bayesian model is set up for all unknown parameters. For more
   details I refer to Komárek and Lesaffre (2006)
   and to Komárek (2006).
 
@@ -170,7 +170,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 	writen to files;}
     }    
   }    
-  \item{prior}{a~list specifying the prior distribution of the G-spline
+  \item{prior}{a list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model
     given by \code{formula}. See \code{prior} argument of
     \code{\link{bayesHistogram}} function for more detail. In this list
@@ -180,11 +180,11 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
     in the case of doubly censored data for the regression parameters of
     the onset time. I.e. it is related to \code{formula}.
     
-    This should be a~list with the following components:
+    This should be a list with the following components:
     \describe{
-    \item{mean.prior}{a~vector specifying a~prior mean for each
+    \item{mean.prior}{a vector specifying a prior mean for each
       \code{beta} parameter in the model.}
-    \item{var.prior}{a~vector specifying a~prior variance for each
+    \item{var.prior}{a vector specifying a prior variance for each
       \code{beta} parameter.}
     }
     It is recommended to run the function
@@ -192,22 +192,22 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
     to find out how the betas are sorted. They must correspond to a
     design matrix X taken from \code{formula}.
   }  %% end of item{prior.beta}
-  \item{init}{an~optional list with initial values for the MCMC related
+  \item{init}{an optional list with initial values for the MCMC related
     to the model given by \code{formula}. The list can have the following components:
     \describe{
     \item{iter}{the number of the iteration to which the initial values
       correspond, usually zero.}
-    \item{beta}{a~vector of initial values for the regression
+    \item{beta}{a vector of initial values for the regression
       parameters. It must be sorted in the same way as are the columns
       in the design matrix. Use \code{onlyX=TRUE} if you do not know how
       the columns in the design matrix are created.}
-    \item{a}{a~matrix of size \eqn{(2K_1+1)\times(2K_2+1)}{(2*K[1]+1) x
+    \item{a}{a matrix of size \eqn{(2K_1+1)\times(2K_2+1)}{(2*K[1]+1) x
 	(2*K[2]+1)} with the initial values of transformed mixture weights.}
     \item{lambda}{initial values for the Markov random fields precision
       parameters. According to the chosen prior for the transformed
-      mixture weights, this is either a~number or a~vector of length 2.
+      mixture weights, this is either a number or a vector of length 2.
     }
-    \item{gamma}{a~vector of length 2 of initial values for the middle
+    \item{gamma}{a vector of length 2 of initial values for the middle
       knots \eqn{\gamma_1, \gamma_2}{gamma[1], gamma[2]} in each
       dimension.
       
@@ -220,7 +220,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       approximately equal to the mean value of the residuals in each
       margin.
     }
-    \item{sigma}{a~vector of length~2 of initial values of the basis
+    \item{sigma}{a vector of length 2 of initial values of the basis
       standard deviations \eqn{\sigma_1, \sigma_2}{sigma[1], sigma[2]}.
       
       If \sQuote{Specification} is 2 this value will not be changed
@@ -234,26 +234,26 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 	divided by the number of knots in each margin and
 	multiplied again by something like 2/3.
       }  
-    \item{intercept}{a~vector of length~2 of initial values of the
+    \item{intercept}{a vector of length 2 of initial values of the
       intercept terms \eqn{\alpha_1, \alpha_2}{alpha[1], alpha[2]}.
       
       If \sQuote{Specification} is 1 this value is not changed by the
       MCMC and the initial value is always changed to zero for both dimensions.}
-    \item{scale}{a~vector of length~2 of initial values of the scale
+    \item{scale}{a vector of length 2 of initial values of the scale
       parameters \eqn{\tau_1, \tau_2}{tau[1], tau[2]}.
 
       If \sQuote{Specification} is 1 this value is not changed by the MCMC
       and the initial value is always changed to one for both dimensions.}
-    \item{y}{a~matrix with 2 columns and \eqn{N}{N} rows with initial
+    \item{y}{a matrix with 2 columns and \eqn{N}{N} rows with initial
       values of log-event-times for each cluster in rows.}
-    \item{r}{a~matrix with 2 columns and \eqn{N}{N} rows with initial
+    \item{r}{a matrix with 2 columns and \eqn{N}{N} rows with initial
       component labels for each bivariate residual in rows. All values
       in the first column must be between \eqn{-K_1}{-K[1]}} and
     \eqn{K_1}{K[1]} and all values in the second column must be between
     \eqn{-K_2}{-K[2]} and \eqn{K_2}{K[2]}. See argument \code{init} of
     the function \code{\link{bayesHistogram}} for more details.}
   }  
-  \item{mcmc.par}{a~list specifying how some of the G-spline parameters
+  \item{mcmc.par}{a list specifying how some of the G-spline parameters
     related to \code{formula} are to be updated. The list can have the following components (all
     of them have their default values):
     \describe{
@@ -287,24 +287,24 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       \code{k.overrelax.scale = 1}, i.e. no overrelaxation}
     }  %% end of describe  
   }  %% end of item{mcmc.par}
-  \item{prior2}{a~list specifying the prior distribution of the G-spline
+  \item{prior2}{a list specifying the prior distribution of the G-spline
     defining the distribution of the error term in the regression model
     given by \code{formula2}. See \code{prior} argument of
     \code{\link{bayesHistogram}} function for more detail.  }
   \item{prior.beta2}{prior specification for the regression parameters
     of time-to-event in the case of doubly censored data (related to
     \code{formula2}).
-    This should be a~list with the same structure as \code{prior.beta}.
+    This should be a list with the same structure as \code{prior.beta}.
   }  %% end of item{prior.beta2}
-  \item{init2}{an~optional list with initial values for the MCMC related
+  \item{init2}{an optional list with initial values for the MCMC related
     to the model given by \code{formula2}. The list has the same
     structure as \code{init}.
   }
-  \item{mcmc.par2}{a~list specifying how some of the G-spline parameters
+  \item{mcmc.par2}{a list specifying how some of the G-spline parameters
     related to \code{formula2} are to be updated. The list has the same
     structure as \code{mcmc.par}.
   }
-  \item{store}{a~list of logical values specifying which chains that are
+  \item{store}{a list of logical values specifying which chains that are
     not stored by default are to be stored. The list can have the
     following components.
     \describe{
@@ -380,7 +380,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       
       all related to the distribution of the error term from the model given by \code{formula}.
     }
-    \item{mixmoment\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{mixmoment_2.sim}{in the case of doubly-censored data, the same
       structure as \code{mixmoment.sim}, however related to the model
       given by \code{formula2}.      
     }
@@ -389,7 +389,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       probabilities numerically higher than zero. Related to the model
       given by \code{formula}.
     }
-    \item{mweight\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{mweight_2.sim}{in the case of doubly-censored data, the same
       structure as \code{mweight.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -400,7 +400,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       than zero. It corresponds to the weights in
       \code{mweight.sim}. Related to the model given by \code{formula}.
     }
-    \item{mmean\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{mmean_2.sim}{in the case of doubly-censored data, the same
       structure as \code{mmean.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -428,18 +428,18 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       
       \bold{sigma1} = basis standard deviation \eqn{\sigma_1}{sigma[1]}
       of the G-spline in the first dimension. This column contains
-      a~fixed value if \sQuote{Specification} is 2;
+      a fixed value if \sQuote{Specification} is 2;
       
       \bold{sigma2} = basis standard deviation \eqn{\sigma_2}{sigma[2]}
       of the G-spline in the second dimension. This column contains
-      a~fixed value if \sQuote{Specification} is 2;
+      a fixed value if \sQuote{Specification} is 2;
       
       \bold{delta1} = distance \eqn{delta_1}{delta[1]} between the two knots of the G-spline in
       the first dimension. This column contains
-      a~fixed value if \sQuote{Specification} is 2;
+      a fixed value if \sQuote{Specification} is 2;
       
       \bold{delta2} = distance \eqn{\delta_2}{delta[2]} between the two knots of the G-spline in
-      the second dimension. This column contains a~fixed value if
+      the second dimension. This column contains a fixed value if
       \sQuote{Specification} is 2;
       
       \bold{intercept1} = the intercept term \eqn{\alpha_1}{alpha[1]} of
@@ -458,7 +458,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       G-spline in the second dimension. \sQuote{Specification} is 1, this column
       usually contains ones.      
     }
-    \item{gspline\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{gspline_2.sim}{in the case of doubly-censored data, the same
       structure as \code{gspline.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -471,7 +471,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       probabilities.
       This file is related to the model given by \code{formula}.
     }
-    \item{mlogweight\_{}2.sim}{fully created only if \code{store$a2 =
+    \item{mlogweight_2.sim}{fully created only if \code{store$a2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{mlogweight.sim}, however related to the model
       given by \code{formula2}. 
@@ -484,7 +484,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       \code{\link{vecr2matr}} can be used to transform it back to double
       indeces.
     }
-    \item{r\_{}2.sim}{fully created only if \code{store$r2 =
+    \item{r_2.sim}{fully created only if \code{store$r2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{r.sim}, however related to the model
       given by \code{formula2}. 
@@ -496,7 +496,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       mixture weights \eqn{a_{k_1,\,k_2}}{a[k[1],k[2]]}). This file is
       related to the model given by \code{formula}.
     }
-    \item{lambda\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{lambda_2.sim}{in the case of doubly-censored data, the same
       structure as \code{lambda.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -505,7 +505,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       \code{formula}. The columns are labeled according to the
       \code{colnames} of the design matrix.
     }
-    \item{beta\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{beta_2.sim}{in the case of doubly-censored data, the same
       structure as \code{beta.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -513,7 +513,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
       contains sampled (augmented) log-event times for all observations
       in the data set.
     }
-    \item{Y\_{}2.sim}{fully created only if \code{store$y2 =
+    \item{Y_2.sim}{fully created only if \code{store$y2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{Y.sim}, however related to the model
       given by \code{formula2}. 
@@ -570,7 +570,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 	  weights})\bigr\}.}{%
       sum[i=1][N] log(p(r[i] | G-spline weights)).}
     }
-    \item{logposter\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{logposter_2.sim}{in the case of doubly-censored data, the same
       structure as \code{lambda.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -607,7 +607,7 @@ bayesBisurvreg(formula, formula2, data = parent.frame(),
 ## R commands available in the documentation
 ## directory of this package as
 ## - see ex-tandmobPA.R and
-##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobPA.pdf
+##   https://www2.karlin.mff.cuni.cz/ komarek/software/bayesSurv/ex-tandmobPA.pdf
 ##
 }
 \keyword{survival}

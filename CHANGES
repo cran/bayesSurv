@@ -1,3 +1,9 @@
+3.5
+05/10/2022
+  Escaped LaTeX specials: \_ and \& removed from Rd files (CRAN NOTE).
+  arms.cpp: all fprintf commands in function void display() commented
+    to avoid some CRAN warnings.
+
 3.4
 20/04/2022
   Invalid e-mail addresses corrected in Rd files.

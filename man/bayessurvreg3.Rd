@@ -228,14 +228,14 @@ bayessurvreg3Para(formula, random, formula2, random2,
     an identification of clusters in the form \code{cluster(id)}, where
     \code{id} is a name of the variable that determines clusters, e.g.
     \tabular{c}{
-      \code{Surv(time, event)~gender + cluster(id)}.
+      \code{Surv(time, event) gender + cluster(id)}.
     }     
   }  %% end of item{formula}
   \item{random}{formula for the `random' part of the model.
     In the case of doubly-censored data, this is the \code{random} formula for
     the onset time. With this version of the function only
     \tabular{c}{
-      \code{random = ~1}
+      \code{random =  1}
     }     
     is allowed. If omitted, no random part is included in the model. 
   }  %% end of item{random}
@@ -696,19 +696,19 @@ bayessurvreg3Para(formula, random, formula2, random2,
       \bold{D.1.1} =
       \eqn{\mbox{var}(\varepsilon_{i,l})}{var(epsilon[i,l])}.
     }
-    \item{mixmoment\_{}b.sim}{this file is related to the density of the
+    \item{mixmoment_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
       The same structure as \code{mixmoment.sim}.
     }
-    \item{mixmoment\_{}2.sim}{in the case of doubly-censored data. This
+    \item{mixmoment_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
       
       The same structure as \code{mixmoment.sim}.
     }
-    \item{mixmoment\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{mixmoment_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
       
@@ -720,19 +720,19 @@ bayessurvreg3Para(formula, random, formula2, random2,
       Sampled mixture weights \eqn{w_{k}}{w[k]} of mixture components that had
       probabilities numerically higher than zero. 
     }
-    \item{mweight\_{}b.sim}{this file is related to the density of the
+    \item{mweight_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
       The same structure as \code{mweight.sim}.
     }
-    \item{mweight\_{}2.sim}{in the case of doubly-censored data. This
+    \item{mweight_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
       
       The same structure as \code{mweight.sim}.
     }
-    \item{mweight\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{mweight_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
       
@@ -747,19 +747,19 @@ bayessurvreg3Para(formula, random, formula2, random2,
       than zero. It corresponds to the weights in
       \code{mweight.sim}. 
     }
-    \item{mmean\_{}b.sim}{this file is related to the density of the
+    \item{mmean_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
       The same structure as \code{mmean.sim}.
     }
-    \item{mmean\_{}2.sim}{in the case of doubly-censored data. This
+    \item{mmean_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
       
       The same structure as \code{mmean.sim}.
     }
-    \item{mmean\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{mmean_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
       
@@ -797,19 +797,19 @@ bayessurvreg3Para(formula, random, formula2, random2,
       \bold{scale1} = the scale parameter \eqn{\tau}{tau} of the G-spline.
       If \sQuote{Specification} is 1, this column usually contains ones;
     }
-    \item{gspline\_{}b.sim}{this file is related to the density of the
+    \item{gspline_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
       The same structure as \code{gspline.sim}.
     }
-    \item{gspline\_{}2.sim}{in the case of doubly-censored data. This
+    \item{gspline_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
       
       The same structure as \code{gspline.sim}.
     }
-    \item{gspline\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{gspline_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
       
@@ -825,7 +825,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       of all mixture components, i.e. also of components that had numerically zero
       probabilities. 
     }
-    \item{mlogweight\_{}b.sim}{this file is related to the density of the
+    \item{mlogweight_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
@@ -833,7 +833,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
 
       The same structure as \code{mlogweight.sim}.
     }
-    \item{mlogweight\_{}2.sim}{in the case of doubly-censored data. This
+    \item{mlogweight_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
 
@@ -841,7 +841,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       
       The same structure as \code{mlogweight.sim}.
     }
-    \item{mlogweight\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{mlogweight_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
 
@@ -860,7 +860,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       \code{\link{vecr2matr}} can be used to transform it back to
       indices from \eqn{-K}{-K} to \eqn{K}{K}.
     }
-    \item{r\_{}b.sim}{this file is related to the density of the
+    \item{r_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
@@ -868,7 +868,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
 
       The same structure as \code{r.sim}.
     }
-    \item{r\_{}2.sim}{in the case of doubly-censored data. This
+    \item{r_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
 
@@ -876,7 +876,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       
       The same structure as \code{r.sim}.
     }
-    \item{r\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{r_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
 
@@ -892,19 +892,19 @@ bayessurvreg3Para(formula, random, formula2, random2,
       (hyperparameters of the prior distribution of the transformed
       mixture weights \eqn{a_{k}}{a[k]}). 
     }
-    \item{lambda\_{}b.sim}{this file is related to the density of the
+    \item{lambda_b.sim}{this file is related to the density of the
       random intercept from the model given by \code{formula} and
       \code{random}.
 
       The same structure as \code{lambda.sim}.
     }
-    \item{lambda\_{}2.sim}{in the case of doubly-censored data. This
+    \item{lambda_2.sim}{in the case of doubly-censored data. This
       file is related to the density of the error term from the model
       given by \code{formula2}.
       
       The same structure as \code{lambda.sim}.
     }
-    \item{lambda\_{}b2.sim}{in the case of doubly-censored data. This
+    \item{lambda_b2.sim}{in the case of doubly-censored data. This
       file is related to the density of the random intercept from the model
       given by \code{formula2} and \code{random2}.
       
@@ -919,7 +919,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       The columns are labeled according to the
       \code{colnames} of the design matrix.
     }
-    \item{beta\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{beta_2.sim}{in the case of doubly-censored data, the same
       structure as \code{beta.sim}, however related to the model
       given by \code{formula2}. 
     }
@@ -930,7 +930,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       contains sampled values of random intercepts for all clusters in
       the data set. The file has \eqn{N}{N} columns.
     }
-    \item{b\_{}2.sim}{fully created only if \code{store$b2 =
+    \item{b_2.sim}{fully created only if \code{store$b2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{b.sim}, however related to the model
       given by \code{formula2} and \code{random2}. 
@@ -941,7 +941,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
       contains sampled (augmented) log-event times for all observations
       in the data set.
     }
-    \item{Y\_{}2.sim}{fully created only if \code{store$y2 =
+    \item{Y_2.sim}{fully created only if \code{store$y2 =
       TRUE} and in the case of doubly-censored data, the same
       structure as \code{Y.sim}, however related to the model
       given by \code{formula2}. 
@@ -996,7 +996,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
 	  weights})\bigr\}.}{%
 	sum[i=1][N] sum[l=1][n[i]] log(p(r[i,l] | error-G-spline weights)).}
     }
-    \item{logposter\_{}b.sim}{This file is related to the random
+    \item{logposter_b.sim}{This file is related to the random
       intercepts from the model given by \code{formula} and
       \code{random}. 
 
@@ -1027,12 +1027,12 @@ bayessurvreg3Para(formula, random, formula2, random2,
       The columns \code{penalty} and \code{logprw} have the analogous
       meaning as in the case of logposter.sim file.
     }
-    \item{logposter\_{}2.sim}{in the case of doubly-censored data, the same
+    \item{logposter_2.sim}{in the case of doubly-censored data, the same
       structure as \code{logposter.sim}, however related to the model
       given by \code{formula2}. 
     }
-    \item{logposter\_{}b2.sim}{in the case of doubly-censored data, the same
-      structure as \code{logposter\_{}b.sim}, however related to the model
+    \item{logposter_b2.sim}{in the case of doubly-censored data, the same
+      structure as \code{logposter_b.sim}, however related to the model
       given by \code{formula2} and \code{random2}.
     }
   }
@@ -1070,7 +1070,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
 ## R commands available in the documentation
 ## directory of this package
 ## - see ex-tandmobCS.R and
-##   https://www2.karlin.mff.cuni.cz/~komarek/software/bayesSurv/ex-tandmobCS.pdf
+##   https://www2.karlin.mff.cuni.cz/ komarek/software/bayesSurv/ex-tandmobCS.pdf
 ##
 }
 \keyword{survival}
