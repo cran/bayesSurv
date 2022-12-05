@@ -1,5 +1,5 @@
-fede9cbe1f23cbcf8d9ffcb18a97b6c7 *CHANGES
-8312243c7eac1fb7ab9b4aab2bbc73ee *DESCRIPTION
+16935a92237974d4dd058ed2a6d434ef *CHANGES
+977e1bb6701513245391a008497a1c84 *DESCRIPTION
 d4c3b4c265c5ac3cc5cb14f05da3da8a *NAMESPACE
 ff5e93f95829c3094cbdfcbc489e0bc6 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -73,7 +73,7 @@ f2670e20333bfd7deb73b1f2b58591eb *inst/doc/ex-tandmobCS.R
 1fcf6fe1022e19871cca27ff359ee348 *inst/doc/ex-tandmobPA.R
 a8f839d595534afd3dd5b8efdd262261 *inst/doc/index.html
 64c313683a2587413a3c5a5d4ea00ba3 *man/bayesBisurvreg.Rd
-1b8682fea31411395ad5cee121ddf683 *man/bayesBisurvreg.help.Rd
+7bf2a37fd3b6f0a3977ab427a6628547 *man/bayesBisurvreg.help.Rd
 c728b6aa540b78661716771993795d87 *man/bayesDensity.Rd
 358c9e79d0a7c457700f407cb74749ad *man/bayesGspline.Rd
 bc79e7f8fa54bb32c3ba45ffec9ebbd8 *man/bayesHistogram.Rd
@@ -81,17 +81,17 @@ bc79e7f8fa54bb32c3ba45ffec9ebbd8 *man/bayesHistogram.Rd
 e1f05caf8967c0a177476047cf0e4f7c *man/bayessurvreg.help.Rd
 accf7dca2e295c71a53624c64ec654a0 *man/bayessurvreg1.Rd
 c83a941273b837a83febefd3eb6b0646 *man/bayessurvreg1.files2init.Rd
-b238dc32e4f426e88a08e4649a9ff999 *man/bayessurvreg1.help.Rd
+0d4b87373ed80e49de1fe9a003ea645b *man/bayessurvreg1.help.Rd
 18732af79026372900d676d2f7a672ba *man/bayessurvreg2.Rd
-088b4bd7df434f85fb09065c3f4f1410 *man/bayessurvreg2.help.Rd
+f42ffb7bb517d10978e8fc010b4f01f2 *man/bayessurvreg2.help.Rd
 4b107c602d9d344b02888d9f56a81e40 *man/bayessurvreg3.Rd
-df4dd0e13b9fa42dc8c7eebf0adeffd3 *man/bayessurvreg3.help.Rd
+bb7c4b99ead275d4c15a8625d07bb09c *man/bayessurvreg3.help.Rd
 032b7d04a773f491613d0cf1ac74dba2 *man/cgd.Rd
 3b148afdd01e66200016306d8716a162 *man/credible.region.Rd
 8b568d1f31fef354d7c138a7298cabea *man/densplot2.Rd
 596212d20df7bbf8f2a5cfa651cfb072 *man/files.Gspline.Rd
 1e9c09e7d4435ca11ffca2b42ef5ef32 *man/files2coda.Rd
-e7b293909673e9e17650f80245131cf8 *man/give.init.Rd
+abd6b0198a45cab2a5350c6ba6023ec4 *man/give.init.Rd
 12429837d1a5eb5be9440ea56e04fc32 *man/give.summary.Rd
 ab8d8786ecac7bf2e3b11d51ab4c3728 *man/marginal.bayesGspline.Rd
 acb18f64482a3ed0924e53a3195a2f5a *man/plot.bayesDensity.Rd
@@ -110,7 +110,7 @@ b1463727ba0749b4145dd35fa024c591 *man/tandmob2.Rd
 d00022b2c622600aa14d299646512a72 *man/tandmobRoos.Rd
 98d3494e6e23eb93718183f43b04fc9b *man/traceplot2.Rd
 e59df261612ff33761f50509b7f0e686 *man/vecr2matr.Rd
-a4548d9467d8a1727783eaba49e88297 *src/00bayesSurv_init.cpp
+3f6b26f8f1af28198a3d7e88a19408b7 *src/00bayesSurv_init.cpp
 605b5218483bec1cbb4ac2619a1530f0 *src/AK_BLAS_LAPACK.cpp
 74a1b9ecb26a1dd423e5aabd7c5cc14d *src/AK_BLAS_LAPACK.h
 ec5c3403d4d572294e03dfd8dc568d9c *src/AK_BasicFun.h

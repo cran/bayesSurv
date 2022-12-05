@@ -1,6 +1,6 @@
 Package: bayesSurv
-Version: 3.5
-Date: 2022-10-05
+Version: 3.6
+Date: 2022-12-05
 Title: Bayesian Survival Regression with Flexible Error and Random
         Effects Distributions
 Author: Arnošt Komárek <arnost.komarek@mff.cuni.cz>
@@ -15,6 +15,6 @@ License: GPL (>= 2)
 URL: https://www2.karlin.mff.cuni.cz/~komarek/
 ZipData: no
 NeedsCompilation: yes
-Packaged: 2022-10-05 12:16:09 UTC; komarek
+Packaged: 2022-12-05 12:41:11 UTC; komarek
 Repository: CRAN
-Date/Publication: 2022-10-09 06:20:02 UTC
+Date/Publication: 2022-12-05 16:00:05 UTC

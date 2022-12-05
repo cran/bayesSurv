@@ -65,8 +65,6 @@ bayessurvreg3.checkrho(rho, doubly)
     \code{prior.beta2} of the function \code{\link{bayessurvreg3}}}
   \item{prior.b}{a list as required by the argument \code{prior.b} or
     \code{prior.b2} of the function \code{\link{bayessurvreg3}}}  
-  \item{init}{a~list as required by the argument \code{init} or \code{init2}
-    of the function \code{\link{bayessurvreg3}}}
   \item{dir}{path to the directory where the sampled values are to be
     stored}
   \item{prior.init}{a list as returned by the function

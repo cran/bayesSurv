@@ -28,41 +28,39 @@ bayesBisurvreg.writeHeaders(dir, dim, nP, doubly, prior.init, store,
                             design, design2)
 }
 \arguments{
-  \item{store}{a~list as required by the argument \code{store} of the
-    function \code{\link{bayesBisurvreg}}}
+  \item{store}{a list as required by the argument \code{store} of the
+    function \code{\link{bayesBisurvreg}} or \code{\link{bayesBisurvreg.checkStore}}}
   \item{dim}{dimension of the response, 1 or 2}    
-  \item{prior}{a~list as required by the argument \code{prior} of the
+  \item{prior}{a list as required by the argument \code{prior} of the
     function \code{\link{bayesBisurvreg}}}
-  \item{prior2}{a~list as required by the argument \code{prior2} of the
+  \item{prior2}{a list as required by the argument \code{prior2} of the
     function \code{\link{bayesBisurvreg}}}
-  \item{init}{a~list as required by the argument \code{init} of the
+  \item{init}{a list as required by the argument \code{init} of the
     function \code{\link{bayesBisurvreg}}}
-  \item{init2}{a~list as required by the argument \code{init2} of the
+  \item{init2}{a list as required by the argument \code{init2} of the
     function \code{\link{bayesBisurvreg}}}
-  \item{mcmc.par}{a~list as required by the argument \code{mcmc.par} of the
+  \item{mcmc.par}{a list as required by the argument \code{mcmc.par} of the
     function \code{\link{bayesBisurvreg}}}
-  \item{mcmc.par2}{a~list as required by the argument \code{mcmc.par2} of the
+  \item{mcmc.par2}{a list as required by the argument \code{mcmc.par2} of the
     function \code{\link{bayesBisurvreg}}}
-  \item{design}{an~object as returned by the function
+  \item{design}{an object as returned by the function
     \code{\link{bayessurvreg.design}} related to either the onset time
     if doubly censored observations or to the event time. Remark:
     \code{design$Y} contains original times and NOT their logarithmic transformations.}
-  \item{design2}{an~object as returned by the function
+  \item{design2}{an object as returned by the function
     \code{\link{bayessurvreg.design}} related to time-to-event
     if doubly censored observations. Remark:
     \code{design2$Y} contains original times and NOT their logarithmic transformations.}    
   \item{doubly}{logical indicating whether the response is doubly
     censored or not}  
-  \item{prior.beta}{a~list as required by the argument \code{prior.beta} or
+  \item{prior.beta}{a list as required by the argument \code{prior.beta} or
     \code{prior.beta2} of the function \code{\link{bayesBisurvreg}}}
   \item{dir}{path to the directory where the sampled values are to be stored}
   \item{nP}{sample size - number of observations if the univariate model
     is fitted, number of bivariate observational vectors if the
     bivariate model is fitted}
-  \item{prior.init}{a~list as returned by the function
+  \item{prior.init}{a list as returned by the function
     \code{\link{bayesBisurvreg.priorInit}}}
-  \item{store}{a~list as returned by the function
-    \code{\link{bayesBisurvreg.checkStore}}}
 }
 \value{
   Some lists.
@@ -129,7 +127,7 @@ bayesBisurvreg.writeHeaders(dir, dim, nP, doubly, prior.init, store,
   }    
 }
 \section{Value for bayesBisurvreg.priorBeta}{
-  A~list with the following components:
+  A list with the following components:
   \describe{
     \item{parmI}{integer arguments for C++ \code{classBetaGamma} constructor}
     \item{parmD}{double arguments for C++ \code{classBetaGamma} constructor}

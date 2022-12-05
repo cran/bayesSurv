@@ -37,7 +37,7 @@ bayessurvreg1.revjump(prop.revjump)
   \item{prior, init, Yinit, Xinit, n, nX, nrandom, ncluster}{???}
   \item{indb, randomInt, toler.chol}{???}
   \item{prior.beta, factors, n.factors, n.in.factors}{???}
-  \item{prior.b, nrandom, ncluster}{???}  
+  \item{prior.b}{???}  
   \item{prop.revjump}{???}
   \item{dir, X, names.random}{???}
   \item{rnamesX, unique.cluster, nBetaBlocks, nbBlocks}{???}

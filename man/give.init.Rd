@@ -86,10 +86,6 @@ give.init.r(init.r, init.y, dim, KK,
      \eqn{-K_j,\dots,K_j,}{-K[j],...,K[j],}
      \eqn{j=1,\dots,dim}{j=1,...,dim}
   }  %% end of item{init.r}
-  \item{init.y}{correctly computed initial observations the G-spline is estimated from. In the case of regression
-     these should be replaced by residuals. This must be either a~vector or matrix (in the format as returned
-     by the function \code{\link{give.init.y}}).
-  }  %% end of item{init.y}
   \item{KK}{vector of length \code{dim} with \eqn{K}{K} coefficients
     defining the G-spline.
   }  %% end of item{KK}
