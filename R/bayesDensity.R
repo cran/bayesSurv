@@ -12,7 +12,7 @@
 ### ======================================
 ### bayesDensity
 ### ======================================
-bayesDensity <- function(dir = getwd(),
+bayesDensity <- function(dir,
                          stgrid,
                          centgrid,
                          grid,
@@ -243,8 +243,14 @@ plot.bayesDensity <- function(x,
                             c(3, 4), c(3, 4), c(3, 4),
                             c(4, 4), c(4, 4), c(4, 4), c(4, 4),
                             c(5, 4), c(5, 4), c(5, 4), c(5, 4))
-  if (dim.plot)        par(mfrow = dims)
-  if (dim.plot & over) par(mfrow = c(1, 1))
+  if (dim.plot){
+    oldpar <- par(mfrow = dims)
+    on.exit(par(oldpar))      
+  }    
+  if (dim.plot & over){
+    oldpar <- par(mfrow = c(1, 1))
+    on.exit(par(oldpar))      
+  }    
   if (missing(lty)) lty <- 1:num.plots
   
 

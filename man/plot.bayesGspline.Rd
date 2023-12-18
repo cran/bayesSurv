@@ -17,6 +17,9 @@
   \item{type, lty, bty, xlab, ylab, main, sub, \dots}{other
      arguments passed to the \code{plot.default} function.}
 }  
+\value{
+  No return value.
+}  
 \author{
   Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }

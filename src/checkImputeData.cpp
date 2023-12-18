@@ -230,7 +230,7 @@ midimputeDataDoubly(int* err,               double* t1_impute,       double* t2_
       switch (*stat2){
       case 1:
         if (*t2_L < *t1_R){
-          REprintf("\nError: onset[%d] = (%f, %f], event[%d] = %f\n", i, *t1_L, *t1_R, *t2_L);
+          REprintf("\nError: onset[%d] = (%f, %f], event[%d] = %f\n", i, *t1_L, *t1_R, i, *t2_L);
           *err = 31;
           return;
         }
@@ -239,7 +239,7 @@ midimputeDataDoubly(int* err,               double* t1_impute,       double* t2_
 
       case 0:
         if (*t2_L < *t1_R){
-          REprintf("\nError: onset[%d] = (%f, %f], event[%d] = %f+\n", i, *t1_L, *t1_R, *t2_L);
+          REprintf("\nError: onset[%d] = (%f, %f], event[%d] = %f+\n", i, *t1_L, *t1_R, i, *t2_L);
           *err = 30;
           return;
         }

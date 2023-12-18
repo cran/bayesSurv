@@ -29,6 +29,9 @@ densplot2(x, plot = TRUE, show.obs = FALSE, bwf, bty = "n", main = "",
   \item{bty, main, \dots}{further arguments passed to the
     \code{\link{plot.default}} function.}
 }
+\value{
+  No return value.
+}  
 \author{
   Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }

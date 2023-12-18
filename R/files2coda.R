@@ -26,6 +26,7 @@ files2coda <- function(files,
                        header = TRUE,
                        chain)
 {
+  if (missing(dir)) dir <- getwd()
   filesindir <- dir(dir)    ## character vector with available files
 
   if (missing(files)) misfiles <- TRUE

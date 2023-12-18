@@ -1,3 +1,9 @@
+3.7
+15/12/2023
+  * Default dir = getwd() in all functions which write the sampled values into the user's drive space
+    was changed to have no default (requested by CRAN)
+  * Many other minor changes
+
 3.6
 21/11/2022
   Minor corrections in Rd files to make CRAN check happy.

@@ -1,18 +1,22 @@
 ###################################################
 ### chunk number 1: directories
 ###################################################
-anadir <- "/home/komari/win/work/papers/bayesaft/Tandmob/tana1/"
-docdir <- "/home/komari/win/work/papers/bayesaft/RforCRAN/tandmob/"
+#anadir <- "/home/komari/win/work/papers/bayesaft/Tandmob/tana1/"
+anadir <- tempdir()
+#docdir <- "/home/komari/win/work/papers/bayesaft/RforCRAN/tandmob/"
+docdir <- anadir
 dirsim <- character()
 dirsim[1] <- paste(anadir, "chain1small", sep="")
 dirsim[2] <- paste(anadir, "chain2small", sep="")
+
+oldpar <- par()
 
 
 ###################################################
 ### chunk number 2: initop1
 ###################################################
-library(bayesSurv)
-data(tandmob2)
+library("bayesSurv")
+data("tandmob2")
 
 
 ###################################################
@@ -438,8 +442,8 @@ nsimul <- list(niter = 1000, nthin = 3, nburn = 500, nwrite = 500)
 ###################################################
 ### chunk number 61: run3
 ###################################################
-dir.create("tandchain1test")
-dir.create("tandchain2test")
+# dir.create("tandchain1test")
+# dir.create("tandchain2test")
 dirsimtest <- character()
 dirsimtest[1] <- paste(getwd(), "/tandchain1test", sep = "")
 dirsimtest[2] <- paste(getwd(), "/tandchain2test", sep = "")
@@ -791,3 +795,4 @@ file.remove("tandchain1test")
 file.remove("tandchain2test")
 
 
+par(oldpar)

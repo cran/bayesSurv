@@ -28,7 +28,7 @@ predictive <- function(
      predict = list(Et=TRUE, t=FALSE, Surv=TRUE, hazard=FALSE, cum.hazard=FALSE),
      store = list(Et=TRUE, t = FALSE, Surv = FALSE, hazard = FALSE, cum.hazard=FALSE),
      Eb0.depend.mix = FALSE,
-     dir = getwd(),
+     dir,
      toler.chol = 1e-10,
      toler.qr = 1e-10)
 {

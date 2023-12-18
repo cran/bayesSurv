@@ -19,7 +19,7 @@
    evaluated in a grid at each iteration of MCMC.
 }
 \usage{
-marginal.bayesGspline(dir = getwd(), extens = "", K, grid1, grid2,
+marginal.bayesGspline(dir, extens = "", K, grid1, grid2,
    skip = 0, by = 1, last.iter, nwrite, only.aver = TRUE)
 }
 \arguments{

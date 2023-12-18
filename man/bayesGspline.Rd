@@ -20,7 +20,7 @@
    evaluated in a grid at each iteration of MCMC.
 }
 \usage{
-bayesGspline(dir = getwd(), extens="", extens.adjust="_b",
+bayesGspline(dir, extens="", extens.adjust="_b",
    grid1, grid2, skip = 0, by = 1, last.iter, nwrite,
    only.aver = TRUE, standard = FALSE, version = 0)
 }

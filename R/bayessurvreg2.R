@@ -36,7 +36,7 @@ bayessurvreg2 <- function
    init2,
    mcmc.par2 = list(type.update.a = "slice", k.overrelax.a = 1, k.overrelax.sigma = 1, k.overrelax.scale = 1),                           
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE, r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE), 
-   dir = getwd())
+   dir)
 {
   thispackage = "bayesSurv"
   #thispackage = NULL

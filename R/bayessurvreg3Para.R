@@ -46,7 +46,7 @@ bayessurvreg3Para <- function
    rho = list(type.update = "fixed.zero", init = 0, sigmaL = 0.1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE, r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
                 a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
-   dir = getwd())
+   dir)
 {  
   thispackage = "bayesSurv"
   #thispackage = NULL

@@ -1,16 +1,19 @@
 ###################################################
 ### chunk number 1: directories
 ###################################################
-anadir <- "/home/komari/win/work/papers/bayesaft/CGDdata/"
+#anadir <- "/home/komari/win/work/papers/bayesaft/CGDdata/"
+anadir <- tempdir()
 dirsim1 <- paste(anadir, "anapaper1b/chain1", sep="")
 dirsim2 <- paste(anadir, "anapaper1b/chain2", sep="")
+
+oldpar <- par()
 
 
 ###################################################
 ### chunk number 2: initop1
 ###################################################
-library(bayesSurv)
-data(cgd)
+library("bayesSurv")
+data("cgd")
 print(cgd[1:6,])
 
 
@@ -538,8 +541,8 @@ nsimul <- list(niter = 1000, nthin = 3, nburn = 500, nnoadapt = 0, nwrite = 500)
 ###################################################
 ### chunk number 78: forrun3
 ###################################################
-dir.create("cgdchain1test")
-dir.create("cgdchain2test")
+# dir.create("cgdchain1test")
+# dir.create("cgdchain2test")
 dirsim1test <- paste(getwd(), "/cgdchain1test", sep = "")
 dirsim2test <- paste(getwd(), "/cgdchain2test", sep = "")
 
@@ -961,3 +964,4 @@ file.remove("cgdchain1test")
 file.remove("cgdchain2test")
 
 
+par(oldpar)

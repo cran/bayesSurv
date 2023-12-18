@@ -58,7 +58,7 @@ files2coda(files, data.frames, variant = 1, dir = getwd(),
 ## *********************************************************************
 ## Two parallel chains with four variables, stored in data.frames
 ## data.frames are further stored in lists
-library(coda)
+library("coda")
 
 group1 <- list();  group2 <- list();  group3 <- list()
     ## first chain of first two variables:

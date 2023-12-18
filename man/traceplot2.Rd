@@ -19,6 +19,9 @@ traceplot2(x, chains, bty = "n", main, xlab, ...)
   \item{bty, main, xlab, \dots}{further arguments passed to the
     \code{\link{plot.default}} function.}
 }
+\value{
+  No return value.
+}  
 \author{
   Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }

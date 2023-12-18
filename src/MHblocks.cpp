@@ -494,72 +494,72 @@ MHblocks::print() const
   if (_nBlocks > 0){
     //std::cout << "nFixedB = "; 
     Rprintf("nFixedB = ");
-    printArray(nFixedB, &_nBlocks);
+    printArrayI(nFixedB, &_nBlocks);
     //std::cout << "nRandomB = "; 
     Rprintf("nRandomB = ");
-    printArray(nRandomB, &_nBlocks);    
+    printArrayI(nRandomB, &_nBlocks);    
 
     //std::cout << "par = "; 
     Rprintf("par = ");
-    printArray(par, &_nParams);
+    printArrayD(par, &_nParams);
     //std::cout << "proppar = "; 
     Rprintf("proppar = ");
-    printArray(proppar, &_nParams);
+    printArrayD(proppar, &_nParams);
     //std::cout << "meanpar = "; 
     Rprintf("meanpar = ");
-    printArray(meanpar, &_nParams);
+    printArrayD(meanpar, &_nParams);
     //std::cout << "halfRangeUnif = "; 
     Rprintf("halfRangeUnif = ");
-    printArray(halfRangeUnif, &_nParams);
+    printArrayD(halfRangeUnif, &_nParams);
 
     //std::cout << "priorMean = "; 
     Rprintf("priorMean = ");
-    printArray(priorMean, &_nParams);
+    printArrayD(priorMean, &_nParams);
     //std::cout << "priorSD = "; 
     Rprintf("priorSD = ");
-    printArray(priorSD, &_nParams);
+    printArrayD(priorSD, &_nParams);
     //std::cout << "priorInvVar = "; 
     Rprintf("priorInvVar = ");
-    printArray(priorInvVar, &_nParams);
+    printArrayD(priorInvVar, &_nParams);
 
     //std::cout << "logdprior = "; 
     Rprintf("logdprior = ");
-    printArray(logdprior, &_nBlocks);
+    printArrayD(logdprior, &_nBlocks);
     //std::cout << "typeUpd = ";  
     Rprintf("typeUpd = ");
-    printArray(typeUpd, &_nBlocks);
+    printArrayI(typeUpd, &_nBlocks);
     //std::cout << "nInBlock = "; 
     Rprintf("nInBlock = ");
-    printArray(nInBlock, &_nBlocks);
+    printArrayI(nInBlock, &_nBlocks);
     for (i = 0; i < _nBlocks; i++){
       dimi = (nInBlock[i] * (nInBlock[i] + 1))/2;
       //std::cout << "Block " << i << ":";
       //std::cout << "  indBlock = "; 
       Rprintf("Block %d:  indBlock = ", i);
-      printArray(indBlock[i], nInBlock + i);
+      printArrayI(indBlock[i], nInBlock + i);
       //std::cout << "          diagI = "; 
       Rprintf("          diagI = ");
-      printArray(diagI[i], nInBlock + i);    
+      printArrayI(diagI[i], nInBlock + i);    
       //std::cout << "          covpar = "; 
       Rprintf("          covpar = ");
-      printArray(covpar[i], &dimi);    
+      printArrayD(covpar[i], &dimi);    
       //std::cout << "          chcovpar = "; 
       Rprintf("          chcovpar = ");
-      printArray(chcovpar[i], &dimi);        
+      printArrayD(chcovpar[i], &dimi);        
     }
 
     //std::cout << "weightUnif = "; 
     Rprintf("weightUnif = ");
-    printArray(weightUnif, &_nBlocks);
+    printArrayD(weightUnif, &_nBlocks);
     //std::cout << "eps = "; 
     Rprintf("eps = ");
-    printArray(eps, &_nBlocks);
+    printArrayD(eps, &_nBlocks);
     //std::cout << "sdNum = "; 
     Rprintf("sdNum = ");
-    printArray(sdNum, &_nBlocks);
+    printArrayD(sdNum, &_nBlocks);
     //std::cout << "sumAccept = "; 
     Rprintf("sumAccept = ");
-    printArray(sumAccept, &_nBlocks);
+    printArrayI(sumAccept, &_nBlocks);
     //std::cout << std::endl;
     Rprintf("\n");
   }

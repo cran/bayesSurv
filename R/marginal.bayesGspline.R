@@ -14,7 +14,7 @@
 ### ======================================
 ##
 ## 27/11/2005
-marginal.bayesGspline <- function(dir = getwd(), extens = "", K, grid1, grid2, skip = 0, by = 1, last.iter, nwrite, only.aver = TRUE)
+marginal.bayesGspline <- function(dir, extens = "", K, grid1, grid2, skip = 0, by = 1, last.iter, nwrite, only.aver = TRUE)
 {
   thispackage = "bayesSurv"
   #thispackage = NULL

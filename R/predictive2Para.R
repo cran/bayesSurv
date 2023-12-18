@@ -33,7 +33,7 @@ predictive2Para <- function(
      nwrite,
      only.aver = TRUE,
      predict = list(density=FALSE, Surv=TRUE, hazard=FALSE, cum.hazard=FALSE),
-     dir = getwd(),
+     dir,
      extens = "",
      extens.random = "_b",
      version = 0

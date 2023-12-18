@@ -14,10 +14,12 @@ template <typename dd>
 void
 cumsum(dd* csum,   const dd* vals,   const int* kP);
 
-template <typename pp>
-void
-printArray(const pp* array, const int* length);
-
+//template <typename pp>                                    // commented on 14/12/2023
+//void
+//printArray(const pp* array, const int* length);
+//
+// /** explicit printArrayI() and printArrayD() moved to printArray.[h,cpp], 14/12/2023 **/
+  
 template <typename pp>
 void
 changePointers(pp** aP, pp** bP);

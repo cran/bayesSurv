@@ -13,6 +13,9 @@
   \item{x}{an object of class \code{bayesDensity}.}
   \item{\dots}{this is here for a consistency with a generic function.}  
 }
+\value{
+  No return value.
+}  
 \author{
   Arnošt Komárek \email{arnost.komarek@mff.cuni.cz}
 }

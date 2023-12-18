@@ -1,20 +1,24 @@
 ###################################################
 ### chunk number 1: directories
 ###################################################
-anadir <- "/home/komari/win/work/papers/gsplineTand/anaDMFsymm/"
+#anadir <- "/home/komari/win/work/papers/gsplineTand/anaDMFsymm/"
+anadir <- tempdir()
 chaindir.CS <- paste(anadir, "chains/modelCS", sep="")
 initdir.CS <- paste(anadir, "chains/end_CS", sep="")
 plotdir.CS <- paste(anadir, "summPlots/modelCS/", sep="")
 resultdir <- paste(anadir, "results/", sep="")
 predCurvesdir <- paste(resultdir, "predCurves/", sep="")
-figuredir <- "/home/komari/win/work/papers/gsplineTand/RforCRAN/figuresCS/"
+#figuredir <- "/home/komari/win/work/papers/gsplineTand/RforCRAN/figuresCS/"
+figuredir <-paste(anadir, "/figuresCS/")
+
+oldpar <- par()
 
 
 ###################################################
 ### chunk number 2: loadLibData
 ###################################################
-library(bayesSurv)
-data(tandmobRoos)
+library("bayesSurv")
+data("tandmobRoos")
 
 
 ###################################################
@@ -1036,3 +1040,4 @@ plfun <- "traceplot2"
 plname <- "trace"
 
 
+par(oldpar)

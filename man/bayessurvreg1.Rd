@@ -44,7 +44,7 @@ bayessurvreg1(formula, random,
                y = NULL, r = NULL, otherp = NULL, u = NULL),
    store = list(y = TRUE, r = TRUE, b = TRUE, u = TRUE,
                 MHb = FALSE, regresres = FALSE),
-   dir = getwd(),
+   dir,
    toler.chol = 1e-10, toler.qr = 1e-10, \dots)
 }
 \arguments{
@@ -545,7 +545,7 @@ bayessurvreg1(formula, random,
     \item{b.sim}{columns labeled \code{nameb[1].id[1], \dots,
 	nameb[q].id[1], \dots, nameb[1].id[N], \dots, nameb[q].id[N]},
       where \code{q} is a dimension of the random effect vector
-      \eqn{b_i}{b[i]} and \code{N}{N} number of clusters. \code{nameb}
+      \eqn{b_i}{b[i]} and \code{N} number of clusters. \code{nameb}
       is replaced by appropriate column name from the design matrix and
       \code{id} is replaced by identificator of the clusters. This gives
       sampled values of the random effects for each cluster.}

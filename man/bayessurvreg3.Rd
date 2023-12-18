@@ -184,7 +184,7 @@ bayessurvreg3(formula, random, formula2, random2,
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
                 r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
                 a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
-   dir = getwd())
+   dir)
 
 bayessurvreg3Para(formula, random, formula2, random2,
    data = parent.frame(),
@@ -209,7 +209,7 @@ bayessurvreg3Para(formula, random, formula2, random2,
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
                 r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE,
                 a.b = FALSE, a.b2 = FALSE, r.b = FALSE, r.b2 = FALSE), 
-   dir = getwd())
+   dir)
 }
 \arguments{
   \item{formula}{model formula for the regression. In the case of

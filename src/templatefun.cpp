@@ -26,7 +26,7 @@
 // vals ...... original values
 // kP ........ length of arrays csum and vals
 //
- template <typename dd>
+template <typename dd>
 void
 cumsum(dd* csum,   const dd* vals,   const int* kP)
 {
@@ -43,22 +43,24 @@ cumsum(dd* csum,   const dd* vals,   const int* kP)
 // Function to print an array on a screen
 //  -> useful especially for debugging
 // ================================================================
- template <typename pp>
-void
-printArray(const pp* array, const int* length)
-{
-  //for (int i = 0; i < *length; i++) std::cout << array[i] << ",  ";
-  //std::cout << std::endl;
-  for (int i = 0; i < *length; i++) Rprintf("%g,  ", array[i]);
-  Rprintf("\n");
-  return;
-}
+//template <typename pp>                                                      // commented on 14/12/2023
+//void
+//printArray(const pp* array, const int* length)
+//{
+//  //for (int i = 0; i < *length; i++) std::cout << array[i] << ",  ";
+//  //std::cout << std::endl;
+//  for (int i = 0; i < *length; i++) Rprintf("%g,  ", array[i]);
+//  Rprintf("\n");
+//  return;
+//}
+//
+// /** explicit printArrayI() and printArrayD() moved to printArray.[h,cpp], 14/12/2023 **/
 
 
 // ================================================================================
 // Function to change two pointers
 // ================================================================================
- template <typename pp>
+template <typename pp>
 void
 changePointers(pp** aP, pp** bP)
 {
@@ -494,7 +496,7 @@ writeRaggedToFile(const dd* array,         const int& nR,                const i
 // skipOnRow ... number of values that are to be skipped at the beginning of each row
 // skip ........ number of rows thar are to be skipped at the beginnig of the file
 //
- template <typename dd>
+template <typename dd>
 void
 readFromFile(dd* array,               int* nread,       
              const int& nR,           const int& nC,               const int& header,
@@ -524,7 +526,9 @@ readFromFile(dd* array,               int* nread,
     else{
       mess = std::string("Reading ") + path + "\n";
       strcpy(cmess, mess.c_str());
-      Rprintf(cmess);
+      //Rprintf(cmess);               /*** commented on 14/12/2023, because it led to                                                ***/
+                                      /*** warning: format string is not a string literal (potentially insecure) [-Wformat-security] ***/
+                                      /*** when running the CRAN check                                                               ***/
 
       /*** Skip what is to be skipped (header included) ***/
       char ch;

@@ -18,7 +18,7 @@
    object). Methods for printing and plotting are also provided.
 }
 \usage{
-bayesDensity(dir = getwd(), stgrid, centgrid, grid, n.grid = 100,
+bayesDensity(dir, stgrid, centgrid, grid, n.grid = 100,
     skip = 0, by = 1, last.iter,
     standard = TRUE, center = TRUE, unstandard = TRUE)
 }

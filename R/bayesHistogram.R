@@ -20,7 +20,7 @@ bayesHistogram <- function(
       init = list(iter = 0),
       mcmc.par = list(type.update.a = "slice", k.overrelax.a = 1, k.overrelax.sigma = 1, k.overrelax.scale = 1),
       store = list(a = FALSE, y = FALSE, r = FALSE),
-      dir = getwd())
+      dir)
 {
   thispackage = "bayesSurv"
   #thispackage = NULL

@@ -12,6 +12,7 @@
 #include "constants.h"
 #include "cholesky.h"
 #include "templatefun.h"
+#include "printArray.h"
 
 // ======================================================================================
 // ***** MHblocks.cpp: a class to store information concerning the parameters that

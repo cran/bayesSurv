@@ -189,23 +189,23 @@ covMatrix::print() const
   //cout << ",  det = " << det << endl;;
   //cout << "covm = "; 
   Rprintf("nrow = %d,  larray = %d,  rank = %d,  det = %g\ncovm = ", _nrow, _larray, _rank, det);
-  printArray(covm, &_larray);
+  printArrayD(covm, &_larray);
   //cout << "ichicovm = "; 
   Rprintf("ichicovm = ");
-  printArray(ichicovm, &_larray);
+  printArrayD(ichicovm, &_larray);
   //cout << "diagI = "; 
   Rprintf("diagI = ");
-  printArray(diagI, &_nrow);
+  printArrayI(diagI, &_nrow);
   int r_r = _nrow*_nrow;
   //cout << "qr = "; 
   Rprintf("qr = ");
-  printArray(qr, &r_r);
+  printArrayD(qr, &r_r);
   //cout << "qraux = "; 
   Rprintf("qraux = ");
-  printArray(qraux, &_nrow);
+  printArrayD(qraux, &_nrow);
   //cout << "jpvt = ";
   Rprintf("jpvt = "); 
-  printArray(jpvt, &_nrow);
+  printArrayI(jpvt, &_nrow);
 
   return;
 }

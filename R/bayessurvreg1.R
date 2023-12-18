@@ -32,7 +32,7 @@ bayessurvreg1 <- function(
      init = list(iter = 0, mixture = NULL, beta = NULL, b = NULL, D = NULL,
                  y = NULL, r = NULL, otherp = NULL, u = NULL),
      store = list(y = TRUE, r = TRUE, b = TRUE, u = TRUE, MHb = FALSE, regresres = FALSE),
-     dir = getwd(),
+     dir,
      toler.chol = 1e-10,
      toler.qr = 1e-10,
      ...)

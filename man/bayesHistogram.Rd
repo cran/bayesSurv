@@ -92,7 +92,7 @@ bayesHistogram(y1, y2,
    mcmc.par = list(type.update.a = "slice", k.overrelax.a = 1,
                    k.overrelax.sigma = 1, k.overrelax.scale = 1),
    store = list(a = FALSE, y = FALSE, r = FALSE),
-   dir = getwd())
+   dir)
 }
 \arguments{
   \item{y1}{response for the first dimension in the form of a survival

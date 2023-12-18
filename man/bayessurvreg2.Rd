@@ -139,7 +139,7 @@ bayessurvreg2(formula, random, formula2, random2,
                     k.overrelax.sigma = 1, k.overrelax.scale = 1),
    store = list(a = FALSE, a2 = FALSE, y = FALSE, y2 = FALSE,
                 r = FALSE, r2 = FALSE, b = FALSE, b2 = FALSE), 
-   dir = getwd())
+   dir)
 }
 \arguments{
   \item{formula}{model formula for the regression. In the case of

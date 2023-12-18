@@ -14,7 +14,7 @@
 ##
 ## 02/11/2004
 ## 02/02/2005
-bayesGspline <- function(dir = getwd(),
+bayesGspline <- function(dir,
                          extens = "",
                          extens.adjust= "_b",
                          grid1,

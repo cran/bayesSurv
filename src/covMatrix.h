@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "cholesky.h"
 #include "templatefun.h"
+#include "printArray.h"
 #include "qrdecomp.h"
 
 class covMatrix

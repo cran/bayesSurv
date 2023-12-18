@@ -26,7 +26,7 @@ predictive2(formula, random, obs.dim, time0, data = parent.frame(),
      only.aver = TRUE,
      predict = list(density=FALSE, Surv=TRUE,
                     hazard=FALSE, cum.hazard=FALSE),
-     dir = getwd(), extens = "", extens.random="_b", version=0)
+     dir, extens = "", extens.random="_b", version=0)
 
 predictive2Para(formula, random, obs.dim, time0, data = parent.frame(),
      grid, na.action = na.fail, Gspline,
@@ -35,7 +35,7 @@ predictive2Para(formula, random, obs.dim, time0, data = parent.frame(),
      only.aver = TRUE,
      predict = list(density=FALSE, Surv=TRUE,
                     hazard=FALSE, cum.hazard=FALSE),
-     dir = getwd(), extens = "", extens.random="_b", version=0)
+     dir, extens = "", extens.random="_b", version=0)
 
 predictive2.control(predict, only.aver, quantile, obs.dim,
      time0, Gspline, n)

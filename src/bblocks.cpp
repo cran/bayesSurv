@@ -360,38 +360,38 @@ bblocks::print() const
     i = _nRandom * _nCluster;
     //cout << "bM = "; 
     Rprintf("bM = ");
-    printArray(bM, &i);
+    printArrayD(bM, &i);
     //cout << "halfRangeUnif = "; 
     Rprintf("halfRangeUnif = ");
-    printArray(halfRangeUnif, &_nRandom);
+    printArrayD(halfRangeUnif, &_nRandom);
 
     //cout << "nInBlock = "; 
     Rprintf("nInBlock = ");
-    printArray(nInBlock, &_nBlocks);
+    printArrayI(nInBlock, &_nBlocks);
     for (i = 0; i < _nBlocks; i++){
       dimi = (nInBlock[i] * (nInBlock[i] + 1))/2;
       //cout << "Block " << i << ":";
       //cout << "  indBlock = "; 
       Rprintf("Block %d:  indBlock = ", i);
-      printArray(indBlock[i], nInBlock + i);
+      printArrayI(indBlock[i], nInBlock + i);
       //cout << "          diagI = "; 
       Rprintf("          diagI = ");
-      printArray(diagI[i], nInBlock + i);    
+      printArrayI(diagI[i], nInBlock + i);    
       //cout << "          covpar = "; 
       Rprintf("          covpar = ");
-      printArray(covpar[i], &dimi);    
+      printArrayD(covpar[i], &dimi);    
       //cout << "          chcovpar = "; 
       Rprintf("          chcovpar = ");
-      printArray(chcovpar[i], &dimi);        
+      printArrayD(chcovpar[i], &dimi);        
     }
 
     //cout << "weightUnif = "; 
     Rprintf("weightUnif = ");
-    printArray(weightUnif, &_nBlocks);
+    printArrayD(weightUnif, &_nBlocks);
     i = _nBlocks * _nCluster;
     //cout << "sumAccept = "; 
     Rprintf("sumAccept = ");
-    printArray(sumAccept, &i);
+    printArrayI(sumAccept, &i);
     //cout << endl;
     Rprintf("\n");
   }
