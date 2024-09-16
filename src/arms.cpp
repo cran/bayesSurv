@@ -8,6 +8,8 @@
 // Arnost Komarek
 // 08/12/2006
 // 19/06/2012  exit() replaced by error() to avoid RCMD check complains
+// 16/09/2024  error() replaced by Rf_error() to avoid RCMD check complains
+//             Calloc() and Free() replaced by R_Calloc() and R_Free() to avoid RCMD check complains
 //
 //
 // It is supposed to be used in R
@@ -153,7 +155,7 @@ int arms_simple (int ninit, double *xl, double *xr,
 /* *xsamp       : to store sampled value */
 
 {
-  double *xinit = Calloc(ninit, double); 
+  double *xinit = R_Calloc(ninit, double); 
   double convex = 1.0;
   double qcent, xcent;
   int err, i, npoint=100, nsamp=1, ncent=0, neval; 
@@ -166,7 +168,7 @@ int arms_simple (int ninit, double *xl, double *xr,
   err = arms(xinit,ninit,xl,xr,myfunc,mydata,&convex,npoint,dometrop,xprev,xsamp,
              nsamp,&qcent,&xcent,ncent,&neval);
 
-  Free(xinit);
+  R_Free(xinit);
   return err;
 }
 
@@ -477,7 +479,7 @@ void invert(double prob, ENVELOPE *env, POINT *p)
 
   /* guard against imprecision yielding point outside interval */
   //if ((p->x < xl) || (p->x > xr))exit(1);
-  if ((p->x < xl) || (p->x > xr)) error("arms error 1\n");
+  if ((p->x < xl) || (p->x > xr)) Rf_error("arms error 1\n");
 
   return;
 }
@@ -632,7 +634,7 @@ int update(ENVELOPE *env, POINT *p, FUNBAG *lpdf, METROPOLIS *metrop)
   } else {
     /* this should be impossible */
     //exit(10);
-    error("arms error 10");
+    Rf_error("arms error 10");
   }
 
   /* now adjust position of q within interval if too close to an endpoint */
@@ -733,7 +735,7 @@ int meet (POINT *q, ENVELOPE *env, METROPOLIS *metrop)
   if(q->f){
     /* this is not an intersection point */
     //exit(30);
-    error("arms error 30");
+    Rf_error("arms error 30");
   }
 
   /* calculate coordinates of point of intersection */
@@ -818,13 +820,13 @@ int meet (POINT *q, ENVELOPE *env, METROPOLIS *metrop)
   } else {
     /* gradient on neither side - should be impossible */
     //exit(31);
-    error("arms error 31");
+    Rf_error("arms error 31");
   }
   if(((q->pl != NULL) && (q->x < q->pl->x)) ||
      ((q->pr != NULL) && (q->x > q->pr->x))){
     /* intersection point outside interval (through imprecision) */
     //exit(32);
-    error("arms error 32");
+    Rf_error("arms error 32");
   }
   /* successful exit : intersection has been calculated */
   return 0;
@@ -842,7 +844,7 @@ double area(POINT *q)
   if(q->pl == NULL){
     /* this is leftmost point in envelope */
     //exit(1);
-    error("arms error 1");
+    Rf_error("arms error 1");
   } else if(q->pl->x == q->x){
     /* interval is zero length */
     a = 0.;

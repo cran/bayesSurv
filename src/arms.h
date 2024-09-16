@@ -9,6 +9,8 @@
 
 #include <R.h>
 #include <Rmath.h>
+#include <R_ext/Error.h>
+#include <R_ext/RS.h>
 
 
 /* *********************************************************************** */

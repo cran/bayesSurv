@@ -9,7 +9,7 @@ dirsim <- character()
 dirsim[1] <- paste(anadir, "chain1small", sep="")
 dirsim[2] <- paste(anadir, "chain2small", sep="")
 
-oldpar <- par()
+oldpar <- par(no.readonly = TRUE)
 
 
 ###################################################

@@ -21,8 +21,7 @@ bibentry(bibtype = "Article",
          volume  = "103",
          number  = "482",
          pages   = "523--533",
-         doi     = "10.1198/016214507000000563",
-	 header = "To cite the package bayesSurv in publications use either of the following articles:"         
+         doi     = "10.1198/016214507000000563"
 )
 
 bibentry(bibtype = "Article",
@@ -33,8 +32,7 @@ bibentry(bibtype = "Article",
          year    = "2007",
          volume  = "17",
          number  = "2",
-         pages   = "549--569",
-	 header = "To cite the package bayesSurv in publications use either of the following articles:"         
+         pages   = "549--569"
 )
 
 bibentry(bibtype = "Article",
@@ -47,8 +45,7 @@ bibentry(bibtype = "Article",
          volume  = "26",
          number  = "30",
          pages   = "5457--5472",
-         doi     = "10.1002/sim.3083",
-	 header = "To cite the package bayesSurv in publications use either of the following articles:"         
+         doi     = "10.1002/sim.3083"
 )
 
 bibentry(bibtype = "Article",
@@ -60,6 +57,5 @@ bibentry(bibtype = "Article",
          volume  = "6",
          number  = "1",
          pages   = "3--22",
-         doi     = "10.1191/1471082X06st107oa",
-	 header = "To cite the package bayesSurv in publications use either of the following articles:"         
+         doi     = "10.1191/1471082X06st107oa"
 )

@@ -6,7 +6,7 @@ anadir <- tempdir()
 dirsim1 <- paste(anadir, "anapaper1b/chain1", sep="")
 dirsim2 <- paste(anadir, "anapaper1b/chain2", sep="")
 
-oldpar <- par()
+oldpar <- par(no.readonly = TRUE)
 
 
 ###################################################

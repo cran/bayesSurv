@@ -1,5 +1,5 @@
-e8d3e753029f37c9d2e2f97a7e8b0bfe *CHANGES
-a0ac9473ba6f83ab7f5076ea19b55fef *DESCRIPTION
+730f050d22e47ae82f460ba531aa208e *CHANGES
+b39d811e5dcfe6a28cbf14494c0131ea *DESCRIPTION
 d4c3b4c265c5ac3cc5cb14f05da3da8a *NAMESPACE
 6df45d7bf1ca946f4f6ba23c170dce09 *R/bayesBisurvreg.R
 43b255faaaf8ff388ab3e834168a05e9 *R/bayesBisurvreg.checkStore.R
@@ -64,13 +64,13 @@ df9aa9fd8f79030c727ec223935b2d58 *R/vecr2matr.R
 036a3f1dfffc4cf8ffca86b1dca590f4 *data/cgd.RData
 2116fffea2317da44840ed12f37c9713 *data/tandmob2.RData
 d21df8732277560c0bb5a9f852a52cb6 *data/tandmobRoos.RData
-aab2c692a312833076de8d64247c17b1 *inst/CITATION
+fa5fd90d42be853f47593c94cae0c938 *inst/CITATION
 fbaaf47994c2d5b8893ef81a84521a03 *inst/doc/IDsampled50.dat
 5b267eef2de94983166c0fe956301493 *inst/doc/IDsampled500.dat
-69077fede59393fcd9ed1d15df8b1a6d *inst/doc/ex-cgd.R
-c1f99430d226985eb9e047403e0f14ea *inst/doc/ex-tandmobCS.R
-f2ee9aad492864a111943753241ba445 *inst/doc/ex-tandmobMixture.R
-a199137f5eeb4d773ea07f1db6b22b74 *inst/doc/ex-tandmobPA.R
+d71623511f429eaeff919a9049ad7552 *inst/doc/ex-cgd.R
+e6aa28ed3a9fd844e72488dcec05d478 *inst/doc/ex-tandmobCS.R
+fa2441659312d812778d4816390023bf *inst/doc/ex-tandmobMixture.R
+8176dcfe432fe530399f833bc9dde175 *inst/doc/ex-tandmobPA.R
 a8f839d595534afd3dd5b8efdd262261 *inst/doc/index.html
 397dba7f33cbebb42171f478a1ac8eac *man/bayesBisurvreg.Rd
 7bf2a37fd3b6f0a3977ab427a6628547 *man/bayesBisurvreg.help.Rd
@@ -142,8 +142,8 @@ b86188bf274d505b5f885215dbc9f7fa *src/MHproposal.cpp
 2801cf4cb84b89d9441dc5cca1a4d0c7 *src/Mvtdist3.h
 5a85679f03eb51e726208fdf67d56aea *src/Slice_sampler2.cpp
 022f2770505e062ed457908dbd875d2a *src/Slice_sampler2.h
-31546e9cf450799a91f08d74fd7f2bb5 *src/arms.cpp
-d6a0b1cc34cf43aab3b22ea02e4f00e8 *src/arms.h
+6e1df37948c9cddd563655ec58de499c *src/arms.cpp
+6f261cb4662a8446956df489f9adea22 *src/arms.h
 4f3bb86fe5ad48cf3de7ec5bfd0fce40 *src/arrays2Mat.cpp
 f8411c942983da50886d32832ef5dac7 *src/arrays2Mat.h
 edbfe0cb8791f164771f0fafbaa7aa68 *src/bayesBisurvreg.cpp

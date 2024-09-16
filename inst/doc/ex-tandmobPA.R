@@ -11,7 +11,7 @@ predCurvesdir <- paste(resultdir, "predCurves/", sep="")
 #figuredir <- "/home/komari/win/work/papers/gsplineTand/RforCRAN/figuresPA/"
 figuredir <-paste(anadir, "/figuresPA/")
 
-oldpar <- par()
+oldpar <- par(no.readonly = TRUE)
 
 
 ###################################################
